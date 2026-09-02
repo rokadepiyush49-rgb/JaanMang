@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { NAV } from "@/lib/data";
+import { LanguageSwitcher } from "./language-switcher";
 import { Icon } from "./icon";
 import { Avatar } from "./ui";
 
@@ -123,6 +124,7 @@ function Topbar({ onMenu }: { onMenu: () => void }) {
           </button>
         ))}
         <span className="mx-2 hidden h-7 w-px bg-line sm:block" />
+        <LanguageSwitcher />
         <button
           className="hidden h-10 items-center rounded-full border border-line px-4 text-sm font-semibold text-ink hover:border-navy md:flex"
           type="button"

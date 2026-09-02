@@ -11,7 +11,11 @@ import {
   PageHeading,
   Tag,
 } from "@/components/ui";
-import { AGENTS, PHASES } from "@/lib/data";
+import { clearSession, writeSession } from "@/lib/council/session-store";
+import { localizedAgent } from "@/lib/council/roster";
+import { stringsFor } from "@/lib/i18n/strings";
+import { useLocale } from "@/lib/i18n/use-locale";
+import { AGENTS, PHASE_KEYS, phaseLabel } from "@/lib/data";
 
 const AGENT_TONES: Record<string, string> = {
   navy: "bg-navy text-white",
@@ -40,6 +44,8 @@ const inputClass =
 
 export default function CouncilSetupPage() {
   const router = useRouter();
+  const [locale] = useLocale();
+  const t = stringsFor(locale);
   const [selected, setSelected] = useState<string[]>(
     AGENTS.filter((a) => a.defaultOn).map((a) => a.id),
   );
@@ -53,17 +59,45 @@ export default function CouncilSetupPage() {
     );
   }
 
+  /**
+   * Hands the brief to the session page through `sessionStorage`.
+   *
+   * There is no server-side session to POST this into, and putting a
+   * multi-paragraph problem statement in the query string is not an option, so
+   * the two pages meet at the store. Any previous sitting is cleared first —
+   * otherwise a student who abandons one session and starts another arrives at
+   * a transcript belonging to the old project.
+   */
   function submit(event: FormEvent) {
     event.preventDefault();
+
+    const data = new FormData(event.currentTarget as HTMLFormElement);
+    const read = (field: string) => String(data.get(field) ?? "").trim();
+
+    clearSession();
+    writeSession({
+      brief: {
+        title: read("title"),
+        problem: read("problem"),
+        solution: read("solution"),
+        demographic: read("demographic"),
+        phase: read("phase"),
+        attachments: files,
+      },
+      seatedAgentIds: selected,
+      transcript: [],
+      complete: false,
+    });
+
     router.push("/council/session");
   }
 
   return (
     <form className="mx-auto flex max-w-7xl flex-col gap-6" onSubmit={submit}>
       <PageHeading
-        breadcrumb={["Problem Explorer", "AI Project Council"]}
-        subtitle="Define your project parameters and select the specialized AI agents to form your advisory council for comprehensive analysis."
-        title="Council Initialization"
+        breadcrumb={[t.problemExplorer, t.councilName]}
+        subtitle={t.setupSubtitle}
+        title={t.setupTitle}
       />
 
       <div className="grid gap-6 xl:grid-cols-[1.5fr_1fr]">
@@ -71,52 +105,52 @@ export default function CouncilSetupPage() {
           <Card>
             <CardHeader
               icon="file-pen"
-              subtitle="Core structural information for the council to analyze."
-              title="Project Details"
+              subtitle={t.projectDetailsHint}
+              title={t.projectDetails}
             />
             <div className="mt-5 flex flex-col gap-5 border-t border-line px-6 pt-5 pb-6">
-              <Field label="Project Title">
+              <Field label={t.fieldTitle}>
                 <input
                   className={inputClass}
                   name="title"
-                  placeholder="e.g., Rural Broadband Initiative"
+                  placeholder={t.fieldTitlePlaceholder}
                   required
                 />
               </Field>
-              <Field label="Problem Statement">
+              <Field label={t.fieldProblem}>
                 <textarea
                   className={inputClass}
                   name="problem"
-                  placeholder="Describe the specific problem this project aims to solve…"
+                  placeholder={t.fieldProblemPlaceholder}
                   rows={4}
                 />
               </Field>
-              <Field label="Proposed Solution">
+              <Field label={t.fieldSolution}>
                 <textarea
                   className={inputClass}
                   name="solution"
-                  placeholder="Detail your approach and methodology…"
+                  placeholder={t.fieldSolutionPlaceholder}
                   rows={5}
                 />
               </Field>
               <div className="grid gap-5 sm:grid-cols-2">
-                <Field label="Target Demographic">
+                <Field label={t.fieldDemographic}>
                   <input
                     className={inputClass}
                     name="demographic"
-                    placeholder="e.g., Students, Farmers"
+                    placeholder={t.fieldDemographicPlaceholder}
                   />
                 </Field>
-                <Field label="Current Phase">
+                <Field label={t.fieldPhase}>
                   <div className="relative">
                     <select
                       className={`${inputClass} appearance-none pr-10 font-semibold`}
-                      defaultValue={PHASES[0]}
+                      defaultValue={PHASE_KEYS[0]}
                       name="phase"
                     >
-                      {PHASES.map((phase) => (
+                      {PHASE_KEYS.map((phase) => (
                         <option key={phase} value={phase}>
-                          {phase}
+                          {phaseLabel(phase, locale)}
                         </option>
                       ))}
                     </select>
@@ -143,21 +177,21 @@ export default function CouncilSetupPage() {
                   tone="ghost"
                   type="button"
                 >
-                  Add
+                  {t.add}
                 </Button>
               }
               icon="folder"
-              subtitle="Upload research, whitepapers, or data sets."
-              title="Supporting Documents"
+              subtitle={t.documentsHint}
+              title={t.documents}
             />
             <div className="mt-5 border-t border-line px-6 pt-5 pb-6">
               <div className="flex flex-col items-center gap-2 rounded-md border border-dashed border-line-strong px-6 py-10 text-center">
                 <Icon className="text-ink-faint" name="upload" size={28} />
                 <p className="text-sm font-semibold text-ink">
-                  Click to select files
+                  {t.filePrompt}
                 </p>
                 <p className="text-xs text-ink-faint">
-                  PDF, DOCX, CSV or XLSX up to 25 MB each
+                  {t.fileHint}
                 </p>
               </div>
 
@@ -173,7 +207,7 @@ export default function CouncilSetupPage() {
                         {file}
                       </span>
                       <button
-                        aria-label={`Remove ${file}`}
+                        aria-label={t.removeFile(file)}
                         className="text-ink-faint hover:text-danger"
                         onClick={() =>
                           setFiles((prev) => prev.filter((f) => f !== file))
@@ -195,18 +229,18 @@ export default function CouncilSetupPage() {
             <div>
               <h2 className="headline-md flex items-center gap-2 text-ink">
                 <Icon className="text-navy" name="users" size={22} />
-                Council Assembly
+                {t.assembly}
               </h2>
               <p className="mt-2 text-sm text-ink-muted">
-                Select AI personas to review your project from multiple critical
-                perspectives.
+                {t.assemblyHint}
               </p>
             </div>
-            <Tag tone="navy">{selected.length} Selected</Tag>
+            <Tag tone="navy">{t.selectedCount(selected.length)}</Tag>
           </div>
 
           <ul className="mt-5 flex flex-col gap-2 border-t border-line px-3 py-4">
-            {AGENTS.map((agent) => {
+            {AGENTS.map((entry) => {
+              const agent = localizedAgent(entry.id, locale);
               const on = selected.includes(agent.id);
               return (
                 <li key={agent.id}>
@@ -261,10 +295,10 @@ export default function CouncilSetupPage() {
               icon="sparkles"
               type="submit"
             >
-              Convene the Council
+              {t.convene}
             </Button>
             <ButtonLink className="w-full" href="/council" tone="ghost">
-              Cancel
+              {t.cancel}
             </ButtonLink>
           </div>
         </Card>

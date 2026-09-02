@@ -32,6 +32,9 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# ...but the template carries no secrets and is how a new checkout learns
+# which keys the council needs.
+!.env.example
 
 # vercel
 .vercel

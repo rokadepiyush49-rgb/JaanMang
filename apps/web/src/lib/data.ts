@@ -1,4 +1,6 @@
 import type { IconName } from "@/components/icon";
+import { COUNCIL_AGENTS } from "@/lib/council/roster";
+import type { Locale } from "@/lib/i18n/locale";
 
 /* Static content transcribed from the Stitch reference screens. All values are
    presentation fixtures — swap for API calls when the backend lands. */
@@ -185,67 +187,47 @@ export const FILTERS = {
   ],
 };
 
-export const AGENTS = [
-  {
-    id: "citizen",
-    name: "Citizen & Social Impact",
-    blurb:
-      "Evaluates community acceptance, social equity, and grassroots impact of the proposal.",
-    icon: "users" as IconName,
-    tone: "impact" as const,
-    defaultOn: true,
-  },
-  {
-    id: "technical",
-    name: "Technical Architect",
-    blurb:
-      "Assesses systemic architecture, data privacy, and technological feasibility at scale.",
-    icon: "code" as IconName,
-    tone: "navy" as const,
-    defaultOn: true,
-  },
-  {
-    id: "financial",
-    name: "Financial Strategist",
-    blurb: "Reviews budget models, funding sustainability, and ROI metrics.",
-    icon: "banknote" as IconName,
-    tone: "community" as const,
-    defaultOn: true,
-  },
-  {
-    id: "legal",
-    name: "Legal & Compliance",
-    blurb: "Identifies regulatory hurdles, policy alignment, and compliance risks.",
-    icon: "scale" as IconName,
-    tone: "muted" as const,
-    defaultOn: false,
-  },
-  {
-    id: "ip",
-    name: "IP & Innovation",
-    blurb: "Checks for novelty, patent potential, and innovative differentiation.",
-    icon: "bulb" as IconName,
-    tone: "community" as const,
-    defaultOn: true,
-  },
-  {
-    id: "industry",
-    name: "Industry Specialist",
-    blurb: "Provides domain-specific benchmarks and competitor positioning.",
-    icon: "bar-chart" as IconName,
-    tone: "muted" as const,
-    defaultOn: false,
-  },
-];
+/**
+ * Re-exported from the council roster so the setup screen and the engine can
+ * never disagree about who is on the panel. `roster.ts` is the source of
+ * truth; this alias only exists so existing imports keep working.
+ */
+export const AGENTS = COUNCIL_AGENTS;
 
-export const PHASES = [
+/**
+ * Project phases, stored as stable English keys.
+ *
+ * The value submitted with the brief must not change with the reader's
+ * language — it travels into the prompt, and a council asked to weigh a
+ * project at stage "प्रोटोटाइप" in one session and "Prototype" in the next
+ * would be answering two different questions. Only the label is translated.
+ */
+export const PHASE_KEYS = [
   "Select Phase",
   "Ideation",
   "Prototype",
   "Pilot",
   "Scale-up",
   "Handover",
-];
+] as const;
+
+export type PhaseKey = (typeof PHASE_KEYS)[number];
+
+const PHASE_LABEL_HI: Record<PhaseKey, string> = {
+  "Select Phase": "चरण चुनिए",
+  Ideation: "विचार",
+  Prototype: "प्रोटोटाइप",
+  Pilot: "पायलट",
+  "Scale-up": "विस्तार",
+  Handover: "हस्तांतरण",
+};
+
+export function phaseLabel(phase: PhaseKey, locale: Locale): string {
+  return locale === "hi" ? PHASE_LABEL_HI[phase] : phase;
+}
+
+/** @deprecated Use `PHASE_KEYS` with `phaseLabel`. Kept for untouched callers. */
+export const PHASES = PHASE_KEYS;
 
 export const TRANSCRIPT = [
   {

@@ -324,6 +324,27 @@ const P = {
     </>
   ),
   "arrow-up-right": <path d="M7 17 17 7M8.5 7H17v8.5" />,
+  languages: (
+    <>
+      <path d="M3 5h10M8 3v2" />
+      <path d="M11 5c0 4-3.5 7-8 8" />
+      <path d="M5 9c0 2 2 4 6 5" />
+      <path d="m12 20 4-9 4 9M13.4 17h5.2" />
+    </>
+  ),
+  "volume-on": (
+    <>
+      <path d="M11 5 6.5 9H3v6h3.5L11 19V5Z" />
+      <path d="M15.5 8.5a5 5 0 0 1 0 7" />
+      <path d="M18.5 5.5a9 9 0 0 1 0 13" />
+    </>
+  ),
+  "volume-off": (
+    <>
+      <path d="M11 5 6.5 9H3v6h3.5L11 19V5Z" />
+      <path d="m16 9.5 5 5M21 9.5l-5 5" />
+    </>
+  ),
 } satisfies Record<string, React.ReactNode>;
 
 export type IconName = keyof typeof P;
