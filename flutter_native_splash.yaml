@@ -1,0 +1,16 @@
+# Native splash screen. Run after dropping the brand assets in place:
+#   flutter pub add --dev flutter_native_splash
+#   dart run flutter_native_splash:create
+flutter_native_splash:
+  color: "#F6FAFE"
+  image: assets/brand/janmaang_logo.png
+  android_12:
+    # Android 12+ masks the splash image to a circle, so it gets the mark
+    # rather than the full lockup.
+    image: assets/brand/janmaang_mark.png
+    color: "#F6FAFE"
+  color_dark: "#0F1417"
+  image_dark: assets/brand/janmaang_logo.png
+  android: true
+  ios: true
+  web: true
