@@ -1,48 +1,35 @@
-# Problem Statement 36 — Jan Setu
+# Problem Statement 36 — JaanMaang
 
-One unified web platform plus one Citizen mobile app, sharing common packages
-and an independent backend.
+A unified platform connecting **Citizens, Students, Industry, Faculty, Mentors, NGOs, and Universities** to identify problems, collaborate on solutions, and create real-world impact.
 
-## Structure
+## 🏗️ Structure
 
-```
+```text
 Problem Statement 36/
 ├── apps/
-│   ├── web/          # THE unified website (Next.js) — all roles, one login
-│   └── citizen-app/  # Citizen mobile application (not implemented yet)
-├── packages/         # Shared code, reusable by web and mobile
-│   ├── models/       # Shared domain types / schemas
-│   ├── api/          # Shared API client
-│   ├── auth/         # Shared authentication logic
-│   ├── ui/           # Shared UI primitives
-│   └── utils/        # Shared helpers
-├── backend/          # Independent backend service
-│   ├── api/          # Route/controller layer
-│   ├── services/     # Business logic
-│   ├── models/       # Persistence models
-│   └── database/     # Migrations, seeds, connection setup
-└── docs/             # Architecture and product documentation
-```
-
-## Architecture rules
-
-1. There is exactly **one** web application: `apps/web`. There is no
-   `student-web`, `industry-web`, `faculty-web`, `mentor-web`, `ngo-web`, or
-   `university-web`.
-2. `apps/web` has a common login/authentication entry point. After login the
-   user's role decides which dashboard and features are shown.
-3. Role-specific functionality lives in `apps/web/src/features/<role>/`
-   (`student`, `industry`, `faculty`, `mentor`, `ngo`, `university`).
-4. There is no student mobile app. The only mobile app is `apps/citizen-app`.
-5. Code shared between web and mobile belongs in `packages/`, not duplicated.
-6. Backend code stays in `backend/` and is never moved into the frontend.
-
-## Running the web app
-
-```bash
+│   ├── web/              # Unified Next.js web platform
+│   └── citizen-app/      # Citizen Flutter mobile app
+├── packages/             # Shared models, API, auth, UI & utilities
+├── backend/              # Independent backend service
+└── docs/                 # Project documentation
+👥 Web Roles
+Student
+Industry
+Faculty
+Mentor
+NGO
+University
+All roles use one unified web application and common authentication, with role-based dashboards and features.
+📱 Citizen App
+apps/citizen-app is the only mobile application.
+There is no separate Student mobile app.
+🚀 Run Web
 cd apps/web
 npm install
 npm run dev
-```
-
-See [apps/web/README.md](apps/web/README.md) for routes and app-level details.
+📱 Run Citizen App
+cd apps/citizen-app
+flutter pub get
+flutter run
+📌 Architecture
+One Web Platform + One Citizen App + Shared Packages + Independent Backend
