@@ -4,7 +4,7 @@ A unified platform connecting **Citizens, Students, Industry, Faculty, Mentors, 
 
 ---
 
-## 🏗️ Project Structure
+##  Project Structure
 
 ```text
 Problem Statement 36/
@@ -18,7 +18,7 @@ Problem Statement 36/
 
 ---
 
-## 👥 Platform Roles & Access
+##  Platform Roles & Access
 
 ### Web Platform (`apps/web`)
 Sabhi major stakeholders ke liye ek unified web application hai jisme role-based dashboards aur single auth system hai:
@@ -35,7 +35,7 @@ Sabhi major stakeholders ke liye ek unified web application hai jisme role-based
 
 ---
 
-## 📌 Architecture
+##  Architecture
 
 **One Web Platform + One Citizen App + Shared Packages + Independent Backend**
 
@@ -46,7 +46,7 @@ Sabhi major stakeholders ke liye ek unified web application hai jisme role-based
 
 ---
 
-## 🚀 Setup & Run Guide
+##  Setup & Run Guide
 
 ### Prerequisites
 * **Node.js**: v18.x ya latest LTS
@@ -104,7 +104,7 @@ npm run dev
 
 ---
 
-## 📦 Packages Overview
+##  Packages Overview
 
 * `packages/models`: Universal data models aur Zod/validation schemas.
 * `packages/api`: Unified API clients aur network utilities.
@@ -113,6 +113,6 @@ npm run dev
 
 ---
 
-## 📄 License
+##  License
 
 Distributed under the MIT License. See `LICENSE` for more details.
