@@ -1,0 +1,27 @@
+# Generates Android/iOS launcher icons and the web favicon from the brand mark.
+#
+# Drop assets/brand/janmaang_mark.png (square, 1024x1024, transparent) in place,
+# then run:
+#   flutter pub add --dev flutter_launcher_icons
+#   dart run flutter_launcher_icons
+flutter_launcher_icons:
+  image_path: "assets/brand/janmaang_mark.png"
+
+  android: "launcher_icon"
+  # Adaptive icon: the mark on the design system's lightest surface so the
+  # multi-colour petals keep their contrast on any wallpaper.
+  adaptive_icon_background: "#F6FAFE"
+  adaptive_icon_foreground: "assets/brand/janmaang_mark.png"
+  min_sdk_android: 23
+
+  ios: true
+  # iOS forbids transparency in app icons, so the mark is flattened onto the
+  # same surface colour.
+  remove_alpha_ios: true
+  background_color_ios: "#F6FAFE"
+
+  web:
+    generate: true
+    image_path: "assets/brand/janmaang_mark.png"
+    background_color: "#F6FAFE"
+    theme_color: "#00152A"
