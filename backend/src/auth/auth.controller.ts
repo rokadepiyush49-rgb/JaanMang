@@ -18,13 +18,18 @@ import {
 } from './dto/auth.dto';
 import type { AuthPrincipal } from './auth.types';
 
+/** 10 requests/min per IP in real environments; effectively off under test. */
+const AUTH_THROTTLE = {
+  default: { ttl: 60_000, limit: process.env.NODE_ENV === 'test' ? 100_000 : 10 },
+};
+
 /**
  * `/api/v1/auth/*`. Every route here is `@Public()` except `/me`, and every
  * route is on a tighter rate limit than the rest of the API (10 / minute).
  */
 @ApiTags('auth')
 @Controller({ path: 'auth', version: '1' })
-@Throttle({ default: { ttl: 60_000, limit: 10 } })
+@Throttle(AUTH_THROTTLE)
 export class AuthController {
   constructor(
     private readonly auth: AuthService,
