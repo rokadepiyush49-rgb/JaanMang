@@ -1,5 +1,6 @@
 import type { NestFastifyApplication } from '@nestjs/platform-fastify';
 import * as argon2 from 'argon2';
+import request from 'supertest';
 import { createApp } from '../../src/bootstrap';
 import { PrismaService } from '../../src/prisma/prisma.service';
 import { seedRbac } from '../../prisma/seed/rbac';
@@ -25,6 +26,19 @@ export async function bootTestApp(): Promise<TestContext> {
 export async function reset(prisma: PrismaService): Promise<void> {
   await prisma.truncateAll();
   await seedRbac(prisma);
+}
+
+/** Logs in via the real endpoint and returns the bearer header value. */
+export async function bearer(
+  url: string,
+  email: string,
+  password = 'jansetu-dev',
+): Promise<string> {
+  const res = await request(url).post('/api/v1/auth/login').send({ email, password });
+  if (res.status !== 200) {
+    throw new Error(`login failed for ${email}: ${res.status} ${JSON.stringify(res.body)}`);
+  }
+  return `Bearer ${res.body.accessToken}`;
 }
 
 export async function createStaffUser(

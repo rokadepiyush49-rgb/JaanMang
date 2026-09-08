@@ -12,6 +12,9 @@ import { PrismaModule } from './prisma/prisma.module';
 import { HealthModule } from './health/health.module';
 import { AuthModule } from './auth/auth.module';
 import { RbacModule } from './rbac/rbac.module';
+import { AuditModule } from './audit/audit.module';
+import { GeographyModule } from './geography/geography.module';
+import { GovModule } from './gov/gov.module';
 
 /**
  * Root module.
@@ -28,14 +31,28 @@ import { RbacModule } from './rbac/rbac.module';
       useFactory: (config: AppConfigService) =>
         loggerConfig({ level: config.logLevel, pretty: config.isDev }),
     }),
-    ThrottlerModule.forRoot({
-      throttlers: [{ name: 'default', ttl: 60_000, limit: 120 }],
+    ThrottlerModule.forRootAsync({
+      inject: [AppConfigService],
+      useFactory: (config: AppConfigService) => ({
+        // Rate limiting is a production concern; e2e tests hammer /auth and
+        // would trip it. Keep it real everywhere except NODE_ENV=test.
+        throttlers: [
+          {
+            name: 'default',
+            ttl: 60_000,
+            limit: config.nodeEnv === 'test' ? 100_000 : 120,
+          },
+        ],
+      }),
     }),
     ScheduleModule.forRoot(),
     PrismaModule,
     CommonModule,
     AuthModule,
     RbacModule,
+    AuditModule,
+    GeographyModule,
+    GovModule,
     HealthModule,
   ],
   providers: [
