@@ -49,6 +49,7 @@ jobs:
       - run: npx tsc --noEmit
       - run: npm test
       - run: npx prisma migrate deploy
+      - run: npm run db:seed
       - run: npm run test:e2e
 
       - name: OpenAPI spec is up to date

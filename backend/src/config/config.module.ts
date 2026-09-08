@@ -15,9 +15,10 @@ import { loadEnv } from './env.schema';
       cache: true,
       // A single validator for the whole environment — see env.schema.ts.
       validate: (raw) => loadEnv(raw as NodeJS.ProcessEnv),
-      // .env is read in every environment except production, where the platform
-      // (Railway) injects real variables.
-      ignoreEnvFile: process.env.NODE_ENV === 'production',
+      // .env is read only in development. Production/staging get real variables
+      // from the platform (Railway); tests are hermetic and configure
+      // process.env directly (see test/e2e/setup.ts).
+      ignoreEnvFile: process.env.NODE_ENV !== 'development',
     }),
   ],
   providers: [AppConfigService],
