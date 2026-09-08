@@ -15,6 +15,9 @@ async function main(): Promise<void> {
 }
 
 main().catch((error) => {
-  new Logger('Bootstrap').error('Fatal: failed to start', error);
+  new Logger('Bootstrap').error(
+    `Fatal: failed to start — ${error instanceof Error ? error.message : String(error)}`,
+    error instanceof Error ? error.stack : undefined,
+  );
   process.exit(1);
 });
