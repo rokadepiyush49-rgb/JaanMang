@@ -1,0 +1,23 @@
+// Jan Setu — database schema.
+//
+// Stage 0 placeholder: datasource + generator + a single `HealthCheck` row the
+// readiness probe writes and reads to prove the connection round-trips. The
+// full domain schema lands in stage 1 (see the plan, §6).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+/// Written by `/readyz` to confirm the database accepts writes, not just reads.
+model HealthCheck {
+  id        String   @id @default(uuid())
+  checkedAt DateTime @default(now())
+
+  @@map("_health_check")
+}
