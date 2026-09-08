@@ -1,0 +1,28 @@
+# Local development database only. Production uses Neon (see backend/README.md).
+#
+#   docker compose up -d
+#   cp .env.example .env      # the default DATABASE_URL already points here
+#   npm run prisma:migrate
+#   npm run db:seed
+#
+# Nothing in this file is used in staging or production.
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: jansetu
+    ports:
+      - '5432:5432'
+    volumes:
+      - jansetu_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d jansetu']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  jansetu_pgdata:
