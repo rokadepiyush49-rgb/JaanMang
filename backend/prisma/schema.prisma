@@ -68,6 +68,7 @@ model User {
 
   roles              UserRole[]
   refreshTokens      RefreshToken[]
+  passwordResets     PasswordResetToken[]
   officer            Officer?
   faculty            Faculty?
   teamMemberships    TeamMember[]
@@ -119,6 +120,22 @@ model OtpCode {
 
   @@index([phone, purpose])
   @@map("otp_codes")
+}
+
+/// A single-use email password-reset token. Hashed at rest; in development the
+/// raw token is returned in the response so the flow works without an email
+/// provider wired up.
+model PasswordResetToken {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  consumedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@map("password_reset_tokens")
 }
 
 /// Roles are a closed set; see prisma/seed/rbac.ts. A user holds a role
