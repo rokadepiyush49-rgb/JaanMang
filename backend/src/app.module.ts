@@ -11,6 +11,7 @@ import { loggerConfig } from './common/logging/logger.config';
 import { PrismaModule } from './prisma/prisma.module';
 import { HealthModule } from './health/health.module';
 import { AuthModule } from './auth/auth.module';
+import { RbacModule } from './rbac/rbac.module';
 
 /**
  * Root module.
@@ -34,6 +35,7 @@ import { AuthModule } from './auth/auth.module';
     PrismaModule,
     CommonModule,
     AuthModule,
+    RbacModule,
     HealthModule,
   ],
   providers: [
