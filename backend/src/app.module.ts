@@ -10,6 +10,7 @@ import { CommonModule } from './common/common.module';
 import { loggerConfig } from './common/logging/logger.config';
 import { PrismaModule } from './prisma/prisma.module';
 import { HealthModule } from './health/health.module';
+import { AuthModule } from './auth/auth.module';
 
 /**
  * Root module.
@@ -32,6 +33,7 @@ import { HealthModule } from './health/health.module';
     ScheduleModule.forRoot(),
     PrismaModule,
     CommonModule,
+    AuthModule,
     HealthModule,
   ],
   providers: [
