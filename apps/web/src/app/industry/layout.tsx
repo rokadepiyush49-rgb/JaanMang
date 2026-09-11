@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { IndustryShell } from "@/components/industry/shell";
 import { IndustryProvider } from "@/lib/industry/store";
+import { requireSurface } from "@/lib/auth/guard";
+import { SessionProvider } from "@/lib/auth/session-context";
 
 export const metadata: Metadata = {
   title: { default: "Industry portal", template: "%s · Jan Setu Industry" },
@@ -11,13 +13,17 @@ export const metadata: Metadata = {
 /**
  * The industry surface sits beside the student app and the government
  * workspace: different navigation, different scope, different permissions — one
- * design system. `IndustryProvider` holds the state every screen acts on, and
- * `visibility.ts` decides what any of it is allowed to show.
+ * design system. `IndustryProvider` holds the state every screen acts on,
+ * `visibility.ts` decides what any of it is allowed to show, and
+ * `requireSurface` decides who is allowed to be here at all.
  */
-export default function IndustryLayout({ children }: { children: React.ReactNode }) {
+export default async function IndustryLayout({ children }: { children: React.ReactNode }) {
+  const session = await requireSurface("industry");
   return (
-    <IndustryProvider>
-      <IndustryShell>{children}</IndustryShell>
-    </IndustryProvider>
+    <SessionProvider value={session}>
+      <IndustryProvider>
+        <IndustryShell>{children}</IndustryShell>
+      </IndustryProvider>
+    </SessionProvider>
   );
 }

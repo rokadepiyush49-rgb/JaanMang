@@ -1,11 +1,16 @@
 /**
  * The browser's view of the backend.
  *
- * Calls go to `/api/gov/<path>` same-origin; the Next route handler there
- * ("the proxy") attaches the bearer from the httpOnly cookie and refreshes it
- * when it expires. So this module never touches a token — it just does
- * `fetch`, unwraps `application/problem+json`, and on an unrecoverable 401
- * bounces to the login page.
+ * Calls go same-origin to a Next route handler ("the proxy") which attaches the
+ * bearer from the httpOnly cookie and refreshes it when it expires. So this
+ * module never touches a token — it just does `fetch`, unwraps
+ * `application/problem+json`, and on an unrecoverable 401 bounces to the login
+ * page.
+ *
+ * Two mounts exist and both resolve to the same handler: `/api/gov` for the
+ * government screens that already call it by that name, and `/api/backend` for
+ * everything since. `createClient` picks one; `api` is the government mount,
+ * kept so no `/gov` screen has to change.
  *
  * The API contract is `backend/openapi.json`; response types are mirrored in
  * `@/lib/gov/types` (which already matched the backend's model).
@@ -31,10 +36,11 @@ type ProblemBody = {
 };
 
 async function request<T>(
+  base: string,
   path: string,
   init: RequestInit & { method?: string } = {},
 ): Promise<T> {
-  const res = await fetch(`/api/gov/${path.replace(/^\//, "")}`, {
+  const res = await fetch(`${base}/${path.replace(/^\//, "")}`, {
     ...init,
     headers: {
       // Only declare a JSON body when there is one — a bodiless POST
@@ -49,7 +55,7 @@ async function request<T>(
     const next = window.location.pathname;
     // A hard navigation on purpose: a full reload clears the now-stale store.
     // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-    window.location.assign(`/gov-login?next=${encodeURIComponent(next)}`);
+    window.location.assign(`/signin?next=${encodeURIComponent(next)}`);
     throw new ApiError(401, "UNAUTHENTICATED", "Session expired.");
   }
 
@@ -69,11 +75,26 @@ async function request<T>(
   return json as T;
 }
 
-export const api = {
-  get: <T>(path: string) => request<T>(path, { method: "GET" }),
-  post: <T>(path: string, body?: unknown) =>
-    request<T>(path, { method: "POST", body: body ? JSON.stringify(body) : undefined }),
-  patch: <T>(path: string, body?: unknown) =>
-    request<T>(path, { method: "PATCH", body: body ? JSON.stringify(body) : undefined }),
-  del: <T>(path: string) => request<T>(path, { method: "DELETE" }),
+export type ApiClient = {
+  get: <T>(path: string) => Promise<T>;
+  post: <T>(path: string, body?: unknown) => Promise<T>;
+  patch: <T>(path: string, body?: unknown) => Promise<T>;
+  del: <T>(path: string) => Promise<T>;
 };
+
+export function createClient(base: string): ApiClient {
+  return {
+    get: <T>(path: string) => request<T>(base, path, { method: "GET" }),
+    post: <T>(path: string, body?: unknown) =>
+      request<T>(base, path, { method: "POST", body: body ? JSON.stringify(body) : undefined }),
+    patch: <T>(path: string, body?: unknown) =>
+      request<T>(base, path, { method: "PATCH", body: body ? JSON.stringify(body) : undefined }),
+    del: <T>(path: string) => request<T>(base, path, { method: "DELETE" }),
+  };
+}
+
+/** The government workspace's mount. */
+export const api = createClient("/api/gov");
+
+/** Everything written since the proxy was generalised. */
+export const backend = createClient("/api/backend");

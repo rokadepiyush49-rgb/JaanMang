@@ -4,11 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { BOTTOM_NAV, NAV_EXPLORE, NAV_MAIN, STUDENT } from "@/lib/data";
+import { DemoBanner } from "./demo-banner";
 import { Brand } from "./brand";
 import { Icon, type IconName } from "./icon";
 import { LanguageSwitcher } from "./language-switcher";
 import { Avatar, CircleButton, cx } from "./ui";
 import { SearchField } from "./ui-interactive";
+import { SignOutButton } from "./auth/sign-out";
+import { useSession } from "@/lib/auth/session-context";
 
 function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
@@ -67,6 +70,9 @@ function NavItem({
 
 function SidebarBody({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
+  const session = useSession();
+  const name = session?.displayName ?? STUDENT.name;
+  const subtitle = session?.student?.institutionName ?? STUDENT.institution;
 
   return (
     <div className="flex h-full flex-col gap-5 overflow-y-auto px-4 py-5">
@@ -127,21 +133,20 @@ function SidebarBody({ onNavigate }: { onNavigate?: () => void }) {
           onNavigate={onNavigate}
         />
 
+        <SignOutButton variant="menu" />
+
         {/* The person the session belongs to, as a pill row — the app's most
-            distinctive shape, doing its most literal job. */}
+            distinctive shape, doing its most literal job. Name and institution
+            come from the session now, not from the fixture. */}
         <Link
           className="mt-3 flex items-center gap-3 rounded-full bg-card-muted p-2 transition-colors duration-150 ease-jm hover:bg-container"
           href="/profile"
           onClick={onNavigate}
         >
-          <Avatar name={STUDENT.name} size={38} />
+          <Avatar name={name} size={38} />
           <span className="min-w-0 flex-1 leading-tight">
-            <span className="block truncate text-sm font-bold text-ink">
-              {STUDENT.name}
-            </span>
-            <span className="block truncate text-xs text-ink-muted">
-              {STUDENT.institution}
-            </span>
+            <span className="block truncate text-sm font-bold text-ink">{name}</span>
+            <span className="block truncate text-xs text-ink-muted">{subtitle}</span>
           </span>
           <Icon className="shrink-0 text-ink-muted" name="chevron-right" size={18} />
         </Link>
@@ -153,6 +158,8 @@ function SidebarBody({ onNavigate }: { onNavigate?: () => void }) {
 /* =============================================================== topbar === */
 
 function Topbar({ onMenu }: { onMenu: () => void }) {
+  const session = useSession();
+  const name = session?.displayName ?? STUDENT.name;
   return (
     <header className="sticky top-0 z-30 flex h-18 items-center gap-3 border-b border-line/70 bg-surface/85 px-4 backdrop-blur-md lg:px-8">
       <button
@@ -181,14 +188,11 @@ function Topbar({ onMenu }: { onMenu: () => void }) {
           <CircleButton href="/achievements" icon="trophy" label="Achievements" />
         </span>
         <LanguageSwitcher />
-        <Link
-          className="hidden h-11 items-center rounded-full bg-card px-4 text-sm font-semibold text-ink shadow-level1 transition-colors duration-150 hover:bg-card-muted xl:flex"
-          href="/profile"
-        >
-          Switch Role
-        </Link>
+        <span className="hidden xl:block">
+          <SignOutButton />
+        </span>
         <Link aria-label="Your profile" className="rounded-full" href="/profile">
-          <Avatar name={STUDENT.name} size={44} />
+          <Avatar name={name} size={44} />
         </Link>
       </div>
     </header>
@@ -297,6 +301,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {/* pb-28 is the app's `navClearance`: the floating bar must never sit
             on top of the last element of a page. */}
         <main className="flex-1 px-4 pt-6 pb-28 sm:px-6 lg:px-8 lg:pt-8 lg:pb-10">
+          <DemoBanner surface="student" />
           {children}
         </main>
       </div>

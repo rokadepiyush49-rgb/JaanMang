@@ -16,6 +16,19 @@
 
 export type GovLevel = "state" | "district" | "block" | "panchayat";
 
+/**
+ * One point on the twelve-week intake-vs-resolution chart.
+ *
+ * `week` is "W1".."W12" and sorts numerically, not lexically — the API orders
+ * it correctly, so nothing downstream re-sorts.
+ */
+export type WeeklyTrendPoint = {
+  week: string;
+  reported: number;
+  resolved: number;
+  priorityAvg: number;
+};
+
 export type Jurisdiction = {
   id: string;
   level: GovLevel;

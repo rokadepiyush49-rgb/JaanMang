@@ -19,6 +19,8 @@ import { SearchField } from "@/components/ui-interactive";
 import { sla } from "@/lib/gov/format";
 import { jurisdictionPath, LEVEL_LABEL } from "@/lib/gov/rbac";
 import { govSeed, useGov } from "@/lib/gov/store";
+import { SignOutButton } from "@/components/auth/sign-out";
+import { useSession } from "@/lib/auth/session-context";
 import { useHydrated, useNow } from "@/lib/gov/use-now";
 
 type NavEntry = { href: string; label: string; icon: IconName; badge?: "pending" | "alerts" | "sla" };
@@ -127,6 +129,7 @@ function GovBrand({ onClick }: { onClick?: () => void }) {
 function SidebarBody({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const { state, ranked } = useGov();
+  const session = useSession();
   const hydrated = useHydrated();
 
   const counts = {
@@ -179,16 +182,23 @@ function SidebarBody({ onNavigate }: { onNavigate?: () => void }) {
             onNavigate={onNavigate}
           />
         ))}
+        <SignOutButton variant="menu" />
+
+        {/* The signed-in officer. Name and designation come from the session,
+            so the card names the person who actually authenticated rather than
+            whoever the jurisdiction switch is currently viewing as. */}
         <Link
           className="mt-3 flex items-center gap-3 rounded-full bg-card-muted p-2 transition-colors duration-150 ease-jm hover:bg-container"
           href="/gov/settings"
           onClick={onNavigate}
         >
-          <Avatar name={state.user.name} size={38} />
+          <Avatar name={session?.displayName ?? state.user.name} size={38} />
           <span className="min-w-0 flex-1 leading-tight">
-            <span className="block truncate text-sm font-bold text-ink">{state.user.name}</span>
+            <span className="block truncate text-sm font-bold text-ink">
+              {session?.displayName ?? state.user.name}
+            </span>
             <span className="block truncate text-xs text-ink-muted">
-              {state.user.designation}
+              {session?.organisation?.designation ?? state.user.designation}
             </span>
           </span>
           <Icon className="shrink-0 text-ink-muted" name="chevron-right" size={18} />
@@ -369,7 +379,21 @@ function ShellSkeleton() {
 
 export function GovShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
-  const hydrated = useHydrated();
+  const painted = useHydrated();
+  const { state } = useGov();
+
+  /*
+   * Two different hydrations, and the screens need both.
+   *
+   * `painted` is the React one — false on the server and through the hydration
+   * pass, which is what keeps the clock-derived copy ("12h remaining") from
+   * mismatching. `state.hydrated` is the data one: the reference lists
+   * (departments, villages, officers, jurisdictions) are read synchronously
+   * during render through `govSeed`, and they start empty. Rendering a screen
+   * before they land shows a routing dialog with no departments in it and a
+   * problem page that mistakes a real id for a missing one.
+   */
+  const ready = painted && state.hydrated;
 
   useEffect(() => {
     if (!open) return;
@@ -405,7 +429,7 @@ export function GovShell({ children }: { children: React.ReactNode }) {
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar onMenu={() => setOpen(true)} />
         <main className="min-w-0 flex-1 px-4 pt-6 pb-16 sm:px-6 lg:px-8 lg:pt-8">
-          {hydrated ? children : <ShellSkeleton />}
+          {ready ? children : <ShellSkeleton />}
         </main>
       </div>
     </div>
