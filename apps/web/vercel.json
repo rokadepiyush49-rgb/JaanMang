@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "buildCommand": "next build",
+  "installCommand": "npm ci",
+  "regions": ["bom1"],
+  "functions": {
+    "src/app/api/council/turn/route.ts": { "maxDuration": 60 },
+    "src/app/api/council/verdict/route.ts": { "maxDuration": 60 }
+  }
+}

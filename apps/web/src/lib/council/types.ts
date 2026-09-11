@@ -158,7 +158,10 @@ export interface ApiError {
     | "MISSING_KEY"
     | "RATE_LIMITED"
     | "UPSTREAM_FAILED"
-    | "TTS_FAILED";
+    | "TTS_FAILED"
+    // Raised by `guardCouncil` before any model call is made.
+    | "UNAUTHENTICATED"
+    | "FORBIDDEN";
   /** Present when the fix is a specific action the developer can take. */
   remedy?: string;
 }

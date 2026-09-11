@@ -1,30 +1,32 @@
 /**
  * The data access boundary for the government workspace.
  *
- * Screens never import `mock-data` directly — they go through this module. The
- * functions are already async and already shaped like an HTTP client, so
- * connecting the real backend (`/backend/api`) is a matter of replacing each
- * body with a `fetch`, leaving every component untouched.
+ * Every function below is a real call to `/api/v1/gov/*` or
+ * `/api/v1/geography/*`. It did not use to be: the problem lifecycle was
+ * server-backed while officers, departments, sponsors, villages, jurisdictions,
+ * automations, alerts, users, reports and the weekly trend all returned the
+ * fixtures in `mock-data.ts` — even though the endpoints serving exactly those
+ * shapes already existed. The workspace therefore showed a roster of invented
+ * officers next to real problems, and routing a problem to a "department" that
+ * had no row behind it was a mutation against a name the database had never
+ * heard of.
  *
- *   export async function listProblems() {
- *     const res = await fetch(`${API}/gov/problems`, { headers: authHeaders() });
- *     return (await res.json()) as Problem[];
- *   }
+ * `mock-data.ts` is still in the tree because the backend seed is generated
+ * from it (`backend/prisma/seed/`) and because `lib/industry` has not been
+ * wired yet. Nothing in the government workspace reads it any more.
+ *
+ * ── On `seed` ──────────────────────────────────────────────────────────────
+ * `seed` is the synchronous reference cache the screens read through
+ * `govSeed` — twelve of them look up a village or a department name during
+ * render, and threading an async call through all of those lookups would be a
+ * rewrite rather than a wiring change. So it starts *empty* and is filled in
+ * place by `loadReference()` before the workspace renders anything (the shell
+ * holds a skeleton until the store reports hydrated). Empty is the right
+ * initial value: a half-rendered screen shows nothing rather than showing
+ * fiction.
  */
 
-import {
-  ALERTS,
-  AUTOMATIONS,
-  DEPARTMENTS,
-  GOV_USERS,
-  JURISDICTIONS,
-  OFFICERS,
-  PROBLEMS,
-  REPORTS,
-  SPONSORS,
-  VILLAGES,
-  WEEKLY_TREND,
-} from "./mock-data";
+import { api } from "@/lib/api/client";
 import type {
   Automation,
   CitizenReport,
@@ -36,14 +38,10 @@ import type {
   Problem,
   Sponsor,
   Village,
+  WeeklyTrendPoint,
 } from "./types";
 
-/**
- * The problem lifecycle is served by the backend now (`GovProvider` in
- * `store.tsx` loads `/api/gov/problems` on mount and validate/reject/route
- * persist). The reference reads below still return fixtures until their own
- * stages land; `seed` is what the store hydrates its not-yet-wired slices from.
- */
+/** Kept for `/gov/settings`, which shows the reader where its data comes from. */
 export const USING_MOCK_DATA = false;
 
 export async function listProblems(): Promise<Problem[]> {
@@ -57,56 +55,138 @@ export async function getProblem(id: string): Promise<Problem | undefined> {
 }
 
 export async function listReports(problemId?: string): Promise<CitizenReport[]> {
-  return problemId ? REPORTS.filter((r) => r.problemId === problemId) : REPORTS;
+  return api.get<CitizenReport[]>(
+    problemId ? `gov/reports?problemId=${encodeURIComponent(problemId)}` : "gov/reports",
+  );
 }
 
 export async function listOfficers(): Promise<Officer[]> {
-  return OFFICERS;
+  return api.get<Officer[]>("gov/officers");
 }
 
 export async function listDepartments(): Promise<Department[]> {
-  return DEPARTMENTS;
+  return api.get<Department[]>("gov/departments");
 }
 
 export async function listSponsors(): Promise<Sponsor[]> {
-  return SPONSORS;
+  return api.get<Sponsor[]>("gov/sponsors");
 }
 
 export async function listVillages(): Promise<Village[]> {
-  return VILLAGES;
+  return api.get<Village[]>("geography/villages");
 }
 
 export async function listJurisdictions(): Promise<Jurisdiction[]> {
-  return JURISDICTIONS;
+  return api.get<Jurisdiction[]>("geography/jurisdictions");
 }
 
 export async function listAutomations(): Promise<Automation[]> {
-  return AUTOMATIONS;
+  return api.get<Automation[]>("gov/automations");
 }
 
 export async function listAlerts(): Promise<GovAlert[]> {
-  return ALERTS;
+  return api.get<GovAlert[]>("gov/alerts");
 }
 
 export async function listUsers(): Promise<GovUser[]> {
-  return GOV_USERS;
+  return api.get<GovUser[]>("gov/users");
 }
 
-export async function weeklyTrend() {
-  return WEEKLY_TREND;
+export async function weeklyTrend(): Promise<WeeklyTrendPoint[]> {
+  return api.get<WeeklyTrendPoint[]>("gov/analytics/weekly-trend");
 }
 
-/** The synchronous seed the client store hydrates from on first render. */
-export const seed = {
-  problems: PROBLEMS,
-  reports: REPORTS,
-  officers: OFFICERS,
-  departments: DEPARTMENTS,
-  sponsors: SPONSORS,
-  villages: VILLAGES,
-  jurisdictions: JURISDICTIONS,
-  automations: AUTOMATIONS,
-  alerts: ALERTS,
-  users: GOV_USERS,
-  trend: WEEKLY_TREND,
+/* ======================================================= the reference === */
+
+export type GovReference = {
+  reports: CitizenReport[];
+  officers: Officer[];
+  departments: Department[];
+  sponsors: Sponsor[];
+  villages: Village[];
+  jurisdictions: Jurisdiction[];
+  automations: Automation[];
+  alerts: GovAlert[];
+  users: GovUser[];
+  trend: WeeklyTrendPoint[];
 };
+
+/**
+ * The synchronous reference the screens read from. Empty until `loadReference`
+ * fills it; see the note at the top of this file for why it is mutated in place
+ * rather than being held in React state.
+ *
+ * `problems` is here only because two screens want the unscoped total — "12 of
+ * 40 records in the system" — which is a different number from the list the
+ * officer is allowed to see.
+ */
+export const seed: GovReference & { problems: Problem[] } = {
+  problems: [],
+  reports: [],
+  officers: [],
+  departments: [],
+  sponsors: [],
+  villages: [],
+  jurisdictions: [],
+  automations: [],
+  alerts: [],
+  users: [],
+  trend: [],
+};
+
+/**
+ * Fetch every reference list in one round of parallel requests and write them
+ * into `seed`.
+ *
+ * All ten are issued together rather than sequentially: they are independent
+ * reads and the workspace is blocked on the slowest one either way. A single
+ * rejection fails the whole load, which is the honest outcome — a workspace
+ * missing its department list is not a workspace with a smaller department
+ * list, it is one that will mis-render every routing dialog.
+ */
+export async function loadReference(): Promise<GovReference> {
+  const [
+    reports,
+    officers,
+    departments,
+    sponsors,
+    villages,
+    jurisdictions,
+    automations,
+    alerts,
+    users,
+    trend,
+  ] = await Promise.all([
+    listReports(),
+    listOfficers(),
+    listDepartments(),
+    listSponsors(),
+    listVillages(),
+    listJurisdictions(),
+    listAutomations(),
+    listAlerts(),
+    listUsers(),
+    weeklyTrend(),
+  ]);
+
+  const reference: GovReference = {
+    reports,
+    officers,
+    departments,
+    sponsors,
+    villages,
+    jurisdictions,
+    automations,
+    alerts,
+    users,
+    trend,
+  };
+
+  Object.assign(seed, reference);
+  return reference;
+}
+
+/** Records the unscoped problem total the register footer quotes. */
+export function setSeedProblems(problems: Problem[]): void {
+  seed.problems = problems;
+}

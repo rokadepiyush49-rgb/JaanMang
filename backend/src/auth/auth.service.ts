@@ -187,17 +187,26 @@ export class AuthService {
 
   /* --------------------------------------------------------------- helpers */
 
-  /** Resolves the full principal (roles, permissions, scopes) for a user id. */
+  /**
+   * Resolves the full principal (roles, permissions, scopes, surface) for a
+   * user id.
+   *
+   * A `pending` account resolves normally — it holds a real session so the
+   * client can explain the wait — and `AccountStatusGuard` is what keeps it out
+   * of everything except the routes marked `@AllowPending()`. Suspended and
+   * soft-deleted accounts resolve to nothing at all.
+   */
   async principalFor(userId: string): Promise<AuthPrincipal | null> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       include: {
+        studentProfile: { select: { onboardedAt: true } },
         roles: {
           include: { role: { include: { permissions: { include: { permission: true } } } } },
         },
       },
     });
-    if (!user || user.deletedAt || user.status !== 'active') return null;
+    if (!user || user.deletedAt || user.status === 'suspended') return null;
 
     const permissions = new Set<string>();
     const roles: string[] = [];
@@ -211,10 +220,18 @@ export class AuthService {
       if (ur.jurisdictionId) jurisdictionIds.add(ur.jurisdictionId);
     }
 
+    // The surface belongs to the highest-ranked role the user holds, so
+    // someone who is both a student and a faculty member lands in the more
+    // privileged workspace and can still reach the other one.
+    const top = user.roles.map((ur) => ur.role).sort((a, b) => b.rank - a.rank)[0];
+
     return {
       userId: user.id,
       kind: user.kind,
+      status: user.status,
       displayName: user.displayName,
+      surface: top?.surface ?? 'citizen',
+      onboarded: await this.isOnboarded(user.id, roles, user.studentProfile?.onboardedAt ?? null),
       roles,
       permissions,
       orgIds: [...orgIds],
@@ -222,10 +239,52 @@ export class AuthService {
     };
   }
 
+  /**
+   * Whether every wizard this user's roles require has been completed.
+   *
+   * Three roles have one. A government account has no wizard — everything it
+   * needs was collected at signup, because a reviewer cannot verify a half-filled
+   * application.
+   */
+  private async isOnboarded(
+    userId: string,
+    roles: string[],
+    studentOnboardedAt: Date | null,
+  ): Promise<boolean> {
+    if (roles.includes('student')) return studentOnboardedAt !== null;
+    if (roles.some((r) => r.startsWith('industry_'))) {
+      const membership = await this.prisma.orgMembership.findFirst({
+        where: { userId },
+        select: { org: { select: { industryInfo: { select: { onboardedAt: true } } } } },
+      });
+      return membership?.org.industryInfo?.onboardedAt != null;
+    }
+    // An institute administrator draws the academic structure in a wizard; a
+    // faculty member joins an institution that already has one.
+    if (roles.includes('institute_admin')) {
+      const membership = await this.prisma.orgMembership.findFirst({
+        where: { userId, org: { type: 'institution' } },
+        select: { org: { select: { institution: { select: { onboardedAt: true } } } } },
+      });
+      return membership?.org.institution?.onboardedAt != null;
+    }
+    return true;
+  }
+
   private assertActive(user: User): void {
     if (user.deletedAt || user.status === 'suspended') {
       throw ProblemException.forbidden('This account is not active.');
     }
+  }
+
+  /** Hashes a password with the same parameters registration and reset use. */
+  hashPassword(plain: string): Promise<string> {
+    return argon2.hash(plain, ARGON_OPTS);
+  }
+
+  /** Issues a token pair for a freshly created account. */
+  issueFor(user: User, userAgent?: string): Promise<TokenPair> {
+    return this.issueTokens(user, userAgent);
   }
 
   private async issueTokens(user: User, userAgent?: string): Promise<TokenPair> {

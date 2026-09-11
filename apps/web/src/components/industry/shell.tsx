@@ -16,12 +16,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Icon, type IconName } from "@/components/icon";
+import { DemoBanner } from "@/components/demo-banner";
 import { Avatar, Skeleton, cx } from "@/components/ui";
 import { SearchField } from "@/components/ui-interactive";
 import { rupees } from "@/lib/industry/format";
 import { awaitingReview, csrBook, isOpen, openRequests, recommended } from "@/lib/industry/selectors";
 import { matchContext } from "@/lib/industry/selectors";
 import { useIndustry, USERS } from "@/lib/industry/store";
+import { SignOutButton } from "@/components/auth/sign-out";
+import { useSession } from "@/lib/auth/session-context";
 import { useHydrated } from "@/lib/gov/use-now";
 
 type BadgeKey = "opportunities" | "review" | "mentorship" | "messages" | "alerts";
@@ -132,6 +135,9 @@ function IndustryBrand({ onClick }: { onClick?: () => void }) {
 function SidebarBody({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const { state, scored } = useIndustry();
+  const session = useSession();
+  const orgName = session?.organisation?.name ?? state.company.name;
+  const orgSector = session?.organisation?.sector ?? state.company.sector;
 
   const context = matchContext(state.projects, state.assignments);
   const counts: Record<BadgeKey, number> = {
@@ -188,15 +194,20 @@ function SidebarBody({ onNavigate }: { onNavigate?: () => void }) {
           />
         ))}
 
+        <SignOutButton variant="menu" />
+
+        {/* The organisation this session belongs to — from the signed-in
+            account's membership, falling back to the fixture until the portal
+            reads its own data from the API. */}
         <Link
           className="mt-3 flex items-center gap-3 rounded-full bg-card-muted p-2 transition-colors duration-150 ease-jm hover:bg-container"
           href="/industry/company"
           onClick={onNavigate}
         >
-          <Avatar name={state.company.name} size={38} tone="ink" />
+          <Avatar name={orgName} size={38} tone="ink" />
           <span className="min-w-0 flex-1 leading-tight">
-            <span className="block truncate text-sm font-bold text-ink">{state.company.name}</span>
-            <span className="block truncate text-xs text-ink-muted">{state.company.sector}</span>
+            <span className="block truncate text-sm font-bold text-ink">{orgName}</span>
+            <span className="block truncate text-xs text-ink-muted">{orgSector}</span>
           </span>
           <Icon className="shrink-0 text-ink-muted" name="chevron-right" size={18} />
         </Link>
@@ -413,6 +424,7 @@ export function IndustryShell({ children }: { children: React.ReactNode }) {
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar onMenu={() => setOpen(true)} />
         <main className="min-w-0 flex-1 px-4 pt-6 pb-16 sm:px-6 lg:px-8 lg:pt-8">
+          <DemoBanner surface="industry" />
           {hydrated ? children : <ShellSkeleton />}
         </main>
       </div>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Icon } from "@/components/icon";
+import { getSession } from "@/lib/auth/session";
 import {
   Avatar,
   Badge,
@@ -30,6 +31,15 @@ import {
 
 export const metadata: Metadata = { title: "Dashboard" };
 
+/** "3rd Year", not "3 Year". */
+function ordinal(n: number): string {
+  const suffix = n % 10 === 1 && n % 100 !== 11 ? "st"
+    : n % 10 === 2 && n % 100 !== 12 ? "nd"
+    : n % 10 === 3 && n % 100 !== 13 ? "rd"
+    : "th";
+  return `${n}${suffix}`;
+}
+
 const STAGES = ["Plan", "Research", "Build", "Test", "Pilot", "Handover"];
 
 /* -------------------------------------------------------------- pieces --- */
@@ -39,27 +49,40 @@ const STAGES = ["Plan", "Research", "Build", "Test", "Pilot", "Handover"];
  * and where they are, and the chrome that belongs to a person rather than to a
  * dataset. There is no page title above it — the greeting *is* the header.
  */
-function Greeting() {
+async function Greeting() {
   const unread = NOTIFICATIONS.filter((n) => n.unread).length;
+
+  /* Identity comes from the session; the metrics below it are still fixtures
+     until the student API lands. Mixing the two is deliberate and bounded —
+     a signed-in person seeing somebody else's name is a defect, a signed-in
+     person seeing placeholder impact points is a known gap. */
+  const session = await getSession();
+  const name = session?.displayName ?? STUDENT.name;
+  const profile = session?.student;
+  const location = profile ? `${profile.district}, ${profile.state}` : STUDENT.location;
+  const year = profile
+    ? `${ordinal(profile.currentYear)} Year · ${profile.branch}`
+    : STUDENT.year;
+
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
       <div className="flex min-w-0 flex-1 items-center gap-4">
-        <Avatar name={STUDENT.name} size={56} />
+        <Avatar name={name} size={56} />
         <div className="min-w-0">
           <h1 className="headline-xl text-ink">
             <span className="font-medium">{STUDENT.greeting},</span>{" "}
-            <span className="font-bold">{STUDENT.name.split(" ")[0]}</span>
+            <span className="font-bold">{name.split(" ")[0]}</span>
           </h1>
           {/* Each fact wraps as a unit — a place name broken across two lines
               reads as two places. */}
           <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-sm text-ink-muted">
             <span className="inline-flex items-center gap-1 whitespace-nowrap">
               <Icon name="map-pin" size={15} />
-              {STUDENT.location}
+              {location}
             </span>
             <span className="hidden whitespace-nowrap sm:inline">
               <span aria-hidden="true" className="mr-2 text-line-strong">·</span>
-              {STUDENT.year}
+              {year}
             </span>
           </p>
         </div>

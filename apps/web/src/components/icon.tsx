@@ -317,6 +317,23 @@ const P = {
       <circle cx="12" cy="12" r="3" />
     </>
   ),
+  /* The password-reveal toggle needs a distinct glyph for its off state — the
+     same eye in both positions tells the reader nothing. */
+  "eye-off": (
+    <>
+      <path d="M10.7 5.1A9.9 9.9 0 0 1 12 5c6.2 0 10 7 10 7a18.5 18.5 0 0 1-2.7 3.6" />
+      <path d="M6.6 6.7A18.6 18.6 0 0 0 2 12s3.8 7 10 7a9.8 9.8 0 0 0 4.5-1.1" />
+      <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+      <path d="m3 3 18 18" />
+    </>
+  ),
+  key: (
+    <>
+      <circle cx="7.5" cy="15.5" r="3.5" />
+      <path d="m10 13 8.5-8.5" />
+      <path d="m16 7 2.5 2.5M19 4l2 2" />
+    </>
+  ),
   gauge: (
     <>
       <path d="M12 15.5 16 9" />

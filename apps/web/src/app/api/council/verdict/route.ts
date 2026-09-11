@@ -6,6 +6,7 @@
  */
 
 import { NextResponse } from "next/server";
+import { guardCouncil } from "@/lib/council/guard";
 import { GroqError } from "@/lib/council/groq";
 import { MissingKeyError, serverEnv } from "@/lib/council/env";
 import { generateVerdict } from "@/lib/council/verdict";
@@ -21,6 +22,10 @@ import type { ApiError, VerdictResponse } from "@/lib/council/types";
 export const maxDuration = 60;
 
 export async function POST(request: Request) {
+  // Authentication and per-account rate limiting, before a single token is spent.
+  const denied = await guardCouncil();
+  if (denied) return denied;
+
   const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
 
   let brief, seatedAgentIds, transcript;

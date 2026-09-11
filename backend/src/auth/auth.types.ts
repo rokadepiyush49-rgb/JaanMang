@@ -1,4 +1,4 @@
-import type { UserKind } from '@prisma/client';
+import type { Surface, UserKind, UserStatus } from '@prisma/client';
 
 /**
  * The authenticated caller, attached to every request as `request.user` by the
@@ -12,7 +12,20 @@ import type { UserKind } from '@prisma/client';
 export interface AuthPrincipal {
   userId: string;
   kind: UserKind;
+  /**
+   * `pending` accounts hold a real session but reach almost nothing: they can
+   * read `/auth/me` and their own verification record, so the client can tell
+   * them *why* they are waiting. `AccountStatusGuard` enforces that.
+   */
+  status: UserStatus;
   displayName: string;
+  /**
+   * Where this user lands after sign-in — the surface of their highest-ranked
+   * role. Derived, never stored on the user, so a role change moves them.
+   */
+  surface: Surface;
+  /** False while a role that has an onboarding wizard has not finished it. */
+  onboarded: boolean;
   /** Role keys held by the user (e.g. "gov_block", "admin"). */
   roles: string[];
   /** Union of every permission key across those roles. */

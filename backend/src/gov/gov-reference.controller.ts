@@ -3,6 +3,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { PrismaService } from '../prisma/prisma.service';
 import { ScopeService } from '../rbac/scope.service';
+import { Surfaces } from '../rbac/surface.decorator';
 import type { AuthPrincipal } from '../auth/auth.types';
 
 /**
@@ -12,9 +13,18 @@ import type { AuthPrincipal } from '../auth/auth.types';
  *
  * These back the `list*` functions in apps/web/src/lib/gov/service.ts that are
  * not the problem list itself.
+ *
+ * `@Surfaces('gov')` is on the controller rather than on each route, so an
+ * endpoint added here is closed by default. It matters more than it looks:
+ * these reads carry officer names, their personal phone numbers and their
+ * performance statistics, and none of them declares a `@Permissions` — so
+ * before this guard existed they were readable by anyone holding any session
+ * at all. That was survivable only while government staff were the only people
+ * who could obtain one.
  */
 @ApiTags('gov')
 @Controller({ path: 'gov', version: '1' })
+@Surfaces('gov')
 export class GovReferenceController {
   constructor(
     private readonly prisma: PrismaService,

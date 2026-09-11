@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { LoggerModule } from 'nestjs-pino';
 import { ZodValidationPipe } from 'nestjs-zod';
 import { AppConfigService } from './config/app-config.service';
 import { ConfigModule } from './config/config.module';
 import { CommonModule } from './common/common.module';
+import { PrincipalThrottlerGuard } from './common/throttler/principal-throttler.guard';
 import { loggerConfig } from './common/logging/logger.config';
 import { PrismaModule } from './prisma/prisma.module';
 import { HealthModule } from './health/health.module';
@@ -15,6 +16,9 @@ import { RbacModule } from './rbac/rbac.module';
 import { AuditModule } from './audit/audit.module';
 import { GeographyModule } from './geography/geography.module';
 import { GovModule } from './gov/gov.module';
+import { InstituteModule } from './institute/institute.module';
+import { RegistryModule } from './registry/registry.module';
+import { PublicModule } from './public/public.module';
 
 /**
  * Root module.
@@ -40,7 +44,13 @@ import { GovModule } from './gov/gov.module';
           {
             name: 'default',
             ttl: 60_000,
-            limit: config.nodeEnv === 'test' ? 100_000 : 120,
+            // A single government screen issues thirteen reads on mount (the
+            // problem list, the weights, and ten reference lists), so 120/min
+            // was about nine navigations before an officer locked themselves
+            // out of their own workspace. The sensitive endpoints do not rely
+            // on this number — `/auth/login`, `/auth/otp/request` and the
+            // password-reset routes carry their own far tighter `@Throttle`.
+            limit: config.nodeEnv === 'test' ? 100_000 : 600,
           },
         ],
       }),
@@ -53,11 +63,16 @@ import { GovModule } from './gov/gov.module';
     AuditModule,
     GeographyModule,
     GovModule,
+    InstituteModule,
+    RegistryModule,
+    PublicModule,
     HealthModule,
   ],
   providers: [
     { provide: APP_PIPE, useClass: ZodValidationPipe },
-    { provide: APP_GUARD, useClass: ThrottlerGuard },
+    // Keyed on the account rather than the address — see the guard for why
+    // an IP bucket is the wrong shape behind the web app's route handler.
+    { provide: APP_GUARD, useClass: PrincipalThrottlerGuard },
   ],
 })
 export class AppModule {}

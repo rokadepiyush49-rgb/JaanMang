@@ -28,7 +28,7 @@ import { ApiError } from "@/lib/api/client";
 import { DEFAULT_WEIGHTS, rankProblems } from "./priority";
 import { GovApi, asPermissions } from "./api";
 import { can, scopeProblems } from "./rbac";
-import { seed } from "./service";
+import { loadReference, seed, setSeedProblems, type GovReference } from "./service";
 import type {
   Automation,
   AuditEntry,
@@ -57,20 +57,36 @@ type State = {
   /** The state's published weighting; the baseline rank movement is measured from. */
   publishedWeights: PriorityWeights;
   /**
-   * The problem lifecycle is now server-backed: `problems` is loaded from
-   * `/api/gov/problems` on mount and validate/reject/route persist. Officers,
-   * automations and alerts still hydrate from the fixtures until their stages
-   * land, so a screen that reads them keeps working unchanged.
+   * False until `/auth/me`, the problem list, the published weights and the ten
+   * reference lists have all landed. The shell holds a skeleton until it flips,
+   * which is what lets every slice below start empty rather than start wrong.
    */
   hydrated: boolean;
 };
 
+/**
+ * The signed-out placeholder.
+ *
+ * It holds no permissions and sits in no jurisdiction, so `can()` refuses
+ * everything and `scopeProblems` matches nothing until the real user arrives.
+ * Failing closed matters more than it looks: this object is what the workspace
+ * renders against in the window between mount and `/auth/me` returning.
+ */
+const NO_USER: GovUser = {
+  id: "",
+  name: "",
+  designation: "",
+  level: "panchayat",
+  jurisdictionId: "",
+  permissions: [],
+};
+
 const initialState: State = {
-  user: seed.users[0],
+  user: NO_USER,
   problems: [],
-  officers: seed.officers,
-  automations: seed.automations,
-  alerts: seed.alerts,
+  officers: [],
+  automations: [],
+  alerts: [],
   weights: DEFAULT_WEIGHTS,
   publishedWeights: DEFAULT_WEIGHTS,
   hydrated: false,
@@ -84,6 +100,7 @@ type Action =
       problems: Problem[];
       user: GovUser;
       publishedWeights: PriorityWeights;
+      reference: GovReference;
     }
   /** Replace one problem with the authoritative copy the server returned. */
   | { type: "problem/replace"; problem: Problem }
@@ -547,6 +564,9 @@ function reducer(state: State, action: Action): State {
         user: action.user,
         publishedWeights: action.publishedWeights,
         weights: action.publishedWeights,
+        officers: action.reference.officers,
+        automations: action.reference.automations,
+        alerts: action.reference.alerts,
         hydrated: true,
       };
 
@@ -592,9 +612,17 @@ type GovContext = {
 
 const Ctx = createContext<GovContext | null>(null);
 
-function govUserFromMe(me: Awaited<ReturnType<typeof GovApi.me>>): GovUser {
-  const seeded = seed.users.find((u) => u.id === me.id);
-  if (seeded) return { ...seeded, permissions: asPermissions(me.permissions) };
+/**
+ * `/auth/me` is the authority on who the caller is and what they may do;
+ * `/gov/users` is the authority on where they sit in the administrative chain.
+ * The permission list always comes from `me`, never from the roster row.
+ */
+function govUserFromMe(
+  me: Awaited<ReturnType<typeof GovApi.me>>,
+  users: GovUser[],
+): GovUser {
+  const roster = users.find((u) => u.id === me.id);
+  if (roster) return { ...roster, permissions: asPermissions(me.permissions) };
   return {
     id: me.id,
     name: me.displayName,
@@ -614,15 +642,25 @@ export function GovProvider({ children }: { children: ReactNode }) {
     let cancelled = false;
     (async () => {
       try {
-        const [me, problems, publishedWeights] = await Promise.all([
+        const [me, problems, publishedWeights, reference] = await Promise.all([
           GovApi.me(),
           GovApi.listProblems(),
           GovApi.publishedWeights(),
+          loadReference(),
         ]);
         if (cancelled) return;
-        dispatch({ type: "hydrate", user: govUserFromMe(me), problems, publishedWeights });
+        // The register footer quotes the unscoped total. `problems` is already
+        // scoped by the API, so this is the only place that number exists.
+        setSeedProblems(problems);
+        dispatch({
+          type: "hydrate",
+          user: govUserFromMe(me, reference.users),
+          problems,
+          publishedWeights,
+          reference,
+        });
       } catch (error) {
-        // A 401 has already sent the browser to /gov-login.
+        // A 401 has already sent the browser to /signin.
         if (!cancelled && !(error instanceof ApiError && error.status === 401)) {
           setLoadError(
             error instanceof ApiError ? error.message : "Could not load the workspace.",
@@ -678,6 +716,10 @@ export function GovProvider({ children }: { children: ReactNode }) {
 
   const visible = useMemo(
     () => scopeProblems(state.problems, state.user, seed.jurisdictions),
+    // `seed.jurisdictions` is mutated outside React and so is not a dependency
+    // React can see. It does not need to be: the dispatch that fills it is the
+    // same one that replaces `user`, so this always recomputes once the real
+    // administrative chain is in place.
     [state.problems, state.user],
   );
 

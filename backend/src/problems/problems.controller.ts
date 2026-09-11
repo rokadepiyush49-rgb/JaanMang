@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Permissions } from '../rbac/permissions.decorator';
+import { Surfaces } from '../rbac/surface.decorator';
 import type { AuthPrincipal } from '../auth/auth.types';
 import {
   ListProblemsQueryDto,
@@ -17,9 +18,16 @@ import { ProblemsService } from './problems.service';
  * Every route is jurisdiction-scoped in the service layer; a problem outside the
  * caller's subtree is a 404. Mutations require the matching permission from the
  * closed union (see prisma/seed/rbac.ts).
+ *
+ * The surface gate is belt and braces over that: a student holds no
+ * jurisdiction, so scoping already returns them an empty list — but an empty
+ * result is a weak thing to rest a disclosure boundary on, and the industry
+ * surface has `visibility.ts` precisely because a raw `Problem` carries what a
+ * `Challenge` must not.
  */
 @ApiTags('problems')
 @Controller({ path: 'problems', version: '1' })
+@Surfaces('gov')
 export class ProblemsController {
   constructor(private readonly problems: ProblemsService) {}
 

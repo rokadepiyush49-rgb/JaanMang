@@ -34,6 +34,12 @@ COPY --from=build --chown=nodeapp:nodeapp /app/package.json ./package.json
 USER nodeapp
 EXPOSE 4000
 
-# Apply any pending migrations, then start. `migrate deploy` is safe to run on
-# every boot — it is a no-op when the schema is current.
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]
+# Migrations are NOT run here. Every replica boots this same command, so a
+# `migrate deploy` in CMD races itself the moment the service scales past one
+# instance. The deploy pipeline runs it once, before the new version goes live —
+# see `railway.json` (preDeployCommand) and `deploy/README.md`.
+#
+# The `prisma` CLI is a runtime dependency for exactly that pre-deploy step, so
+# the migration runs from the image that is about to serve rather than pulling a
+# floating version off npm at boot.
+CMD ["node", "dist/main.js"]

@@ -21,6 +21,7 @@ import {
   STUDENT,
   STUDENT_PROJECTS,
 } from "@/lib/data";
+import { getSession } from "@/lib/auth/session";
 
 export const metadata: Metadata = { title: "My Profile" };
 
@@ -39,9 +40,21 @@ const LEGACY_TINT = {
   community: "clay",
 } as const;
 
-export default function ProfilePage() {
+export default async function ProfilePage() {
   const earned = ACHIEVEMENTS.filter((a) => a.earned);
   const completed = STUDENT_PROJECTS.filter((p) => p.percent === 100).length;
+
+  /* Who this is comes from the session. The impact record below it is still a
+     fixture — that is the student API, which has not been built yet. */
+  const session = await getSession();
+  const profile = session?.student;
+  const name = session?.displayName ?? STUDENT.name;
+  const institution = profile?.institutionName ?? STUDENT.institution;
+  const location = profile ? `${profile.district}, ${profile.state}` : STUDENT.location;
+  const year = profile ? `Year ${profile.currentYear} · ${profile.branch}` : STUDENT.year;
+  const role = profile ? `${profile.degree} Student, Social Innovator` : STUDENT.role;
+  const skills = profile?.skills.length ? profile.skills : STUDENT.skills;
+  const interests = profile?.interests.length ? profile.interests : STUDENT.interests;
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-6">
@@ -69,21 +82,21 @@ export default function ProfilePage() {
         <Card className="p-6 lg:p-7">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
             <div className="flex min-w-0 flex-1 flex-wrap items-center gap-5">
-              <Avatar name={STUDENT.name} size={80} />
+              <Avatar name={name} size={80} />
               <div className="min-w-0">
-                <h2 className="headline-lg text-ink">{STUDENT.name}</h2>
+                <h2 className="headline-lg text-ink">{name}</h2>
                 <p className="text-sm text-ink-muted">
-                  {STUDENT.role} · {STUDENT.institution}
+                  {role} · {institution}
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   <Badge icon="check-circle" tone="success">
                     Verified innovator
                   </Badge>
                   <Badge icon="map-pin" tone="neutral">
-                    {STUDENT.location}
+                    {location}
                   </Badge>
                   <Badge icon="graduation" tone="info">
-                    {STUDENT.year}
+                    {year}
                   </Badge>
                 </div>
               </div>
@@ -156,17 +169,35 @@ export default function ProfilePage() {
               Derived from verified project contributions, not self-declared
               tags.
             </p>
-            <ul className="mt-5 flex flex-col gap-4">
-              {SKILLS.map((skill) => (
-                <li key={skill.name}>
-                  <MetricBar label={skill.name} score={skill.level} suffix="%" />
-                </li>
-              ))}
-            </ul>
+            {/* A proficiency level is earned from delivered work, and a new
+                account has none — so it lists the declared skills plainly
+                rather than inventing a score for them. */}
+            {profile && !SKILLS.some((s) => skills.includes(s.name)) ? (
+              <>
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {skills.map((skill) => (
+                    <Badge key={skill} tone="neutral">
+                      {skill}
+                    </Badge>
+                  ))}
+                </div>
+                <p className="mt-3 text-xs text-ink-muted">
+                  Levels appear here once a project you contributed to is signed off.
+                </p>
+              </>
+            ) : (
+              <ul className="mt-5 flex flex-col gap-4">
+                {SKILLS.map((skill) => (
+                  <li key={skill.name}>
+                    <MetricBar label={skill.name} score={skill.level} suffix="%" />
+                  </li>
+                ))}
+              </ul>
+            )}
             <div className="mt-6 border-t border-line pt-5">
               <p className="label-caps text-ink-faint">Interests</p>
               <div className="mt-2 flex flex-wrap gap-2">
-                {STUDENT.interests.map((interest) => (
+                {interests.map((interest) => (
                   <Badge key={interest} tone="info">
                     {interest}
                   </Badge>
