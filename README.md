@@ -55,6 +55,25 @@ The web app is on `:3000`, the API on `:4000`. Every seeded account uses the
 password `jansetu-dev`; the sign-in page lists them, so you do not have to go
 looking. `user-district@jansetu.local` is the one with the most to look at.
 
+### Credentials
+
+Every key the repository can use lives in one file, `/.env.example`. Copy it to
+`/.env`, fill in whatever you have, and fan it out:
+
+```bash
+cp .env.example .env && node scripts/sync-env.mjs
+```
+
+That writes `backend/.env` and `apps/web/.env.local`, and prints the
+`--dart-define` line for the Flutter app, which takes no `.env` at all. A blank
+value in the root file changes nothing in the targets, so it is safe to re-run
+against a working local setup — `--dry-run` shows what it would do first.
+
+Blank is a valid answer to all of it. No Groq key means report intake uses its
+deterministic keyword pass; no R2 means uploads go to local disk; no recommender
+URL means the heuristic scorer runs. A fresh clone with nothing filled in still
+runs the whole product end to end.
+
 ## Checks
 
 ```bash
