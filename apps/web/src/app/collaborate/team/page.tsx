@@ -67,7 +67,7 @@ export default function TeamFormationPage() {
         title="Team Formation"
       />
 
-      <div className="grid gap-6 xl:grid-cols-[1.7fr_1fr]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.7fr_1fr]">
         <div className="flex flex-col gap-5">
           <Card className="p-5">
             <label className="relative block">
@@ -78,7 +78,7 @@ export default function TeamFormationPage() {
                 size={18}
               />
               <input
-                className="h-12 w-full rounded-[0.5rem] border border-line bg-card-muted pr-4 pl-11 text-sm text-ink placeholder:text-ink-faint focus:border-navy focus:bg-card focus:outline-none"
+                className="h-12 w-full rounded-md border border-line bg-card-muted pr-4 pl-11 text-sm text-ink placeholder:text-ink-faint focus:border-primary focus:bg-card focus:ring-2 focus:ring-primary focus:outline-none"
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search by student name, college, or skill…"
                 type="search"
@@ -114,7 +114,7 @@ export default function TeamFormationPage() {
               No collaborators match those filters yet.
             </Card>
           ) : (
-            <div className="grid gap-5 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
               {visible.map((candidate) => {
                 const isInvited = invited.includes(candidate.id);
                 return (
@@ -204,7 +204,7 @@ export default function TeamFormationPage() {
             ))}
 
             {team.length > 0 ? (
-              <li className="rounded-md border border-dashed border-line-strong px-4 py-4 text-center text-sm text-ink-faint">
+              <li className="rounded-lg bg-card-muted px-4 py-4 text-center text-sm text-ink-muted">
                 Pending Invite…
               </li>
             ) : null}
@@ -213,7 +213,7 @@ export default function TeamFormationPage() {
               length: Math.max(0, TEAM_SIZE - 1 - invited.length - (team.length > 0 ? 1 : 0)),
             }).map((_, i) => (
               <li
-                className="rounded-md border border-dashed border-line-strong px-4 py-4 text-center text-sm text-ink-faint"
+                className="rounded-lg bg-card-muted px-4 py-4 text-center text-sm text-ink-muted"
                 key={i}
               >
                 Open Slot

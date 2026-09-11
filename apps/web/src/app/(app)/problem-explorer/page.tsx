@@ -32,7 +32,7 @@ function Select({
     <label className="relative">
       <span className="sr-only">{label}</span>
       <select
-        className="h-11 appearance-none rounded-[0.5rem] border border-line bg-card pr-10 pl-4 text-sm font-semibold text-ink focus:border-navy focus:outline-none"
+        className="h-11 appearance-none rounded-md border border-line bg-card pr-10 pl-4 text-sm font-semibold text-ink focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none"
         onChange={(e) => onChange(e.target.value)}
         value={value}
       >
@@ -53,7 +53,7 @@ function Select({
 
 function ChallengeCard({ challenge }: { challenge: Challenge }) {
   return (
-    <article className="flex flex-col overflow-hidden rounded-lg border border-line bg-card shadow-level1 transition-shadow hover:shadow-level2">
+    <article className="flex flex-col overflow-hidden rounded-lg bg-card shadow-level1 transition-shadow hover:shadow-level2">
       <span className="h-1.5 w-full bg-primary" />
       <div className="flex flex-1 flex-col p-5">
         <div className="flex flex-wrap items-center gap-2">
@@ -119,7 +119,7 @@ function ChallengeCard({ challenge }: { challenge: Challenge }) {
 function MapView({ items }: { items: Challenge[] }) {
   const regions = FILTERS.regions.slice(1);
   return (
-    <div className="grid gap-4 md:grid-cols-2">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
       {regions.map((region) => {
         const inRegion = items.filter((c) => c.region === region);
         return (
@@ -202,10 +202,10 @@ export default function ProblemExplorerPage() {
     <div className="mx-auto flex max-w-7xl flex-col gap-6">
       <PageHeading
         actions={
-          <div className="flex rounded-[0.5rem] border border-line bg-card p-1">
+          <div className="flex rounded-md border border-line bg-card p-1">
             {(["map", "grid"] as const).map((mode) => (
               <button
-                className={`flex h-9 items-center gap-2 rounded-[0.375rem] px-4 text-sm font-semibold transition-colors ${
+                className={`flex h-9 items-center gap-2 rounded-sm px-4 text-sm font-semibold transition-colors ${
                   view === mode
                     ? "bg-card-muted text-ink"
                     : "text-ink-muted hover:text-ink"
@@ -233,7 +233,7 @@ export default function ProblemExplorerPage() {
             size={18}
           />
           <input
-            className="h-11 w-full rounded-[0.5rem] border border-line bg-card-muted pr-4 pl-11 text-sm text-ink placeholder:text-ink-faint focus:border-navy focus:bg-card focus:outline-none"
+            className="h-11 w-full rounded-md border border-line bg-card-muted pr-4 pl-11 text-sm text-ink placeholder:text-ink-faint focus:border-primary focus:bg-card focus:ring-2 focus:ring-primary focus:outline-none"
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search challenges by keyword, location, or ID…"
             type="search"
@@ -294,7 +294,7 @@ export default function ProblemExplorerPage() {
               <p className="mt-1 text-sm text-ink-muted">
                 Based on your skills: IoT, React, and Data Analytics
               </p>
-              <div className="mt-5 grid gap-5 lg:grid-cols-2">
+              <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-2">
                 {recommended.map((c) => (
                   <ChallengeCard challenge={c} key={c.id} />
                 ))}
@@ -305,7 +305,7 @@ export default function ProblemExplorerPage() {
           {others.length > 0 ? (
             <section>
               <h2 className="headline-lg text-ink">All Challenges</h2>
-              <div className="mt-5 grid gap-5 lg:grid-cols-2">
+              <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-2">
                 {others.map((c) => (
                   <ChallengeCard challenge={c} key={c.id} />
                 ))}

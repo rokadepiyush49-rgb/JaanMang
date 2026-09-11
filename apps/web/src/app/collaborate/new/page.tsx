@@ -8,7 +8,7 @@ import { Button, ButtonLink, Card, PageHeading } from "@/components/ui";
 import { CHALLENGES, GOALS } from "@/lib/data";
 
 const inputClass =
-  "w-full rounded-[0.5rem] border border-line bg-card-muted px-4 py-3.5 text-base text-ink placeholder:text-ink-faint focus:border-navy focus:border-2 focus:bg-card focus:outline-none";
+  "w-full rounded-md border border-line bg-card-muted px-4 py-3.5 text-base text-ink placeholder:text-ink-faint focus:border-primary focus:bg-card focus:ring-2 focus:ring-primary focus:outline-none";
 
 export default function CollaborationDetailsPage() {
   const router = useRouter();
@@ -76,7 +76,7 @@ export default function CollaborationDetailsPage() {
             <legend className="mb-2 text-sm font-semibold text-ink">
               Primary Innovation Goal
             </legend>
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               {GOALS.map((option) => {
                 const active = goal === option.id;
                 return (
