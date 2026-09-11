@@ -1,0 +1,37 @@
+name: web-ci
+
+on:
+  push:
+    branches: [main, 'feat/**']
+    paths: ['apps/web/**', '.github/workflows/web-ci.yml']
+  pull_request:
+    paths: ['apps/web/**', '.github/workflows/web-ci.yml']
+
+defaults:
+  run:
+    working-directory: apps/web
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    env:
+      # The build must not depend on a reachable backend: every page that reads
+      # the API is server-rendered on demand, so nothing calls out at build
+      # time. A placeholder here proves that stays true — if a page starts
+      # fetching during the build, this job fails rather than a deploy.
+      BACKEND_API_URL: http://localhost:4000
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - run: npm run lint
+      - run: npm run build
