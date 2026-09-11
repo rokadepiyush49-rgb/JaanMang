@@ -51,7 +51,7 @@ export function LanguageSwitcher() {
         aria-expanded={open}
         aria-haspopup="listbox"
         aria-label={t.language}
-        className="flex h-10 items-center gap-1.5 rounded-full border border-line px-3 text-sm font-semibold text-ink hover:border-navy"
+        className="flex h-11 items-center gap-1.5 rounded-full bg-card px-3.5 text-sm font-semibold text-ink shadow-level1 transition-colors duration-150 hover:bg-card-muted"
         onClick={() => setOpen((wasOpen) => !wasOpen)}
         type="button"
       >
@@ -62,7 +62,7 @@ export function LanguageSwitcher() {
       {open ? (
         <ul
           aria-label={t.language}
-          className="absolute right-0 z-50 mt-2 w-44 overflow-hidden rounded-md border border-line bg-card py-1 shadow-level2"
+          className="absolute right-0 z-50 mt-2 w-44 overflow-hidden rounded-lg border border-line bg-card p-1.5 shadow-level3"
           role="listbox"
         >
           {LOCALES.map((option) => {
@@ -71,8 +71,10 @@ export function LanguageSwitcher() {
               <li key={option} role="none">
                 <button
                   aria-selected={active}
-                  className={`flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm transition-colors ${
-                    active ? "font-semibold text-ink" : "text-ink-muted hover:bg-card-muted"
+                  className={`flex w-full items-center gap-2 rounded-md px-3 py-2.5 text-left text-sm transition-colors ${
+                    active
+                      ? "bg-primary-fixed font-bold text-on-primary-fixed"
+                      : "font-semibold text-ink-muted hover:bg-card-muted"
                   }`}
                   onClick={() => {
                     setLocale(option);
@@ -82,7 +84,7 @@ export function LanguageSwitcher() {
                   type="button"
                 >
                   <span className="w-4 shrink-0">
-                    {active ? <Icon className="text-navy" name="check" size={15} /> : null}
+                    {active ? <Icon name="check" size={15} /> : null}
                   </span>
                   {LOCALE_LABEL[option]}
                 </button>

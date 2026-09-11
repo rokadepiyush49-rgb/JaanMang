@@ -136,18 +136,22 @@ function InsightsPanel({
         if (turns.length === 0) {
           return (
             <div
-              className="flex flex-col items-center gap-2 rounded-lg border border-dashed border-line-strong px-6 py-6 text-center"
+              className="flex items-center gap-3 rounded-lg bg-card px-4 py-3.5"
               key={id}
             >
-              <Icon className="text-ink-faint" name={agent.icon} size={22} />
-              <p className="text-sm text-ink-faint">{t.notSpokenYet(agent.personName)}</p>
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-neutral-tint text-on-neutral-tint">
+                <Icon name={agent.icon} size={19} />
+              </span>
+              <p className="min-w-0 flex-1 text-sm text-ink-muted">
+                {t.notSpokenYet(agent.personName)}
+              </p>
             </div>
           );
         }
 
         return (
           <section
-            className={`rounded-lg border border-line border-l-4 bg-card p-5 shadow-level1 ${ACCENTS[agent.tone]}`}
+            className={`rounded-lg border-l-4 bg-card p-5 shadow-level1 ${ACCENTS[agent.tone]}`}
             key={id}
           >
             <h3 className="flex items-center gap-2 font-bold text-ink">
@@ -258,7 +262,7 @@ function LiveSession({ stored }: { stored: StoredSession }) {
     : null;
 
   return (
-    <div className="mx-auto -my-8 flex max-w-7xl flex-col xl:h-[calc(100vh-4.5rem)] xl:flex-row">
+    <div className="mx-auto flex max-w-[1400px] flex-col overflow-hidden rounded-lg bg-card shadow-level1 xl:h-[calc(100vh-9.5rem)] xl:flex-row">
       {/* Transcript column */}
       <div className="flex min-w-0 flex-1 flex-col border-line xl:border-r">
         <div className="flex flex-wrap items-center gap-3 border-b border-line px-5 py-4">
@@ -300,7 +304,7 @@ function LiveSession({ stored }: { stored: StoredSession }) {
               <button
                 aria-label={speech.muted ? t.unmute : t.mute}
                 aria-pressed={speech.muted}
-                className="flex size-9 items-center justify-center rounded-[0.5rem] border border-line text-ink-muted hover:bg-card-muted"
+                className="flex size-11 items-center justify-center rounded-full bg-card text-ink shadow-level1 transition-colors duration-150 hover:bg-card-muted"
                 onClick={speech.toggleMuted}
                 type="button"
               >
@@ -310,9 +314,9 @@ function LiveSession({ stored }: { stored: StoredSession }) {
           </div>
         </div>
 
-        <div className="h-1 w-full bg-line">
+        <div className="h-1 w-full bg-track">
           <div
-            className="h-full bg-impact-deep transition-[width] duration-500"
+            className="h-full rounded-r-full bg-primary transition-[width] duration-500"
             style={{ width: `${percent}%` }}
           />
         </div>
@@ -324,8 +328,10 @@ function LiveSession({ stored }: { stored: StoredSession }) {
           </p>
 
           {transcript.length === 0 && status === "idle" ? (
-            <div className="mx-auto flex max-w-md flex-col items-center gap-4 rounded-lg border border-dashed border-line-strong px-6 py-12 text-center">
-              <Icon className="text-ink-faint" name="users" size={30} />
+            <div className="mx-auto flex max-w-md flex-col items-center gap-4 rounded-lg bg-card-muted px-6 py-12 text-center">
+              <span className="flex size-17 items-center justify-center rounded-full border border-info/25 bg-info-tint text-on-info-tint">
+                <Icon name="users" size={30} />
+              </span>
               <p className="text-sm text-ink-muted">
                 {t.seatedReady(stored.seatedAgentIds.length)}
               </p>
@@ -377,9 +383,9 @@ function LiveSession({ stored }: { stored: StoredSession }) {
           ) : null}
         </div>
 
-        <form className="border-t border-line bg-surface px-5 py-4" onSubmit={submit}>
+        <form className="border-t border-line bg-card-muted px-5 py-4" onSubmit={submit}>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-            <div className="flex-1 rounded-md border border-line bg-card p-3 focus-within:border-navy">
+            <div className="flex-1 rounded-md border border-line bg-card p-3 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary">
               <label>
                 <span className="sr-only">{t.replyLabel}</span>
                 <textarea
@@ -427,7 +433,7 @@ function LiveSession({ stored }: { stored: StoredSession }) {
       </div>
 
       {/* Insights column */}
-      <aside className="w-full shrink-0 overflow-y-auto border-t border-line bg-surface px-5 py-6 xl:w-96 xl:border-t-0">
+      <aside className="w-full shrink-0 overflow-y-auto border-t border-line bg-card-muted px-5 py-6 xl:w-96 xl:border-t-0">
         <div className="flex items-center justify-between">
           <h2 className="headline-lg text-ink">{t.insights}</h2>
           <Icon className="text-ink-faint" name="arrow-up-right" size={18} />
@@ -437,9 +443,9 @@ function LiveSession({ stored }: { stored: StoredSession }) {
 
         <Link
           aria-disabled={status !== "complete"}
-          className={`mt-4 flex h-12 items-center justify-center gap-2 rounded-[0.5rem] text-sm font-semibold transition-colors ${
+          className={`mt-4 flex h-12 items-center justify-center gap-2 rounded-md text-sm font-semibold transition-colors ${
             status === "complete"
-              ? "bg-primary text-white hover:bg-navy"
+              ? "bg-primary text-white hover:bg-primary-hover"
               : "pointer-events-none bg-card-muted text-ink-faint"
           }`}
           href="/council/verdict"
