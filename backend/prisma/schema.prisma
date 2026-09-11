@@ -101,6 +101,10 @@ model User {
   weightSetsCreated  PriorityWeightSet[]
   fundingApprovals   Funding[]             @relation("FundingApprovedBy")
   allocationsApprved Allocation[]          @relation("AllocationApprovedBy")
+  problemVotes       ProblemVote[]
+  deliveryRatings    DeliveryRating[]
+  badgesEarned       BadgeEarned[]
+  awardsGranted      Award[]               @relation("AwardGrantedBy")
 
   @@index([kind])
   @@map("users")
@@ -307,20 +311,22 @@ model Organization {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  department     Department?
-  sponsor        Sponsor?
-  govBody        GovernmentBodyProfile?
-  industryInfo   IndustryProfile?
-  institution    InstitutionProfile?
-  locations      OrgLocation[]
-  memberships    OrgMembership[]
-  students       StudentProfile[]
-  userRoles      UserRole[]
-  studentTeams   StudentTeam[]
-  faculty        Faculty[]
-  fundingCommits FundingCommitment[]
-  departments    InstituteDepartment[]
-  programs       Program[]
+  department       Department?
+  sponsor          Sponsor?
+  govBody          GovernmentBodyProfile?
+  industryInfo     IndustryProfile?
+  institution      InstitutionProfile?
+  locations        OrgLocation[]
+  memberships      OrgMembership[]
+  students         StudentProfile[]
+  userRoles        UserRole[]
+  studentTeams     StudentTeam[]
+  faculty          Faculty[]
+  fundingCommits   FundingCommitment[]
+  departments      InstituteDepartment[]
+  programs         Program[]
+  proposals        SolutionProposal[]
+  hackathonsHosted Hackathon[]
 
   @@index([type])
   @@map("organizations")
@@ -491,7 +497,12 @@ model Problem {
   jurisdiction      Jurisdiction    @relation(fields: [jurisdictionId], references: [id])
   reportCount       Int             @default(0)
   duplicateCount    Int             @default(0)
+  /// Kept separate from reportCount on purpose — see ProblemVote.
+  voteCount         Int             @default(0)
   affected          Int             @default(0)
+  /// UN Sustainable Development Goal numbers, 1–17. The matching input that
+  /// makes IndustryProfile.sdgPreferences mean something.
+  sdgGoals          Int[]
   slaDueAt          DateTime?
   estimatedCost     Decimal         @default(0) @db.Decimal(14, 2)
   departmentId      String?
@@ -523,6 +534,9 @@ model Problem {
   allocations         Allocation[]
   mentorshipRequests  MentorshipRequest[]
   studentTeams        StudentTeam[]
+  votes               ProblemVote[]
+  solutionProposals   SolutionProposal[]
+  hackathons          HackathonProblem[]
 
   @@index([status])
   @@index([jurisdictionId])
@@ -704,6 +718,8 @@ model Sponsorship {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  csrBenefit CsrBenefit?
+
   @@map("sponsorships")
 }
 
@@ -880,6 +896,9 @@ model Project {
   teamId         String?
   team           StudentTeam?  @relation(fields: [teamId], references: [id])
   governmentBody String?
+  /// UN Sustainable Development Goal numbers, 1–17. Usually inherited from the
+  /// problem, but a project may address more than the problem it came from.
+  sdgGoals       Int[]
   startedAt      DateTime?
   dueAt          DateTime?
   planDays       Int?
@@ -898,6 +917,7 @@ model Project {
   threads            MessageThread[]
   mentorshipRequests MentorshipRequest[]
   mentorAssignments  MentorAssignment[]
+  ratings            DeliveryRating[]
 
   @@index([problemId])
   @@map("projects")
@@ -1070,6 +1090,8 @@ model StudentTeam {
   applications       Application[]
   mentorshipRequests MentorshipRequest[]
   mentorAssignments  MentorAssignment[]
+  proposals          SolutionProposal[]
+  hackathonEntries   HackathonTeam[]
 
   @@index([orgId])
   @@index([facultyId])
@@ -1489,6 +1511,32 @@ model StudentProfile {
   skills    String[]
   interests String[]
 
+  // -------------------------------------------------------------------------
+  // Recommender inputs
+  //
+  // Everything the skill-map recommender reads, held as columns rather than
+  // derived per request. `RecommendationService` documents the feature vector
+  // these become; an external model plugs in behind that same contract.
+  // -------------------------------------------------------------------------
+
+  /// Problem categories the student wants to work on. Empty means no
+  /// preference, which the scorer reads as "all", not as "none".
+  preferredCategories   ProblemCategory[]
+  /// Districts the student can realistically reach. Empty means no constraint.
+  preferredDistricts    String[]
+  /// SDG numbers, 1–17. Matches Problem.sdgGoals.
+  sdgInterests          Int[]
+  /// Hours a week the student says they can give. Null = unstated, which the
+  /// scorer must not read as zero.
+  weeklyHours           Int?
+  /// Contributions that reached a confirmed Verification. Maintained by the
+  /// recognition cron, never written by the client — a student cannot assert
+  /// their own track record.
+  verifiedContributions Int               @default(0)
+  /// When the recommender last ran for this student, so a cron can prioritise
+  /// stale rows over recomputing everybody.
+  lastRecommendedAt     DateTime?
+
   /// Where the institution has placed this student in its own structure. Set
   /// by the institute roster screen, never by the student — a student cannot
   /// put themselves in a department they are not in.
@@ -1846,6 +1894,399 @@ model AccountVerification {
   @@index([status])
   @@index([subjectType, subjectId])
   @@map("account_verifications")
+}
+
+// ===========================================================================
+// Participation — voting, proposals, hackathons
+// ===========================================================================
+
+/// One citizen, one problem, one vote.
+///
+/// Deliberately *not* the same signal as a CitizenReport. A report means "I
+/// have this problem"; a vote means "I agree this matters", and the voter need
+/// not be affected by it. The priority engine weights them differently, so they
+/// stay two columns — `Problem.reportCount` and `Problem.voteCount` — all the
+/// way through rather than being merged into one demand number on the way in.
+model ProblemVote {
+  id        String  @id @default(uuid())
+  problemId String
+  problem   Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, problemId])
+  @@index([problemId])
+  @@index([userId])
+  @@map("problem_votes")
+}
+
+enum SolutionProposalStatus {
+  draft
+  submitted
+  under_review
+  accepted
+  rejected
+  withdrawn
+}
+
+/// An institution proposing a solution to a published problem unprompted,
+/// rather than waiting for the matcher to pair it with one.
+///
+/// The inverse of `Application`: an Application answers a brief somebody else
+/// wrote, a SolutionProposal writes the brief. Both end in the same place — a
+/// StudentTeam working on a Problem — which is why this carries an optional
+/// teamId rather than inventing a second team model.
+model SolutionProposal {
+  id        String       @id @default(uuid())
+  problemId String
+  problem   Problem      @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  orgId     String
+  org       Organization @relation(fields: [orgId], references: [id])
+  teamId    String?
+  team      StudentTeam? @relation(fields: [teamId], references: [id])
+
+  title    String
+  summary  String
+  approach String
+
+  estimatedCost Decimal  @default(0) @db.Decimal(14, 2)
+  durationDays  Int?
+  /// What the institution says it needs from government or a partner.
+  needs         String[]
+
+  status SolutionProposalStatus @default(draft)
+
+  submittedById String?
+  submittedAt   DateTime?
+  reviewedById  String?
+  reviewedAt    DateTime?
+  /// Why it was accepted or refused. Shown to the proposing institution.
+  decisionNote  String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([problemId])
+  @@index([orgId])
+  @@index([teamId])
+  @@index([status])
+  @@map("solution_proposals")
+}
+
+enum HackathonStatus {
+  draft
+  announced
+  registration_open
+  in_progress
+  judging
+  completed
+  cancelled
+}
+
+/// A time-boxed event binding a set of Problems to a set of StudentTeams.
+///
+/// Deliberately thin: teams are `StudentTeam`, entries are `Application`, and
+/// judging writes `Award`. A hackathon is a window and a problem set, not a
+/// parallel universe with its own teams and submissions.
+model Hackathon {
+  id        String        @id @default(uuid())
+  code      String        @unique
+  title     String
+  about     String?
+  hostOrgId String?
+  hostOrg   Organization? @relation(fields: [hostOrgId], references: [id])
+
+  status HackathonStatus @default(draft)
+  mode   String?
+
+  registrationOpensAt  DateTime?
+  registrationClosesAt DateTime?
+  startsAt             DateTime
+  endsAt               DateTime
+
+  prizePool   Decimal @default(0) @db.Decimal(14, 2)
+  maxTeamSize Int?
+  venue       String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  problems HackathonProblem[]
+  teams    HackathonTeam[]
+
+  @@index([status])
+  @@index([hostOrgId])
+  @@map("hackathons")
+}
+
+/// The problem set a hackathon puts in front of its teams.
+model HackathonProblem {
+  hackathonId String
+  hackathon   Hackathon @relation(fields: [hackathonId], references: [id], onDelete: Cascade)
+  problemId   String
+  problem     Problem   @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  /// The track or brief label this problem was presented under.
+  track       String?
+
+  createdAt DateTime @default(now())
+
+  @@id([hackathonId, problemId])
+  @@index([problemId])
+  @@map("hackathon_problems")
+}
+
+/// A team's registration in a hackathon, and where it finished.
+model HackathonTeam {
+  hackathonId String
+  hackathon   Hackathon   @relation(fields: [hackathonId], references: [id], onDelete: Cascade)
+  teamId      String
+  team        StudentTeam @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  registeredAt DateTime  @default(now())
+  withdrawnAt  DateTime?
+  /// Set at judging. Null until then.
+  finalRank    Int?
+  score        Float?
+
+  @@id([hackathonId, teamId])
+  @@index([teamId])
+  @@map("hackathon_teams")
+}
+
+// ===========================================================================
+// CSR benefit
+// ===========================================================================
+
+enum CsrDocumentationStatus {
+  not_started
+  drafted
+  submitted
+  certified
+  filed
+}
+
+/// The tax position a sponsorship moves, attached 1:1 to the Sponsorship.
+///
+/// This is why a partner engages at all, so it is a table and not a Json blob:
+/// the CSR report at the end of the financial year is a sum over these rows.
+/// `csrSpendBefore` / `csrSpendAfter` record the partner's cumulative position
+/// at the moment of commitment, so the report reconstructs the year without
+/// re-deriving it from a moving balance.
+model CsrBenefit {
+  problemId   String      @id
+  sponsorship Sponsorship @relation(fields: [problemId], references: [problemId], onDelete: Cascade)
+
+  /// The Companies Act section claimed under — "135" for mainline CSR spend.
+  qualifyingSection String  @default("135")
+  /// The Schedule VII activity head, e.g. "(i) eradicating hunger".
+  scheduleViiItem   String?
+  financialYear     String
+
+  estimatedRelief Decimal @default(0) @db.Decimal(14, 2)
+  /// The partner's cumulative CSR spend before and after this commitment.
+  csrSpendBefore  Decimal @default(0) @db.Decimal(14, 2)
+  csrSpendAfter   Decimal @default(0) @db.Decimal(14, 2)
+
+  documentation CsrDocumentationStatus @default(not_started)
+  certificateNo String?
+  certifiedAt   DateTime?
+  note          String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([financialYear])
+  @@map("csr_benefits")
+}
+
+// ===========================================================================
+// Delivery rating
+// ===========================================================================
+
+/// A citizen's verdict on how well a completed project was delivered.
+///
+/// Distinct from `Verification` on purpose. Verification asks *was it fixed*
+/// and is a yes or no with photographic evidence; rating asks *how well*, and
+/// is the signal the delivery leaderboards in the recognition layer rank on.
+/// Merging the two loses the second answer, which is the one that separates a
+/// handpump that works from a handpump that works and was finished on time.
+model DeliveryRating {
+  id        String  @id @default(uuid())
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// 1–5. Constrained in the service layer and by a check constraint added in
+  /// the migration — Prisma has no native range type.
+  stars   Int
+  comment String?
+
+  /// Sub-scores, all optional: a citizen may rate overall and nothing else.
+  timeliness Int?
+  quality    Int?
+  conduct    Int?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@unique([projectId, userId])
+  @@index([projectId])
+  @@index([userId])
+  @@map("delivery_ratings")
+}
+
+// ===========================================================================
+// Recognition — badges, awards, leaderboards
+// ===========================================================================
+
+enum BadgeTier {
+  bronze
+  silver
+  gold
+  platinum
+}
+
+/// The *definition* of a badge and the rule that earns it.
+///
+/// `criteria` is the machine-readable rule the recognition cron evaluates
+/// (e.g. `{ "metric": "verifications_confirmed", "gte": 10 }`). Keeping the
+/// rule in a row rather than in code means a new badge is a seed entry, and an
+/// existing badge's threshold can be corrected without a deploy.
+model Badge {
+  id          String    @id @default(uuid())
+  key         String    @unique
+  name        String
+  description String
+  tier        BadgeTier @default(bronze)
+  /// Which audience can hold it — a Surface, so it lines up with the shells.
+  surface     Surface
+  icon        String?
+  points      Int       @default(0)
+  criteria    Json      @default("{}")
+  active      Boolean   @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  earned BadgeEarned[]
+
+  @@index([surface])
+  @@map("badges")
+}
+
+/// A badge actually held by a person, with the numbers that earned it.
+///
+/// `Achievement` remains the generic points-bearing accomplishment; this is
+/// the narrower rule-earned kind, and it keeps `evidence` so a holder can see
+/// which ten verifications got them the badge.
+model BadgeEarned {
+  id      String @id @default(uuid())
+  badgeId String
+  badge   Badge  @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  userId  String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// The metric snapshot at the moment the rule fired.
+  evidence Json     @default("{}")
+  earnedAt DateTime @default(now())
+
+  @@unique([badgeId, userId])
+  @@index([userId])
+  @@map("badges_earned")
+}
+
+enum AwardSubject {
+  user
+  organization
+  team
+}
+
+/// A granted honour. Unlike a Badge, nothing computes this — a person decides.
+///
+/// Polymorphic on subject because an award goes to a citizen, an institution
+/// or a team with equal ease, and three near-identical tables would be worse.
+/// The same shape as LeaderboardEntry, for the same reason.
+model Award {
+  id          String  @id @default(uuid())
+  key         String?
+  name        String
+  description String?
+  /// Free text: "Best Delivery, Ranchi District, FY 2026".
+  citation    String?
+  period      String?
+
+  subjectType AwardSubject
+  subjectId   String
+
+  grantedById String?
+  grantedBy   User?     @relation("AwardGrantedBy", fields: [grantedById], references: [id])
+  grantedAt   DateTime  @default(now())
+  revokedAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([subjectType, subjectId])
+  @@index([key])
+  @@map("awards")
+}
+
+enum LeaderboardScope {
+  citizens
+  students
+  institutes
+  partners
+  officers
+}
+
+enum LeaderboardSubject {
+  user
+  organization
+  team
+}
+
+/// A materialised rank row, refreshed on a schedule.
+///
+/// Ranking is a window function over several tables; running it per request on
+/// a public page is how a leaderboard takes a site down. This table is the
+/// answer, recomputed by a cron. `breakdown` carries the components of the
+/// score so a leaderboard can say *why* somebody is third, and `displayName`
+/// is cached so rendering a page of fifty costs one query rather than fifty-one.
+///
+/// Scores come from verified outcomes only — see the recognition service. An
+/// activity count would rank the loudest account first, which is the opposite
+/// of what this is for.
+model LeaderboardEntry {
+  id          String             @id @default(uuid())
+  scope       LeaderboardScope
+  subjectType LeaderboardSubject
+  subjectId   String
+
+  displayName  String
+  score        Float  @default(0)
+  rank         Int
+  /// Rank in the previous computation, so the UI can show movement.
+  previousRank Int?
+  /// { verifiedProblems: 12, avgRating: 4.4, fundsDelivered: "120000", … }
+  breakdown    Json   @default("{}")
+
+  /// Optional narrowing — a district leaderboard rather than a platform one.
+  jurisdictionId String?
+  /// The window the score covers: "all-time", "2026", "2026-Q3".
+  period         String  @default("all-time")
+
+  computedAt DateTime @default(now())
+
+  @@unique([scope, subjectType, subjectId, period, jurisdictionId])
+  @@index([scope, period, rank])
+  @@index([subjectType, subjectId])
+  @@map("leaderboard_entries")
 }
 
 // ===========================================================================

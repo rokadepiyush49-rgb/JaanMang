@@ -13,6 +13,7 @@ import { seedRbac } from './seed/rbac';
 import { seedGov } from './seed/gov';
 import { seedOnboarding } from './seed/onboarding';
 import { seedInstitute } from './seed/institute';
+import { seedParticipation } from './seed/participation';
 
 const prisma = new PrismaClient();
 
@@ -38,6 +39,7 @@ async function main(): Promise<void> {
   const { devLogins } = await seedGov(prisma);
   const { devLogins: identityLogins } = await seedOnboarding(prisma);
   const { devLogins: instituteLogins } = await seedInstitute(prisma);
+  const { devLogins: citizenLogins } = await seedParticipation(prisma);
 
   const counts = {
     users: await prisma.user.count(),
@@ -45,6 +47,11 @@ async function main(): Promise<void> {
     villages: await prisma.village.count(),
     problems: await prisma.problem.count(),
     reports: await prisma.citizenReport.count(),
+    votes: await prisma.problemVote.count(),
+    proposals: await prisma.solutionProposal.count(),
+    ratings: await prisma.deliveryRating.count(),
+    badgesEarned: await prisma.badgeEarned.count(),
+    leaderboardRows: await prisma.leaderboardEntry.count(),
     auditEntries: await prisma.auditEntry.count(),
   };
 
@@ -54,7 +61,7 @@ async function main(): Promise<void> {
         .map(([k, v]) => `  ${v.toString().padStart(4)}  ${k}`)
         .join('\n') +
       `\n\nDemo logins — every account uses the password  jansetu-dev\n\n` +
-      identityLogins.concat(instituteLogins).map((l) => `  ${l}`).join('\n') +
+      identityLogins.concat(instituteLogins, citizenLogins).map((l) => `  ${l}`).join('\n') +
       '\n' +
       devLogins.map((l) => `  ${l}`).join('\n') +
       '\n',
