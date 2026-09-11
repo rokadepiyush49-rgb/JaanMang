@@ -212,7 +212,258 @@
             "description": ""
           }
         },
-        "summary": "The authenticated user, with roles, permissions and scopes",
+        "summary": "The authenticated user, with roles, permissions, scopes and surface",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/email-available": {
+      "get": {
+        "operationId": "RegistrationController_emailAvailable_v1",
+        "parameters": [
+          {
+            "name": "email",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "format": "email",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Whether an email address is free to register",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/register/student": {
+      "post": {
+        "operationId": "RegistrationController_registerStudent_v1",
+        "parameters": [
+          {
+            "name": "user-agent",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StudentRegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Create a student account and sign in",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/register/government": {
+      "post": {
+        "operationId": "RegistrationController_registerGovernment_v1",
+        "parameters": [
+          {
+            "name": "user-agent",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GovernmentRegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Register a government authority and its representative (pending review)",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/register/industry": {
+      "post": {
+        "operationId": "RegistrationController_registerIndustry_v1",
+        "parameters": [
+          {
+            "name": "user-agent",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IndustryRegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Register an industry partner and its representative (pending review)",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/register/institute": {
+      "post": {
+        "operationId": "RegistrationController_registerInstitute_v1",
+        "parameters": [
+          {
+            "name": "user-agent",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InstituteRegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Register an institution and its administrator (pending review)",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/onboarding/student": {
+      "post": {
+        "operationId": "RegistrationController_onboardStudent_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StudentOnboardingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Complete the student onboarding wizard",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/onboarding/industry": {
+      "post": {
+        "operationId": "RegistrationController_onboardIndustry_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IndustryOnboardingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Complete the industry match profile",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/onboarding/institute": {
+      "post": {
+        "operationId": "RegistrationController_onboardInstitute_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InstituteOnboardingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Complete the institute academic structure wizard",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/verification": {
+      "get": {
+        "operationId": "RegistrationController_verification_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The signed-in account’s verification status",
         "tags": [
           "auth"
         ]
@@ -649,6 +900,951 @@
         ]
       }
     },
+    "/api/v1/institute/overview": {
+      "get": {
+        "operationId": "InstituteController_overview_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The institute dashboard: counts, pipeline, queues and activity",
+        "tags": [
+          "institute"
+        ]
+      }
+    },
+    "/api/v1/institute/analytics": {
+      "get": {
+        "operationId": "InstituteController_analytics_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Participation, delivery and selection analytics",
+        "tags": [
+          "institute"
+        ]
+      }
+    },
+    "/api/v1/institute/profile": {
+      "get": {
+        "operationId": "InstituteController_profile_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The institution profile, verification state and completion",
+        "tags": [
+          "institute"
+        ]
+      },
+      "patch": {
+        "operationId": "InstituteController_updateProfile_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Update the institution profile",
+        "tags": [
+          "institute"
+        ]
+      }
+    },
+    "/api/v1/institute/departments": {
+      "get": {
+        "operationId": "InstituteController_departments_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Academic departments with their programmes and live counts",
+        "tags": [
+          "institute"
+        ]
+      },
+      "post": {
+        "operationId": "InstituteController_createDepartment_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DepartmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Create an academic department",
+        "tags": [
+          "institute"
+        ]
+      }
+    },
+    "/api/v1/institute/departments/{id}": {
+      "patch": {
+        "operationId": "InstituteController_updateDepartment_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DepartmentPatchDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Update a department",
+        "tags": [
+          "institute"
+        ]
+      },
+      "delete": {
+        "operationId": "InstituteController_deleteDepartment_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Archive a department that has no active teams",
+        "tags": [
+          "institute"
+        ]
+      }
+    },
+    "/api/v1/institute/programs": {
+      "post": {
+        "operationId": "InstituteController_createProgram_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProgramDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Create a programme under a department",
+        "tags": [
+          "institute"
+        ]
+      }
+    },
+    "/api/v1/institute/programs/{id}": {
+      "patch": {
+        "operationId": "InstituteController_updateProgram_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProgramPatchDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Update a programme",
+        "tags": [
+          "institute"
+        ]
+      },
+      "delete": {
+        "operationId": "InstituteController_deleteProgram_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Archive a programme",
+        "tags": [
+          "institute"
+        ]
+      }
+    },
+    "/api/v1/institute/students": {
+      "get": {
+        "operationId": "InstituteController_students_v1",
+        "parameters": [
+          {
+            "name": "q",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "maxLength": 120
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    ""
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "name": "departmentId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "maxLength": 60
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    ""
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "name": "programId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "maxLength": 60
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    ""
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "name": "year",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 6,
+              "exclusiveMaximum": false,
+              "exclusiveMinimum": false,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "all",
+              "type": "string",
+              "enum": [
+                "all",
+                "verified",
+                "unverified"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The student roster, filterable by department, year and status",
+        "tags": [
+          "institute"
+        ]
+      }
+    },
+    "/api/v1/institute/students/{userId}": {
+      "patch": {
+        "operationId": "InstituteController_placeStudent_v1",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StudentPlacementDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Place a student in a department or programme, or verify them",
+        "tags": [
+          "institute"
+        ]
+      }
+    },
+    "/api/v1/institute/faculty": {
+      "get": {
+        "operationId": "InstituteController_faculty_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Faculty with their department, expertise and current guiding load",
+        "tags": [
+          "institute"
+        ]
+      },
+      "post": {
+        "operationId": "InstituteController_createFaculty_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FacultyCreateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Create a faculty account at this institution",
+        "tags": [
+          "institute"
+        ]
+      }
+    },
+    "/api/v1/institute/faculty/{userId}": {
+      "patch": {
+        "operationId": "InstituteController_updateFaculty_v1",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FacultyPatchDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Update a faculty member’s department, expertise or capacity",
+        "tags": [
+          "institute"
+        ]
+      },
+      "delete": {
+        "operationId": "InstituteController_removeFaculty_v1",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Remove a faculty member from this institution",
+        "tags": [
+          "institute"
+        ]
+      }
+    },
+    "/api/v1/institute/teams": {
+      "get": {
+        "operationId": "InstituteController_teams_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Student teams — every team for a registrar, own teams for a guide",
+        "tags": [
+          "institute"
+        ]
+      },
+      "post": {
+        "operationId": "InstituteController_createTeam_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TeamCreateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Form a team",
+        "tags": [
+          "institute"
+        ]
+      }
+    },
+    "/api/v1/institute/teams/{id}": {
+      "get": {
+        "operationId": "InstituteController_team_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "One team with its members, guide, project and applications",
+        "tags": [
+          "institute"
+        ]
+      },
+      "patch": {
+        "operationId": "InstituteController_updateTeam_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TeamPatchDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Update a team’s brief, stage or status",
+        "tags": [
+          "institute"
+        ]
+      }
+    },
+    "/api/v1/institute/teams/{id}/guide": {
+      "post": {
+        "operationId": "InstituteController_assignGuide_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignGuideDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Assign or clear the faculty guide for a team",
+        "tags": [
+          "institute"
+        ]
+      }
+    },
+    "/api/v1/institute/teams/{id}/members": {
+      "post": {
+        "operationId": "InstituteController_addMembers_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignMembersDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Assign students to a team",
+        "tags": [
+          "institute"
+        ]
+      }
+    },
+    "/api/v1/institute/teams/{id}/members/{userId}": {
+      "delete": {
+        "operationId": "InstituteController_removeMember_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Remove a student from a team",
+        "tags": [
+          "institute"
+        ]
+      }
+    },
+    "/api/v1/institute/projects": {
+      "get": {
+        "operationId": "InstituteController_projects_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Projects the institution is carrying, with milestone state",
+        "tags": [
+          "institute"
+        ]
+      }
+    },
+    "/api/v1/institute/projects/{id}": {
+      "get": {
+        "operationId": "InstituteController_project_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "One project end to end",
+        "tags": [
+          "institute"
+        ]
+      }
+    },
+    "/api/v1/institute/submissions": {
+      "get": {
+        "operationId": "InstituteController_submissions_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Milestones submitted by teams and awaiting a decision",
+        "tags": [
+          "institute"
+        ]
+      }
+    },
+    "/api/v1/institute/submissions/{id}/approve": {
+      "post": {
+        "operationId": "InstituteController_approve_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Approve a submitted milestone",
+        "tags": [
+          "institute"
+        ]
+      }
+    },
+    "/api/v1/institute/submissions/{id}/request-changes": {
+      "post": {
+        "operationId": "InstituteController_requestChanges_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestChangesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Return a submitted milestone to the team with a reason",
+        "tags": [
+          "institute"
+        ]
+      }
+    },
+    "/api/v1/institute/applications": {
+      "get": {
+        "operationId": "InstituteController_applications_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Applications by this institution’s students and teams",
+        "tags": [
+          "institute"
+        ]
+      }
+    },
+    "/api/v1/institute/opportunities": {
+      "get": {
+        "operationId": "InstituteController_opportunities_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Validated citizen problems open to a student team (redacted)",
+        "tags": [
+          "institute"
+        ]
+      }
+    },
+    "/api/v1/institute/partners": {
+      "get": {
+        "operationId": "InstituteController_partners_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Industry partners, and which of them already carry our work",
+        "tags": [
+          "institute"
+        ]
+      }
+    },
+    "/api/v1/institute/notifications": {
+      "get": {
+        "operationId": "InstituteController_notifications_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "This account’s notifications",
+        "tags": [
+          "institute"
+        ]
+      }
+    },
+    "/api/v1/institute/notifications/read": {
+      "post": {
+        "operationId": "InstituteController_markRead_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Mark every notification read",
+        "tags": [
+          "institute"
+        ]
+      }
+    },
+    "/api/v1/registry/institutions": {
+      "get": {
+        "operationId": "RegistryController_institutions_v1",
+        "parameters": [
+          {
+            "name": "q",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The institution register, for the student signup picker",
+        "tags": [
+          "registry"
+        ]
+      }
+    },
+    "/api/v1/registry/jurisdictions": {
+      "get": {
+        "operationId": "RegistryController_jurisdictions_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The administrative tree, for the cascading government picker",
+        "tags": [
+          "registry"
+        ]
+      }
+    },
+    "/api/v1/registry/departments": {
+      "get": {
+        "operationId": "RegistryController_departments_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Line departments, for the delivery-officer signup path",
+        "tags": [
+          "registry"
+        ]
+      }
+    },
+    "/api/v1/registry/taxonomy": {
+      "get": {
+        "operationId": "RegistryController_taxonomy_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Closed vocabularies for every signup and onboarding field",
+        "tags": [
+          "registry"
+        ]
+      }
+    },
+    "/api/v1/public/stats": {
+      "get": {
+        "operationId": "PublicController_stats_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Platform statistics for the public landing page",
+        "tags": [
+          "public"
+        ]
+      }
+    },
     "/healthz": {
       "get": {
         "operationId": "HealthController_liveness",
@@ -808,6 +2004,785 @@
           "password"
         ]
       },
+      "StudentRegisterDto": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "fullName",
+          "email",
+          "password"
+        ]
+      },
+      "GovernmentRegisterDto": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "designation": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "phone": {
+            "type": "string",
+            "pattern": "^\\+?[0-9]{8,15}$"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 200
+          },
+          "bodyType": {
+            "type": "string",
+            "enum": [
+              "gram_panchayat",
+              "nagar_panchayat",
+              "municipal_council",
+              "municipal_corporation",
+              "block_office",
+              "district_office",
+              "line_department",
+              "other"
+            ]
+          },
+          "bodyName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 200
+          },
+          "state": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 80
+          },
+          "district": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 80
+          },
+          "block": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "lgdCode": {
+            "oneOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9]{1,10}$"
+              },
+              {
+                "type": "string",
+                "enum": [
+                  ""
+                ]
+              }
+            ]
+          },
+          "jurisdictionId": {
+            "type": "string",
+            "minLength": 1,
+            "nullable": true
+          },
+          "requestedRoleKey": {
+            "type": "string",
+            "enum": [
+              "gov_panchayat",
+              "gov_urban_body",
+              "gov_block",
+              "gov_district",
+              "gov_field_officer"
+            ]
+          },
+          "departmentId": {
+            "type": "string",
+            "minLength": 1,
+            "nullable": true
+          },
+          "officeAddress": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "pincode": {
+            "oneOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9]{6}$"
+              },
+              {
+                "type": "string",
+                "enum": [
+                  ""
+                ]
+              }
+            ]
+          }
+        },
+        "required": [
+          "fullName",
+          "designation",
+          "email",
+          "phone",
+          "password",
+          "bodyType",
+          "bodyName",
+          "state",
+          "district",
+          "lgdCode",
+          "requestedRoleKey",
+          "pincode"
+        ]
+      },
+      "IndustryRegisterDto": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "designation": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "phone": {
+            "type": "string",
+            "pattern": "^\\+?[0-9]{8,15}$"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 200
+          },
+          "companyName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 200
+          },
+          "legalName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 200
+          },
+          "orgSize": {
+            "type": "string",
+            "enum": [
+              "startup",
+              "sme",
+              "enterprise",
+              "mnc",
+              "psu",
+              "csr_trust",
+              "other"
+            ]
+          },
+          "sector": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "website": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 300
+          },
+          "state": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 80
+          },
+          "city": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 80
+          },
+          "district": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "pincode": {
+            "oneOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9]{6}$"
+              },
+              {
+                "type": "string",
+                "enum": [
+                  ""
+                ]
+              }
+            ]
+          }
+        },
+        "required": [
+          "fullName",
+          "designation",
+          "email",
+          "phone",
+          "password",
+          "companyName",
+          "legalName",
+          "orgSize",
+          "sector",
+          "website",
+          "state",
+          "city",
+          "pincode"
+        ]
+      },
+      "InstituteRegisterDto": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "designation": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "phone": {
+            "type": "string",
+            "pattern": "^\\+?[0-9]{8,15}$"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 200
+          },
+          "claimOrgId": {
+            "type": "string",
+            "minLength": 1,
+            "nullable": true
+          },
+          "institutionName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 200
+          },
+          "institutionType": {
+            "type": "string",
+            "enum": [
+              "university",
+              "college",
+              "polytechnic",
+              "iti",
+              "training_institute",
+              "other"
+            ]
+          },
+          "shortName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 80
+          },
+          "aisheCode": {
+            "oneOf": [
+              {
+                "type": "string",
+                "maxLength": 40
+              },
+              {
+                "type": "string",
+                "enum": [
+                  ""
+                ]
+              }
+            ]
+          },
+          "website": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 300
+              },
+              {
+                "type": "string",
+                "enum": [
+                  ""
+                ]
+              }
+            ]
+          },
+          "establishedYear": {
+            "type": "integer",
+            "minimum": 1800,
+            "exclusiveMinimum": false,
+            "maximum": 2026,
+            "exclusiveMaximum": false
+          },
+          "state": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 80
+          },
+          "district": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "city": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 80
+          },
+          "pincode": {
+            "oneOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9]{6}$"
+              },
+              {
+                "type": "string",
+                "enum": [
+                  ""
+                ]
+              }
+            ]
+          }
+        },
+        "required": [
+          "fullName",
+          "designation",
+          "email",
+          "phone",
+          "password",
+          "institutionName",
+          "institutionType",
+          "shortName",
+          "aisheCode",
+          "website",
+          "state",
+          "city",
+          "pincode"
+        ]
+      },
+      "StudentOnboardingDto": {
+        "type": "object",
+        "properties": {
+          "orgId": {
+            "type": "string",
+            "minLength": 1,
+            "nullable": true
+          },
+          "institutionName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 200
+          },
+          "degree": {
+            "type": "string",
+            "enum": [
+              "B.Tech",
+              "B.E.",
+              "B.Sc",
+              "B.A.",
+              "B.Com",
+              "BBA",
+              "BCA",
+              "Diploma",
+              "M.Tech",
+              "M.Sc",
+              "MBA",
+              "MCA",
+              "PhD",
+              "Other"
+            ]
+          },
+          "branch": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "currentYear": {
+            "type": "integer",
+            "minimum": 1,
+            "exclusiveMinimum": false,
+            "maximum": 6,
+            "exclusiveMaximum": false
+          },
+          "graduationYear": {
+            "type": "integer",
+            "minimum": 2024,
+            "exclusiveMinimum": false,
+            "maximum": 2034,
+            "exclusiveMaximum": false
+          },
+          "enrollmentNo": {
+            "type": "string",
+            "maxLength": 60
+          },
+          "state": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 80
+          },
+          "district": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 80
+          },
+          "skills": {
+            "type": "array",
+            "maxItems": 30,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            },
+            "default": []
+          },
+          "interests": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            },
+            "default": []
+          },
+          "phone": {
+            "type": "string",
+            "pattern": "^\\+?[0-9]{8,15}$"
+          }
+        },
+        "required": [
+          "institutionName",
+          "degree",
+          "branch",
+          "currentYear",
+          "graduationYear",
+          "state",
+          "district"
+        ]
+      },
+      "IndustryOnboardingDto": {
+        "type": "object",
+        "properties": {
+          "csrThemes": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "enum": [
+                "water",
+                "health",
+                "education",
+                "agriculture",
+                "environment",
+                "energy",
+                "infrastructure",
+                "accessibility",
+                "rural"
+              ]
+            }
+          },
+          "geographies": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 80
+            }
+          },
+          "fundingMin": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": false
+          },
+          "fundingMax": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": false
+          },
+          "technologyDomains": {
+            "type": "array",
+            "maxItems": 40,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "default": []
+          },
+          "capabilities": {
+            "type": "array",
+            "maxItems": 8,
+            "items": {
+              "type": "string",
+              "enum": [
+                "manufacturing",
+                "testing",
+                "field-deployment",
+                "software",
+                "hardware",
+                "logistics",
+                "training",
+                "certification"
+              ]
+            },
+            "default": []
+          },
+          "sdgPreferences": {
+            "type": "array",
+            "maxItems": 17,
+            "items": {
+              "type": "integer",
+              "minimum": 1,
+              "exclusiveMinimum": false,
+              "maximum": 17,
+              "exclusiveMaximum": false
+            },
+            "default": []
+          },
+          "employeeCount": {
+            "type": "integer",
+            "minimum": 1,
+            "exclusiveMinimum": false,
+            "maximum": 5000000,
+            "exclusiveMaximum": false
+          },
+          "yearEstablished": {
+            "type": "integer",
+            "minimum": 1800,
+            "exclusiveMinimum": false,
+            "maximum": 2026,
+            "exclusiveMaximum": false
+          },
+          "branches": {
+            "type": "array",
+            "maxItems": 25,
+            "items": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "branch",
+                    "plant",
+                    "office"
+                  ],
+                  "default": "branch"
+                },
+                "label": {
+                  "type": "string",
+                  "maxLength": 120
+                },
+                "state": {
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 80
+                },
+                "district": {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                "city": {
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 80
+                },
+                "pincode": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^[0-9]{6}$"
+                    },
+                    {
+                      "type": "string",
+                      "enum": [
+                        ""
+                      ]
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "state",
+                "city",
+                "pincode"
+              ]
+            },
+            "default": []
+          },
+          "csrFinancialYear": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "csrAllocated": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": false
+          },
+          "csrPreferredCeiling": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": false
+          }
+        },
+        "required": [
+          "csrThemes",
+          "geographies",
+          "fundingMin",
+          "fundingMax"
+        ]
+      },
+      "InstituteOnboardingDto": {
+        "type": "object",
+        "properties": {
+          "departments": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 40,
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 120
+                },
+                "code": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 16
+                },
+                "programs": {
+                  "type": "array",
+                  "maxItems": 20,
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "minLength": 2,
+                        "maxLength": 160
+                      },
+                      "level": {
+                        "type": "string",
+                        "enum": [
+                          "certificate",
+                          "diploma",
+                          "undergraduate",
+                          "postgraduate",
+                          "doctoral"
+                        ]
+                      },
+                      "durationYears": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "exclusiveMinimum": false,
+                        "maximum": 8,
+                        "exclusiveMaximum": false
+                      },
+                      "intake": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "exclusiveMinimum": false,
+                        "maximum": 10000,
+                        "exclusiveMaximum": false
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "level",
+                      "durationYears"
+                    ]
+                  },
+                  "default": []
+                }
+              },
+              "required": [
+                "name",
+                "code"
+              ]
+            }
+          },
+          "focusAreas": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "default": []
+          },
+          "labs": {
+            "type": "array",
+            "maxItems": 30,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "default": []
+          },
+          "emailDomains": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z0-9.-]+\\.[a-z]{2,}$"
+            },
+            "default": []
+          },
+          "accreditation": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "about": {
+            "type": "string",
+            "maxLength": 1200
+          },
+          "officialEmail": {
+            "type": "string",
+            "format": "email"
+          },
+          "officialPhone": {
+            "type": "string",
+            "pattern": "^\\+?[0-9]{8,15}$"
+          }
+        },
+        "required": [
+          "departments"
+        ]
+      },
       "PublishWeightsDto": {
         "type": "object",
         "properties": {
@@ -911,6 +2886,690 @@
         "required": [
           "departmentId",
           "reason"
+        ]
+      },
+      "UpdateProfileDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 160
+          },
+          "shortName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 80
+          },
+          "institutionType": {
+            "type": "string",
+            "enum": [
+              "university",
+              "college",
+              "polytechnic",
+              "iti",
+              "training_institute",
+              "other"
+            ]
+          },
+          "about": {
+            "oneOf": [
+              {
+                "type": "string",
+                "maxLength": 1200
+              },
+              {
+                "type": "string",
+                "enum": [
+                  ""
+                ]
+              }
+            ]
+          },
+          "accreditation": {
+            "oneOf": [
+              {
+                "type": "string",
+                "maxLength": 160
+              },
+              {
+                "type": "string",
+                "enum": [
+                  ""
+                ]
+              }
+            ]
+          },
+          "aisheCode": {
+            "oneOf": [
+              {
+                "type": "string",
+                "maxLength": 40
+              },
+              {
+                "type": "string",
+                "enum": [
+                  ""
+                ]
+              }
+            ]
+          },
+          "website": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 300
+              },
+              {
+                "type": "string",
+                "enum": [
+                  ""
+                ]
+              }
+            ]
+          },
+          "officialEmail": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "email"
+              },
+              {
+                "type": "string",
+                "enum": [
+                  ""
+                ]
+              }
+            ]
+          },
+          "officialPhone": {
+            "oneOf": [
+              {
+                "type": "string",
+                "pattern": "^\\+?[0-9]{8,15}$"
+              },
+              {
+                "type": "string",
+                "enum": [
+                  ""
+                ]
+              }
+            ]
+          },
+          "establishedYear": {
+            "type": "integer",
+            "minimum": 1800,
+            "exclusiveMinimum": false,
+            "maximum": 2026,
+            "exclusiveMaximum": false
+          },
+          "city": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 80
+          },
+          "state": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 80
+          },
+          "district": {
+            "oneOf": [
+              {
+                "type": "string",
+                "maxLength": 80
+              },
+              {
+                "type": "string",
+                "enum": [
+                  ""
+                ]
+              }
+            ]
+          },
+          "focusAreas": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            }
+          },
+          "labs": {
+            "type": "array",
+            "maxItems": 30,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          "emailDomains": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z0-9.-]+\\.[a-z]{2,}$"
+            }
+          }
+        },
+        "required": [
+          "about",
+          "accreditation",
+          "aisheCode",
+          "website",
+          "officialEmail",
+          "officialPhone",
+          "district"
+        ]
+      },
+      "DepartmentDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 160
+          },
+          "code": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16
+          },
+          "hodFacultyId": {
+            "type": "string",
+            "minLength": 1,
+            "nullable": true
+          },
+          "facultyStrength": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": false,
+            "maximum": 5000,
+            "exclusiveMaximum": false,
+            "nullable": true
+          }
+        },
+        "required": [
+          "name",
+          "code"
+        ]
+      },
+      "DepartmentPatchDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 160
+          },
+          "code": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16
+          },
+          "hodFacultyId": {
+            "type": "string",
+            "minLength": 1,
+            "nullable": true
+          },
+          "facultyStrength": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": false,
+            "maximum": 5000,
+            "exclusiveMaximum": false,
+            "nullable": true
+          }
+        }
+      },
+      "ProgramDto": {
+        "type": "object",
+        "properties": {
+          "departmentId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 160
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "certificate",
+              "diploma",
+              "undergraduate",
+              "postgraduate",
+              "doctoral"
+            ]
+          },
+          "durationYears": {
+            "type": "integer",
+            "minimum": 1,
+            "exclusiveMinimum": false,
+            "maximum": 8,
+            "exclusiveMaximum": false
+          },
+          "intake": {
+            "type": "integer",
+            "minimum": 1,
+            "exclusiveMinimum": false,
+            "maximum": 10000,
+            "exclusiveMaximum": false,
+            "nullable": true
+          },
+          "eligibility": {
+            "oneOf": [
+              {
+                "type": "string",
+                "maxLength": 400
+              },
+              {
+                "type": "string",
+                "enum": [
+                  ""
+                ]
+              }
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "paused",
+              "archived"
+            ]
+          }
+        },
+        "required": [
+          "departmentId",
+          "name",
+          "level",
+          "durationYears",
+          "eligibility"
+        ]
+      },
+      "ProgramPatchDto": {
+        "type": "object",
+        "properties": {
+          "departmentId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 160
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "certificate",
+              "diploma",
+              "undergraduate",
+              "postgraduate",
+              "doctoral"
+            ]
+          },
+          "durationYears": {
+            "type": "integer",
+            "minimum": 1,
+            "exclusiveMinimum": false,
+            "maximum": 8,
+            "exclusiveMaximum": false
+          },
+          "intake": {
+            "type": "integer",
+            "minimum": 1,
+            "exclusiveMinimum": false,
+            "maximum": 10000,
+            "exclusiveMaximum": false,
+            "nullable": true
+          },
+          "eligibility": {
+            "oneOf": [
+              {
+                "type": "string",
+                "maxLength": 400
+              },
+              {
+                "type": "string",
+                "enum": [
+                  ""
+                ]
+              }
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "paused",
+              "archived"
+            ]
+          }
+        }
+      },
+      "StudentPlacementDto": {
+        "type": "object",
+        "properties": {
+          "departmentId": {
+            "type": "string",
+            "minLength": 1,
+            "nullable": true
+          },
+          "programId": {
+            "type": "string",
+            "minLength": 1,
+            "nullable": true
+          },
+          "verified": {
+            "type": "boolean"
+          }
+        }
+      },
+      "FacultyCreateDto": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 160
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "designation": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "departmentId": {
+            "type": "string",
+            "minLength": 1,
+            "nullable": true
+          },
+          "expertise": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            },
+            "default": []
+          },
+          "officialPhone": {
+            "oneOf": [
+              {
+                "type": "string",
+                "pattern": "^\\+?[0-9]{8,15}$"
+              },
+              {
+                "type": "string",
+                "enum": [
+                  ""
+                ]
+              }
+            ]
+          },
+          "guideCapacity": {
+            "type": "integer",
+            "minimum": 1,
+            "exclusiveMinimum": false,
+            "maximum": 30,
+            "exclusiveMaximum": false,
+            "default": 4
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "fullName",
+          "email",
+          "designation",
+          "officialPhone",
+          "password"
+        ]
+      },
+      "FacultyPatchDto": {
+        "type": "object",
+        "properties": {
+          "designation": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "departmentId": {
+            "type": "string",
+            "minLength": 1,
+            "nullable": true
+          },
+          "expertise": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            }
+          },
+          "officialPhone": {
+            "oneOf": [
+              {
+                "type": "string",
+                "maxLength": 20
+              },
+              {
+                "type": "string",
+                "enum": [
+                  ""
+                ]
+              }
+            ]
+          },
+          "guideCapacity": {
+            "type": "integer",
+            "minimum": 1,
+            "exclusiveMinimum": false,
+            "maximum": 30,
+            "exclusiveMaximum": false
+          }
+        },
+        "required": [
+          "officialPhone"
+        ]
+      },
+      "TeamCreateDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 160
+          },
+          "title": {
+            "oneOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "string",
+                "enum": [
+                  ""
+                ]
+              }
+            ]
+          },
+          "departmentId": {
+            "type": "string",
+            "minLength": 1,
+            "nullable": true
+          },
+          "problemId": {
+            "type": "string",
+            "minLength": 1,
+            "nullable": true
+          },
+          "facultyId": {
+            "type": "string",
+            "minLength": 1,
+            "nullable": true
+          },
+          "memberIds": {
+            "type": "array",
+            "maxItems": 12,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "default": []
+          },
+          "skills": {
+            "type": "array",
+            "maxItems": 30,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            },
+            "default": []
+          }
+        },
+        "required": [
+          "name",
+          "title"
+        ]
+      },
+      "TeamPatchDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 160
+          },
+          "title": {
+            "oneOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "string",
+                "enum": [
+                  ""
+                ]
+              }
+            ]
+          },
+          "departmentId": {
+            "type": "string",
+            "minLength": 1,
+            "nullable": true
+          },
+          "problemId": {
+            "type": "string",
+            "minLength": 1,
+            "nullable": true
+          },
+          "skills": {
+            "type": "array",
+            "maxItems": 30,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            }
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "discovery",
+              "team_formed",
+              "funded",
+              "research",
+              "prototype",
+              "testing",
+              "pilot",
+              "deployment",
+              "impact"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "forming",
+              "active",
+              "submitted",
+              "completed",
+              "archived"
+            ]
+          }
+        },
+        "required": [
+          "title"
+        ]
+      },
+      "AssignGuideDto": {
+        "type": "object",
+        "properties": {
+          "facultyId": {
+            "type": "string",
+            "minLength": 1,
+            "nullable": true
+          }
+        },
+        "required": [
+          "facultyId"
+        ]
+      },
+      "AssignMembersDto": {
+        "type": "object",
+        "properties": {
+          "studentIds": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 12,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "required": [
+          "studentIds"
+        ]
+      },
+      "ReviewDto": {
+        "type": "object",
+        "properties": {
+          "note": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        }
+      },
+      "RequestChangesDto": {
+        "type": "object",
+        "properties": {
+          "note": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "note"
         ]
       }
     }
