@@ -80,3 +80,10 @@ server/.env.*
 android/key.properties
 *.jks
 *.keystore
+
+# Stray npm lockfile at the Flutter root — the real locks live in apps/web/ and backend/
+/package-lock.json
+
+# Local AI/editor agent config (not part of the project)
+.claude/
+CLAUDE.md

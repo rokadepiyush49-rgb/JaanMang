@@ -270,7 +270,7 @@ export default function VerdictPage() {
         </ul>
       </Card>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <section className="rounded-lg border border-impact bg-impact-wash/60 p-6">
           <h2 className="headline-lg flex items-center gap-2 text-impact-deep">
             <Icon name="thumbs-up" size={22} />

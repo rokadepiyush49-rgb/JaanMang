@@ -40,7 +40,7 @@ function Field({
 }
 
 const inputClass =
-  "w-full rounded-[0.5rem] border border-line bg-card px-4 py-3 text-sm text-ink placeholder:text-ink-faint focus:border-navy focus:border-2 focus:outline-none";
+  "w-full rounded-md border border-line bg-card px-4 py-3 text-sm text-ink placeholder:text-ink-faint focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none";
 
 export default function CouncilSetupPage() {
   const router = useRouter();
@@ -100,7 +100,7 @@ export default function CouncilSetupPage() {
         title={t.setupTitle}
       />
 
-      <div className="grid gap-6 xl:grid-cols-[1.5fr_1fr]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.5fr_1fr]">
         <div className="flex flex-col gap-6">
           <Card>
             <CardHeader
@@ -133,7 +133,7 @@ export default function CouncilSetupPage() {
                   rows={5}
                 />
               </Field>
-              <div className="grid gap-5 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                 <Field label={t.fieldDemographic}>
                   <input
                     className={inputClass}
@@ -185,7 +185,7 @@ export default function CouncilSetupPage() {
               title={t.documents}
             />
             <div className="mt-5 border-t border-line px-6 pt-5 pb-6">
-              <div className="flex flex-col items-center gap-2 rounded-md border border-dashed border-line-strong px-6 py-10 text-center">
+              <div className="flex flex-col items-center gap-2 rounded-lg bg-card-muted px-6 py-10 text-center">
                 <Icon className="text-ink-faint" name="upload" size={28} />
                 <p className="text-sm font-semibold text-ink">
                   {t.filePrompt}
@@ -199,7 +199,7 @@ export default function CouncilSetupPage() {
                 <ul className="mt-4 flex flex-col gap-2">
                   {files.map((file) => (
                     <li
-                      className="flex items-center gap-3 rounded-[0.5rem] border border-line px-4 py-3"
+                      className="flex items-center gap-3 rounded-md border border-line px-4 py-3"
                       key={file}
                     >
                       <Icon className="text-navy" name="paperclip" size={17} />

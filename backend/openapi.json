@@ -1,0 +1,918 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/v1/auth/otp/request": {
+      "post": {
+        "operationId": "AuthController_requestOtp_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OtpRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Send a login OTP to a phone number",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/otp/verify": {
+      "post": {
+        "operationId": "AuthController_verifyOtp_v1",
+        "parameters": [
+          {
+            "name": "user-agent",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OtpVerifyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Verify an OTP and sign in (creates a citizen account on first use)",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "operationId": "AuthController_login_v1",
+        "parameters": [
+          {
+            "name": "user-agent",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Sign in with email and password (staff)",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "operationId": "AuthController_refresh_v1",
+        "parameters": [
+          {
+            "name": "user-agent",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Exchange a refresh token for a new token pair (rotating)",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogoutDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "summary": "Revoke the current refresh token (or all sessions)",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/password/reset-request": {
+      "post": {
+        "operationId": "AuthController_requestPasswordReset_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordResetRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Request a password reset link",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/password/reset": {
+      "post": {
+        "operationId": "AuthController_resetPassword_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordResetDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Set a new password using a reset token",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "operationId": "AuthController_me_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The authenticated user, with roles, permissions and scopes",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/geography/jurisdictions": {
+      "get": {
+        "operationId": "GeographyController_jurisdictions_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The full administrative tree",
+        "tags": [
+          "geography"
+        ]
+      }
+    },
+    "/api/v1/geography/villages": {
+      "get": {
+        "operationId": "GeographyController_villages_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The village register with population and deprivation index",
+        "tags": [
+          "geography"
+        ]
+      }
+    },
+    "/api/v1/gov/departments": {
+      "get": {
+        "operationId": "GovReferenceController_departments_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Departments, their categories and budget position",
+        "tags": [
+          "gov"
+        ]
+      }
+    },
+    "/api/v1/gov/officers": {
+      "get": {
+        "operationId": "GovReferenceController_officers_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Delivery officers with rolling task load",
+        "tags": [
+          "gov"
+        ]
+      }
+    },
+    "/api/v1/gov/sponsors": {
+      "get": {
+        "operationId": "GovReferenceController_sponsors_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Industry sponsors and their CSR position",
+        "tags": [
+          "gov"
+        ]
+      }
+    },
+    "/api/v1/gov/automations": {
+      "get": {
+        "operationId": "GovReferenceController_automations_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The automation catalogue and its recent activity",
+        "tags": [
+          "gov"
+        ]
+      }
+    },
+    "/api/v1/gov/alerts": {
+      "get": {
+        "operationId": "GovReferenceController_alerts_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The signed-in officer’s workspace alerts",
+        "tags": [
+          "gov"
+        ]
+      }
+    },
+    "/api/v1/gov/users": {
+      "get": {
+        "operationId": "GovReferenceController_users_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Government users the caller may act as (dev \"view as\")",
+        "tags": [
+          "gov"
+        ]
+      }
+    },
+    "/api/v1/gov/reports": {
+      "get": {
+        "operationId": "GovReferenceController_reports_v1",
+        "parameters": [
+          {
+            "name": "problemId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Citizen reports, optionally filtered to one problem",
+        "tags": [
+          "gov"
+        ]
+      }
+    },
+    "/api/v1/gov/analytics/weekly-trend": {
+      "get": {
+        "operationId": "GovReferenceController_weeklyTrend_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Twelve weeks of intake vs resolution",
+        "tags": [
+          "gov"
+        ]
+      }
+    },
+    "/api/v1/problems": {
+      "get": {
+        "operationId": "ProblemsController_list_v1",
+        "parameters": [
+          {
+            "name": "filter[status]",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending_validation",
+                "awaiting_sponsorship",
+                "funding_required",
+                "in_progress",
+                "verification_pending",
+                "resolved",
+                "rejected"
+              ]
+            }
+          },
+          {
+            "name": "filter[category]",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "water",
+                "roads",
+                "drainage",
+                "streetlight",
+                "waste",
+                "bridge",
+                "sanitation",
+                "school",
+                "health"
+              ]
+            }
+          },
+          {
+            "name": "filter[departmentId]",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "weights",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "List problems in the caller’s jurisdiction, ranked",
+        "tags": [
+          "problems"
+        ]
+      }
+    },
+    "/api/v1/problems/priority": {
+      "get": {
+        "operationId": "ProblemsController_publishedWeights_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The published priority weighting for the caller’s jurisdiction",
+        "tags": [
+          "problems"
+        ]
+      }
+    },
+    "/api/v1/problems/priority/weights": {
+      "post": {
+        "operationId": "ProblemsController_publishWeights_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublishWeightsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Publish a new priority weighting",
+        "tags": [
+          "problems"
+        ]
+      }
+    },
+    "/api/v1/problems/{id}": {
+      "get": {
+        "operationId": "ProblemsController_get_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "One problem, with its full lifecycle detail",
+        "tags": [
+          "problems"
+        ]
+      }
+    },
+    "/api/v1/problems/{id}/reports": {
+      "get": {
+        "operationId": "ProblemsController_reports_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The individual citizen reports behind a problem",
+        "tags": [
+          "problems"
+        ]
+      }
+    },
+    "/api/v1/problems/{id}/audit": {
+      "get": {
+        "operationId": "ProblemsController_audit_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The audit trail for a problem",
+        "tags": [
+          "problems"
+        ]
+      }
+    },
+    "/api/v1/problems/{id}/validate": {
+      "post": {
+        "operationId": "ProblemsController_validate_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Validate a pending problem",
+        "tags": [
+          "problems"
+        ]
+      }
+    },
+    "/api/v1/problems/{id}/reject": {
+      "post": {
+        "operationId": "ProblemsController_reject_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectProblemDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Reject a problem with a reason",
+        "tags": [
+          "problems"
+        ]
+      }
+    },
+    "/api/v1/problems/{id}/route": {
+      "post": {
+        "operationId": "ProblemsController_route_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RouteProblemDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Override the department a problem is routed to",
+        "tags": [
+          "problems"
+        ]
+      }
+    },
+    "/healthz": {
+      "get": {
+        "operationId": "HealthController_liveness",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Liveness probe",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/readyz": {
+      "get": {
+        "operationId": "HealthController_readiness",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Readiness probe — verifies the database is reachable",
+        "tags": [
+          "health"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Jan Setu API",
+    "description": "Generated — do not edit by hand. Run `npm run openapi:gen`.",
+    "version": "1",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "access-token": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "OtpRequestDto": {
+        "type": "object",
+        "properties": {
+          "phone": {
+            "type": "string",
+            "pattern": "^\\+?[0-9]{8,15}$"
+          },
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "login",
+              "phone_verify"
+            ],
+            "default": "login"
+          }
+        },
+        "required": [
+          "phone"
+        ]
+      },
+      "OtpVerifyDto": {
+        "type": "object",
+        "properties": {
+          "phone": {
+            "type": "string",
+            "pattern": "^\\+?[0-9]{8,15}$"
+          },
+          "code": {
+            "type": "string",
+            "pattern": "^[0-9]{6}$"
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          }
+        },
+        "required": [
+          "phone",
+          "code"
+        ]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "RefreshDto": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "refreshToken"
+        ]
+      },
+      "LogoutDto": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "PasswordResetRequestDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "PasswordResetDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "minLength": 1
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "token",
+          "password"
+        ]
+      },
+      "PublishWeightsDto": {
+        "type": "object",
+        "properties": {
+          "weights": {
+            "type": "object",
+            "properties": {
+              "populationImpact": {
+                "type": "number",
+                "minimum": 0,
+                "exclusiveMinimum": false,
+                "maximum": 100,
+                "exclusiveMaximum": false
+              },
+              "severity": {
+                "type": "number",
+                "minimum": 0,
+                "exclusiveMinimum": false,
+                "maximum": 100,
+                "exclusiveMaximum": false
+              },
+              "deprivation": {
+                "type": "number",
+                "minimum": 0,
+                "exclusiveMinimum": false,
+                "maximum": 100,
+                "exclusiveMaximum": false
+              },
+              "coverage": {
+                "type": "number",
+                "minimum": 0,
+                "exclusiveMinimum": false,
+                "maximum": 100,
+                "exclusiveMaximum": false
+              },
+              "duration": {
+                "type": "number",
+                "minimum": 0,
+                "exclusiveMinimum": false,
+                "maximum": 100,
+                "exclusiveMaximum": false
+              },
+              "recurrence": {
+                "type": "number",
+                "minimum": 0,
+                "exclusiveMinimum": false,
+                "maximum": 100,
+                "exclusiveMaximum": false
+              },
+              "repeatedDemand": {
+                "type": "number",
+                "minimum": 0,
+                "exclusiveMinimum": false,
+                "maximum": 100,
+                "exclusiveMaximum": false
+              }
+            },
+            "required": [
+              "populationImpact",
+              "severity",
+              "deprivation",
+              "coverage",
+              "duration",
+              "recurrence",
+              "repeatedDemand"
+            ]
+          },
+          "jurisdictionId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "weights"
+        ]
+      },
+      "RejectProblemDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
+      "RouteProblemDto": {
+        "type": "object",
+        "properties": {
+          "departmentId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "departmentId",
+          "reason"
+        ]
+      }
+    }
+  }
+}

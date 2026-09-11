@@ -345,6 +345,47 @@ const P = {
       <path d="m16 9.5 5 5M21 9.5l-5 5" />
     </>
   ),
+  clock: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3.5 2" />
+    </>
+  ),
+  target: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <circle cx="12" cy="12" r="5" />
+      <circle cx="12" cy="12" r="1.4" />
+    </>
+  ),
+  bookmark: <path d="M6 4.5A1.5 1.5 0 0 1 7.5 3h9A1.5 1.5 0 0 1 18 4.5V21l-6-3.6L6 21Z" />,
+  "log-out": (
+    <>
+      <path d="M9 21H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3" />
+      <path d="M15.5 16.5 20 12l-4.5-4.5M20 12H9" />
+    </>
+  ),
+  mail: (
+    <>
+      <rect height="15" rx="2.5" width="19" x="2.5" y="4.5" />
+      <path d="m3.5 6.5 8.5 6 8.5-6" />
+    </>
+  ),
+  list: <path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01" />,
+  share: (
+    <>
+      <circle cx="18" cy="5.5" r="2.5" />
+      <circle cx="6" cy="12" r="2.5" />
+      <circle cx="18" cy="18.5" r="2.5" />
+      <path d="m8.2 10.8 7.6-4.1M8.2 13.2l7.6 4.1" />
+    </>
+  ),
+  flame: (
+    <>
+      <path d="M12 3s5 4.2 5 9a5 5 0 0 1-10 0c0-2 1-3.4 1.8-4.3.3 1.2 1 2 1.9 2.3C11.2 8.4 12 6 12 3Z" />
+      <path d="M12 21a7 7 0 0 0 7-7" />
+    </>
+  ),
 } satisfies Record<string, React.ReactNode>;
 
 export type IconName = keyof typeof P;

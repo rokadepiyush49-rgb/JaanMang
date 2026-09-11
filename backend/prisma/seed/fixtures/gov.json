@@ -1,0 +1,4087 @@
+{
+  "_generatedAt": "2026-09-08T08:20:46.576Z",
+  "_source": "apps/web/src/lib/gov/{mock-data,priority}.ts",
+  "defaultWeights": {
+    "populationImpact": 30,
+    "severity": 20,
+    "deprivation": 20,
+    "coverage": 10,
+    "duration": 10,
+    "recurrence": 5,
+    "repeatedDemand": 5
+  },
+  "jurisdictions": [
+    {
+      "id": "jh",
+      "level": "state",
+      "name": "Jharkhand",
+      "population": 38593948
+    },
+    {
+      "id": "jh-ran",
+      "level": "district",
+      "name": "Ranchi District",
+      "parentId": "jh",
+      "population": 2914253
+    },
+    {
+      "id": "jh-ran-blk",
+      "level": "block",
+      "name": "Ranchi Block",
+      "parentId": "jh-ran",
+      "population": 214600
+    },
+    {
+      "id": "gp-nagri",
+      "level": "panchayat",
+      "name": "Nagri Gram Panchayat",
+      "parentId": "jh-ran-blk",
+      "population": 28470
+    },
+    {
+      "id": "gp-pithoria",
+      "level": "panchayat",
+      "name": "Pithoria Gram Panchayat",
+      "parentId": "jh-ran-blk",
+      "population": 19230
+    },
+    {
+      "id": "gp-ormanjhi",
+      "level": "panchayat",
+      "name": "Ormanjhi Gram Panchayat",
+      "parentId": "jh-ran-blk",
+      "population": 24110
+    }
+  ],
+  "villages": [
+    {
+      "id": "v-nagri",
+      "name": "Nagri",
+      "jurisdictionId": "gp-nagri",
+      "population": 7420,
+      "deprivation": 0.54,
+      "lat": 23.3812,
+      "lng": 85.2536
+    },
+    {
+      "id": "v-hesag",
+      "name": "Hesag",
+      "jurisdictionId": "gp-nagri",
+      "population": 4180,
+      "deprivation": 0.71,
+      "lat": 23.3654,
+      "lng": 85.2381
+    },
+    {
+      "id": "v-chandaghasi",
+      "name": "Chandaghasi",
+      "jurisdictionId": "gp-nagri",
+      "population": 3260,
+      "deprivation": 0.78,
+      "lat": 23.3945,
+      "lng": 85.2702
+    },
+    {
+      "id": "v-tigra",
+      "name": "Tigra",
+      "jurisdictionId": "gp-nagri",
+      "population": 2890,
+      "deprivation": 0.82,
+      "lat": 23.4021,
+      "lng": 85.2298
+    },
+    {
+      "id": "v-booty",
+      "name": "Booty Basti",
+      "jurisdictionId": "gp-nagri",
+      "population": 5340,
+      "deprivation": 0.46,
+      "lat": 23.4108,
+      "lng": 85.3164
+    },
+    {
+      "id": "v-kanke",
+      "name": "Kanke Chowk",
+      "jurisdictionId": "gp-nagri",
+      "population": 5380,
+      "deprivation": 0.38,
+      "lat": 23.4271,
+      "lng": 85.3223
+    },
+    {
+      "id": "v-pithoria",
+      "name": "Pithoria",
+      "jurisdictionId": "gp-pithoria",
+      "population": 6120,
+      "deprivation": 0.66,
+      "lat": 23.4489,
+      "lng": 85.1876
+    },
+    {
+      "id": "v-ormanjhi",
+      "name": "Ormanjhi",
+      "jurisdictionId": "gp-ormanjhi",
+      "population": 8240,
+      "deprivation": 0.59,
+      "lat": 23.4712,
+      "lng": 85.4361
+    }
+  ],
+  "departments": [
+    {
+      "id": "dept-water",
+      "name": "Drinking Water & Sanitation Department",
+      "shortName": "Water & Sanitation",
+      "categories": [
+        "water",
+        "sanitation"
+      ],
+      "headOfficerId": "off-01",
+      "budgetAllocated": 9600000,
+      "budgetCommitted": 6820000,
+      "budgetSpent": 4310000,
+      "slaHours": 24
+    },
+    {
+      "id": "dept-pwd",
+      "name": "Rural Works Department",
+      "shortName": "Rural Works",
+      "categories": [
+        "roads",
+        "bridge"
+      ],
+      "headOfficerId": "off-02",
+      "budgetAllocated": 8400000,
+      "budgetCommitted": 5940000,
+      "budgetSpent": 3620000,
+      "slaHours": 72
+    },
+    {
+      "id": "dept-elec",
+      "name": "Electrical & Street Lighting",
+      "shortName": "Electrical",
+      "categories": [
+        "streetlight"
+      ],
+      "headOfficerId": "off-04",
+      "budgetAllocated": 2600000,
+      "budgetCommitted": 1480000,
+      "budgetSpent": 980000,
+      "slaHours": 48
+    },
+    {
+      "id": "dept-swm",
+      "name": "Solid Waste & Drainage",
+      "shortName": "Waste & Drainage",
+      "categories": [
+        "waste",
+        "drainage"
+      ],
+      "headOfficerId": "off-03",
+      "budgetAllocated": 2200000,
+      "budgetCommitted": 1360000,
+      "budgetSpent": 890000,
+      "slaHours": 36
+    },
+    {
+      "id": "dept-social",
+      "name": "Education & Health Infrastructure",
+      "shortName": "Education & Health",
+      "categories": [
+        "school",
+        "health"
+      ],
+      "headOfficerId": "off-05",
+      "budgetAllocated": 1200000,
+      "budgetCommitted": 640000,
+      "budgetSpent": 410000,
+      "slaHours": 72
+    }
+  ],
+  "officers": [
+    {
+      "id": "off-01",
+      "name": "Sunita Mahto",
+      "designation": "Junior Engineer, Water",
+      "departmentId": "dept-water",
+      "jurisdictionId": "gp-nagri",
+      "phone": "+91 94311 02218",
+      "activeTasks": 18,
+      "criticalTasks": 3,
+      "overdue": 2,
+      "completionRate": 88,
+      "avgResolutionDays": 6.4,
+      "capacity": 20
+    },
+    {
+      "id": "off-02",
+      "name": "Rakesh Oraon",
+      "designation": "Assistant Engineer, Rural Works",
+      "departmentId": "dept-pwd",
+      "jurisdictionId": "gp-nagri",
+      "phone": "+91 94311 44520",
+      "activeTasks": 11,
+      "criticalTasks": 2,
+      "overdue": 1,
+      "completionRate": 81,
+      "avgResolutionDays": 11.2,
+      "capacity": 18
+    },
+    {
+      "id": "off-03",
+      "name": "Anita Kujur",
+      "designation": "Sanitation Supervisor",
+      "departmentId": "dept-swm",
+      "jurisdictionId": "gp-nagri",
+      "phone": "+91 94311 77103",
+      "activeTasks": 6,
+      "criticalTasks": 0,
+      "overdue": 0,
+      "completionRate": 94,
+      "avgResolutionDays": 3.8,
+      "capacity": 16
+    },
+    {
+      "id": "off-04",
+      "name": "Mohammad Irfan",
+      "designation": "Line Inspector, Electrical",
+      "departmentId": "dept-elec",
+      "jurisdictionId": "gp-nagri",
+      "phone": "+91 94311 65042",
+      "activeTasks": 9,
+      "criticalTasks": 1,
+      "overdue": 3,
+      "completionRate": 72,
+      "avgResolutionDays": 8.9,
+      "capacity": 14
+    },
+    {
+      "id": "off-05",
+      "name": "Priya Bhengra",
+      "designation": "Block Education Coordinator",
+      "departmentId": "dept-social",
+      "jurisdictionId": "gp-nagri",
+      "phone": "+91 94311 39887",
+      "activeTasks": 4,
+      "criticalTasks": 1,
+      "overdue": 0,
+      "completionRate": 91,
+      "avgResolutionDays": 9.5,
+      "capacity": 12
+    }
+  ],
+  "govUsers": [
+    {
+      "id": "user-gp",
+      "name": "Shri Devendra Munda",
+      "designation": "Panchayat Secretary, Nagri",
+      "level": "panchayat",
+      "jurisdictionId": "gp-nagri",
+      "permissions": [
+        "problem.validate",
+        "problem.route",
+        "sponsorship.invite",
+        "officer.assign",
+        "project.update"
+      ]
+    },
+    {
+      "id": "user-block",
+      "name": "Smt. Rekha Toppo",
+      "designation": "Block Development Officer, Ranchi",
+      "level": "block",
+      "jurisdictionId": "jh-ran-blk",
+      "permissions": [
+        "problem.validate",
+        "problem.route",
+        "sponsorship.invite",
+        "sponsorship.approve",
+        "funding.approve",
+        "officer.assign",
+        "project.update"
+      ]
+    },
+    {
+      "id": "user-district",
+      "name": "Shri Rajesh Sharma, IAS",
+      "designation": "Deputy Commissioner, Ranchi",
+      "level": "district",
+      "jurisdictionId": "jh-ran",
+      "permissions": [
+        "problem.validate",
+        "problem.route",
+        "sponsorship.invite",
+        "sponsorship.approve",
+        "funding.approve",
+        "officer.assign",
+        "project.update",
+        "settings.manage"
+      ]
+    }
+  ],
+  "sponsors": [
+    {
+      "id": "sp-tata",
+      "name": "Tata Steel Foundation",
+      "sector": "Metals & Mining",
+      "csrThemes": [
+        "Rural Development",
+        "Drinking Water",
+        "Health"
+      ],
+      "csrGeographies": [
+        "Jharkhand",
+        "Odisha"
+      ],
+      "csrBudgetRemaining": 41200000,
+      "responseRate": 78
+    },
+    {
+      "id": "sp-jindal",
+      "name": "Jindal Rural Infra Trust",
+      "sector": "Steel",
+      "csrThemes": [
+        "Water Infrastructure",
+        "Roads"
+      ],
+      "csrGeographies": [
+        "Jharkhand",
+        "Chhattisgarh"
+      ],
+      "csrBudgetRemaining": 18600000,
+      "responseRate": 54
+    },
+    {
+      "id": "sp-hindalco",
+      "name": "Hindalco Community Trust",
+      "sector": "Aluminium",
+      "csrThemes": [
+        "Sanitation",
+        "Education"
+      ],
+      "csrGeographies": [
+        "Jharkhand"
+      ],
+      "csrBudgetRemaining": 9400000,
+      "responseRate": 61
+    },
+    {
+      "id": "sp-cclmine",
+      "name": "Central Coalfields CSR Cell",
+      "sector": "Coal",
+      "csrThemes": [
+        "Roads",
+        "Rural Development",
+        "Lighting"
+      ],
+      "csrGeographies": [
+        "Jharkhand"
+      ],
+      "csrBudgetRemaining": 26800000,
+      "responseRate": 43
+    },
+    {
+      "id": "sp-usha",
+      "name": "Usha Martin Foundation",
+      "sector": "Wire Ropes",
+      "csrThemes": [
+        "Education",
+        "Health",
+        "Lighting"
+      ],
+      "csrGeographies": [
+        "Jharkhand",
+        "West Bengal"
+      ],
+      "csrBudgetRemaining": 7200000,
+      "responseRate": 69
+    }
+  ],
+  "problems": [
+    {
+      "id": "P-1042",
+      "title": "Water supply interruption across three villages",
+      "category": "water",
+      "status": "awaiting_sponsorship",
+      "severity": "critical",
+      "stage": "sponsorship",
+      "jurisdictionId": "gp-nagri",
+      "villageIds": [
+        "v-nagri",
+        "v-hesag",
+        "v-chandaghasi"
+      ],
+      "reportCount": 43,
+      "duplicateCount": 11,
+      "affected": 4281,
+      "createdAt": "2026-09-05T08:20:46.571Z",
+      "updatedAt": "2026-09-08T06:20:46.571Z",
+      "slaDueAt": "2026-09-08T20:20:46.571Z",
+      "factors": {
+        "populationImpact": 96,
+        "severity": 95,
+        "deprivation": 88,
+        "coverage": 82,
+        "duration": 64,
+        "recurrence": 70,
+        "repeatedDemand": 79
+      },
+      "adjustments": [
+        {
+          "label": "Under-reporting correction",
+          "points": 3,
+          "reason": "Tigra and Chandaghasi file 0.4× the block's average reports per capita; volume is scaled to the village's historic rate."
+        },
+        {
+          "label": "Seasonal relevance",
+          "points": 2,
+          "reason": "Pre-monsoon: groundwater in this belt is at its annual low, so an outage escalates faster."
+        }
+      ],
+      "estimatedCost": 620000,
+      "departmentId": "dept-water",
+      "ai": {
+        "category": "water",
+        "categoryConfidence": 92,
+        "severity": "critical",
+        "durationDays": 3,
+        "affected": 4281,
+        "similarReports": 40,
+        "clusterLabel": "Water Supply — Nagri / Hesag / Chandaghasi",
+        "originalQuote": "Hamare gaon mein 3 din se paani nahi aa raha. Handpump bhi sookh gaya hai.",
+        "originalLanguage": "Hindi",
+        "interpretation": [
+          {
+            "label": "Problem",
+            "value": "Piped water supply interruption"
+          },
+          {
+            "label": "Duration",
+            "value": "3 days, continuous"
+          },
+          {
+            "label": "Location",
+            "value": "Nagri, Hesag, Chandaghasi"
+          },
+          {
+            "label": "Secondary failure",
+            "value": "Handpump fallback also dry"
+          },
+          {
+            "label": "Severity",
+            "value": "Critical — no alternate source"
+          }
+        ],
+        "routedDepartmentId": "dept-water",
+        "routingReason": "Category water + Nagri GP jurisdiction → Drinking Water & Sanitation"
+      },
+      "sponsorship": {
+        "status": "invited",
+        "eligible": true,
+        "invitedAt": "2026-09-07T06:20:46.571Z",
+        "responseDueAt": "2026-09-09T04:20:46.571Z",
+        "matches": [
+          {
+            "sponsorId": "sp-tata",
+            "score": 92,
+            "status": "interested",
+            "respondedAt": "2026-09-08T02:20:46.571Z",
+            "reasons": [
+              "CSR theme: Drinking Water",
+              "Geography: Jharkhand",
+              "₹4.1 Cr CSR budget unspent this FY",
+              "78% historic response rate"
+            ],
+            "note": "Requests a site visit before committing."
+          },
+          {
+            "sponsorId": "sp-jindal",
+            "score": 81,
+            "status": "invited",
+            "reasons": [
+              "CSR theme: Water Infrastructure",
+              "Geography: Jharkhand",
+              "Funded a comparable ₹8L borewell scheme in Ormanjhi"
+            ]
+          },
+          {
+            "sponsorId": "sp-hindalco",
+            "score": 64,
+            "status": "declined",
+            "respondedAt": "2026-09-07T18:20:46.571Z",
+            "reasons": [
+              "Geography: Jharkhand",
+              "Theme partially aligned (Sanitation)"
+            ],
+            "note": "FY allocation already committed to school sanitation."
+          }
+        ]
+      },
+      "funding": {
+        "status": "pending",
+        "required": 620000,
+        "departmentBudgetAvailable": 840000,
+        "fundable": true,
+        "source": "15th Finance Commission — Tied Grant (Water)"
+      },
+      "evidence": {
+        "before": {
+          "photos": 12,
+          "activeReports": 43,
+          "note": "Dry overhead tank at Nagri; pump house valve seized."
+        }
+      },
+      "verification": {
+        "asked": 0,
+        "confirmed": 0,
+        "denied": 0,
+        "pending": 0
+      },
+      "audit": [
+        {
+          "id": "a1",
+          "at": "2026-09-05T08:20:46.571Z",
+          "actor": "Citizen",
+          "actorName": "Ramesh Munda",
+          "action": "Problem reported by voice",
+          "detail": "First of 43 reports, Hindi voice note",
+          "automated": false
+        },
+        {
+          "id": "a2",
+          "at": "2026-09-05T08:20:46.571Z",
+          "actor": "AI",
+          "action": "Classified as Water Supply",
+          "detail": "92% confidence · severity critical",
+          "automated": true
+        },
+        {
+          "id": "a3",
+          "at": "2026-09-05T08:20:46.571Z",
+          "actor": "AI",
+          "action": "Clustered 40 similar reports",
+          "detail": "11 exact duplicates folded in",
+          "automated": true
+        },
+        {
+          "id": "a4",
+          "at": "2026-09-06T08:20:46.571Z",
+          "actor": "System",
+          "action": "Priority recalculated 82 → 94",
+          "detail": "18 new reports from Chandaghasi + deprivation weighting",
+          "automated": true
+        },
+        {
+          "id": "a5",
+          "at": "2026-09-06T08:20:46.571Z",
+          "actor": "System",
+          "action": "Routed to Drinking Water & Sanitation",
+          "detail": "Category + jurisdiction rule",
+          "automated": true
+        },
+        {
+          "id": "a6",
+          "at": "2026-09-06T08:20:46.571Z",
+          "actor": "Officer",
+          "actorName": "Devendra Munda",
+          "action": "Validated problem",
+          "automated": false
+        },
+        {
+          "id": "a7",
+          "at": "2026-09-07T06:20:46.571Z",
+          "actor": "System",
+          "action": "Sponsorship invitations sent to 3 industries",
+          "detail": "Match score ≥ 60%",
+          "automated": true
+        },
+        {
+          "id": "a8",
+          "at": "2026-09-07T18:20:46.571Z",
+          "actor": "Industry",
+          "actorName": "Hindalco Community Trust",
+          "action": "Declined sponsorship",
+          "detail": "FY allocation committed elsewhere",
+          "automated": false
+        },
+        {
+          "id": "a9",
+          "at": "2026-09-08T02:20:46.571Z",
+          "actor": "Industry",
+          "actorName": "Tata Steel Foundation",
+          "action": "Marked interested",
+          "detail": "Site visit requested",
+          "automated": false
+        }
+      ],
+      "assignedOfficerId": "off-01"
+    },
+    {
+      "id": "P-1038",
+      "title": "Pithoria approach road washed out over 1.4 km",
+      "category": "roads",
+      "status": "funding_required",
+      "severity": "high",
+      "stage": "funded",
+      "jurisdictionId": "gp-pithoria",
+      "villageIds": [
+        "v-pithoria"
+      ],
+      "reportCount": 122,
+      "duplicateCount": 38,
+      "affected": 1800,
+      "createdAt": "2026-08-28T08:20:46.571Z",
+      "updatedAt": "2026-09-08T05:20:46.571Z",
+      "slaDueAt": "2026-09-10T00:20:46.571Z",
+      "factors": {
+        "populationImpact": 62,
+        "severity": 84,
+        "deprivation": 74,
+        "coverage": 44,
+        "duration": 88,
+        "recurrence": 82,
+        "repeatedDemand": 96
+      },
+      "adjustments": [
+        {
+          "label": "Recurrence penalty on prior works",
+          "points": 4,
+          "reason": "Third washout at the same chainage in 24 months — the previous repair did not hold, so the fix must be re-specified."
+        }
+      ],
+      "estimatedCost": 1450000,
+      "departmentId": "dept-pwd",
+      "ai": {
+        "category": "roads",
+        "categoryConfidence": 96,
+        "severity": "high",
+        "durationDays": 11,
+        "affected": 1800,
+        "similarReports": 118,
+        "clusterLabel": "Road Damage — Pithoria approach",
+        "originalQuote": "Sadak poori tarah toot gayi hai, ambulance gaon tak nahi aa paati.",
+        "originalLanguage": "Hindi",
+        "interpretation": [
+          {
+            "label": "Problem",
+            "value": "Road surface failure, 1.4 km stretch"
+          },
+          {
+            "label": "Consequence",
+            "value": "Ambulance and school bus access lost"
+          },
+          {
+            "label": "Duration",
+            "value": "11 days"
+          },
+          {
+            "label": "Severity",
+            "value": "High — emergency access blocked"
+          }
+        ],
+        "routedDepartmentId": "dept-pwd",
+        "routingReason": "Category roads + Pithoria GP → Rural Works Department"
+      },
+      "sponsorship": {
+        "status": "declined",
+        "eligible": true,
+        "invitedAt": "2026-09-02T08:20:46.571Z",
+        "responseDueAt": "2026-09-07T02:20:46.571Z",
+        "failureReason": "No eligible sponsor responded within the 96-hour industry SLA.",
+        "matches": [
+          {
+            "sponsorId": "sp-cclmine",
+            "score": 74,
+            "status": "declined",
+            "respondedAt": "2026-09-06T08:20:46.571Z",
+            "reasons": [
+              "CSR theme: Roads",
+              "Geography: Jharkhand"
+            ],
+            "note": "Outside their operational-area radius."
+          },
+          {
+            "sponsorId": "sp-jindal",
+            "score": 68,
+            "status": "declined",
+            "respondedAt": "2026-09-05T08:20:46.571Z",
+            "reasons": [
+              "CSR theme: Roads"
+            ],
+            "note": "No response within SLA; auto-marked declined."
+          }
+        ]
+      },
+      "funding": {
+        "status": "recommended",
+        "required": 1450000,
+        "departmentBudgetAvailable": 2460000,
+        "fundable": true,
+        "source": "PMGSY Maintenance Head + 15th FC Untied",
+        "note": "Fallback triggered automatically when the industry SLA expired."
+      },
+      "evidence": {
+        "before": {
+          "photos": 26,
+          "activeReports": 122,
+          "note": "Full-width scour at ch. 0.8 km; culvert apron gone."
+        }
+      },
+      "verification": {
+        "asked": 0,
+        "confirmed": 0,
+        "denied": 0,
+        "pending": 0
+      },
+      "audit": [
+        {
+          "id": "b1",
+          "at": "2026-08-28T08:20:46.571Z",
+          "actor": "Citizen",
+          "actorName": "Sarita Devi",
+          "action": "Problem reported with photos",
+          "automated": false
+        },
+        {
+          "id": "b2",
+          "at": "2026-08-28T08:20:46.571Z",
+          "actor": "AI",
+          "action": "Classified as Road Damage",
+          "detail": "96% confidence",
+          "automated": true
+        },
+        {
+          "id": "b3",
+          "at": "2026-08-29T08:20:46.571Z",
+          "actor": "AI",
+          "action": "Clustered 118 reports, 38 duplicates",
+          "automated": true
+        },
+        {
+          "id": "b4",
+          "at": "2026-08-30T08:20:46.571Z",
+          "actor": "Officer",
+          "actorName": "Rekha Toppo",
+          "action": "Validated problem",
+          "automated": false
+        },
+        {
+          "id": "b5",
+          "at": "2026-09-02T08:20:46.571Z",
+          "actor": "System",
+          "action": "Sponsorship invitations sent to 2 industries",
+          "automated": true
+        },
+        {
+          "id": "b6",
+          "at": "2026-09-05T08:20:46.571Z",
+          "actor": "Industry",
+          "actorName": "Jindal Rural Infra Trust",
+          "action": "No response — auto-declined at SLA",
+          "automated": true
+        },
+        {
+          "id": "b7",
+          "at": "2026-09-06T08:20:46.571Z",
+          "actor": "Industry",
+          "actorName": "Central Coalfields CSR Cell",
+          "action": "Declined sponsorship",
+          "detail": "Outside operational-area radius",
+          "automated": false
+        },
+        {
+          "id": "b8",
+          "at": "2026-09-07T02:20:46.571Z",
+          "actor": "System",
+          "action": "Industry sponsorship marked failed",
+          "detail": "96-hour SLA expired with no acceptance",
+          "automated": true
+        },
+        {
+          "id": "b9",
+          "at": "2026-09-07T02:20:46.571Z",
+          "actor": "System",
+          "action": "Government funding workflow triggered",
+          "detail": "₹14.5 L required · ₹24.6 L available in Rural Works",
+          "automated": true
+        }
+      ],
+      "assignedOfficerId": "off-02"
+    },
+    {
+      "id": "P-1051",
+      "title": "Street lighting failure along Booty Basti main road",
+      "category": "streetlight",
+      "status": "awaiting_sponsorship",
+      "severity": "medium",
+      "stage": "prioritised",
+      "jurisdictionId": "gp-nagri",
+      "villageIds": [
+        "v-booty"
+      ],
+      "reportCount": 87,
+      "duplicateCount": 24,
+      "affected": 2100,
+      "createdAt": "2026-09-02T08:20:46.571Z",
+      "updatedAt": "2026-09-07T23:20:46.571Z",
+      "slaDueAt": "2026-09-09T14:20:46.571Z",
+      "factors": {
+        "populationImpact": 58,
+        "severity": 62,
+        "deprivation": 41,
+        "coverage": 34,
+        "duration": 72,
+        "recurrence": 58,
+        "repeatedDemand": 91
+      },
+      "adjustments": [
+        {
+          "label": "Safety signal",
+          "points": 3,
+          "reason": "Two reports cite night-time harassment on the unlit stretch; women's safety escalates severity beyond the category default."
+        }
+      ],
+      "estimatedCost": 340000,
+      "departmentId": "dept-elec",
+      "ai": {
+        "category": "streetlight",
+        "categoryConfidence": 94,
+        "severity": "medium",
+        "durationDays": 6,
+        "affected": 2100,
+        "similarReports": 84,
+        "clusterLabel": "Street Lighting — Booty Basti",
+        "originalQuote": "Poore road par ek bhi light nahi jal rahi, raat mein ladkiyon ko darr lagta hai.",
+        "originalLanguage": "Hindi",
+        "interpretation": [
+          {
+            "label": "Problem",
+            "value": "Street light circuit failure, ~1.1 km"
+          },
+          {
+            "label": "Consequence",
+            "value": "Night-time safety risk reported"
+          },
+          {
+            "label": "Duration",
+            "value": "6 days"
+          }
+        ],
+        "routedDepartmentId": "dept-elec",
+        "routingReason": "Category streetlight → Electrical & Street Lighting"
+      },
+      "sponsorship": {
+        "status": "awaiting",
+        "eligible": true,
+        "matches": [
+          {
+            "sponsorId": "sp-usha",
+            "score": 88,
+            "status": "matched",
+            "reasons": [
+              "CSR theme: Lighting",
+              "Geography: Jharkhand",
+              "Funded 340 solar poles in Ranchi block last FY"
+            ]
+          },
+          {
+            "sponsorId": "sp-cclmine",
+            "score": 71,
+            "status": "matched",
+            "reasons": [
+              "CSR theme: Lighting",
+              "Geography: Jharkhand"
+            ]
+          }
+        ]
+      },
+      "funding": {
+        "status": "not_required",
+        "required": 340000,
+        "departmentBudgetAvailable": 1120000,
+        "fundable": true
+      },
+      "evidence": {
+        "before": {
+          "photos": 8,
+          "activeReports": 87,
+          "note": "Feeder pillar burnt out near Booty More."
+        }
+      },
+      "verification": {
+        "asked": 0,
+        "confirmed": 0,
+        "denied": 0,
+        "pending": 0
+      },
+      "audit": [
+        {
+          "id": "c1",
+          "at": "2026-09-02T08:20:46.571Z",
+          "actor": "Citizen",
+          "actorName": "Neha Kumari",
+          "action": "Problem reported by voice",
+          "automated": false
+        },
+        {
+          "id": "c2",
+          "at": "2026-09-02T08:20:46.571Z",
+          "actor": "AI",
+          "action": "Classified as Street Lighting",
+          "detail": "94% confidence",
+          "automated": true
+        },
+        {
+          "id": "c3",
+          "at": "2026-09-03T08:20:46.571Z",
+          "actor": "AI",
+          "action": "Clustered 84 reports, 24 duplicates",
+          "automated": true
+        },
+        {
+          "id": "c4",
+          "at": "2026-09-07T08:20:46.571Z",
+          "actor": "System",
+          "action": "Sponsorship eligibility confirmed",
+          "detail": "2 industry matches ≥ 70%",
+          "automated": true
+        }
+      ]
+    },
+    {
+      "id": "P-1012",
+      "title": "Kanchi stream bridge deck cracked, load restricted",
+      "category": "bridge",
+      "status": "in_progress",
+      "severity": "critical",
+      "stage": "implementation",
+      "jurisdictionId": "gp-nagri",
+      "villageIds": [
+        "v-tigra",
+        "v-chandaghasi"
+      ],
+      "reportCount": 18,
+      "duplicateCount": 3,
+      "affected": 3400,
+      "createdAt": "2026-08-01T08:20:46.571Z",
+      "updatedAt": "2026-09-07T12:20:46.571Z",
+      "slaDueAt": "2026-09-12T08:20:46.571Z",
+      "factors": {
+        "populationImpact": 86,
+        "severity": 92,
+        "deprivation": 84,
+        "coverage": 58,
+        "duration": 94,
+        "recurrence": 30,
+        "repeatedDemand": 34
+      },
+      "adjustments": [
+        {
+          "label": "Under-reporting correction",
+          "points": 5,
+          "reason": "Tigra reports at 0.3× the block rate; 18 reports here indicate demand comparable to ~60 in a high-reporting village."
+        }
+      ],
+      "estimatedCost": 2840000,
+      "departmentId": "dept-pwd",
+      "ai": {
+        "category": "bridge",
+        "categoryConfidence": 89,
+        "severity": "critical",
+        "durationDays": 38,
+        "affected": 3400,
+        "similarReports": 15,
+        "clusterLabel": "Bridge Damage — Kanchi stream crossing",
+        "originalQuote": "Pul mein badi darar aa gayi hai, bhaari gaadi nikalne par hilta hai.",
+        "originalLanguage": "Hindi",
+        "interpretation": [
+          {
+            "label": "Problem",
+            "value": "Structural cracking in bridge deck"
+          },
+          {
+            "label": "Observation",
+            "value": "Visible movement under heavy vehicles"
+          },
+          {
+            "label": "Severity",
+            "value": "Critical — structural"
+          }
+        ],
+        "routedDepartmentId": "dept-pwd",
+        "routingReason": "Category bridge → Rural Works Department"
+      },
+      "sponsorship": {
+        "status": "declined",
+        "eligible": true,
+        "failureReason": "Cost exceeded the CSR ceiling of all matched sponsors.",
+        "matches": [
+          {
+            "sponsorId": "sp-cclmine",
+            "score": 58,
+            "status": "declined",
+            "respondedAt": "2026-08-15T08:20:46.571Z",
+            "reasons": [
+              "Geography: Jharkhand"
+            ],
+            "note": "Above per-project CSR ceiling."
+          }
+        ]
+      },
+      "funding": {
+        "status": "approved",
+        "required": 2840000,
+        "departmentBudgetAvailable": 2460000,
+        "fundable": true,
+        "source": "State Bridge Renewal Fund",
+        "approvedAt": "2026-08-17T08:20:46.571Z",
+        "approvedBy": "Shri Rajesh Sharma, IAS"
+      },
+      "evidence": {
+        "before": {
+          "photos": 14,
+          "activeReports": 18,
+          "note": "12 mm crack across the deck soffit at pier 2."
+        }
+      },
+      "verification": {
+        "asked": 0,
+        "confirmed": 0,
+        "denied": 0,
+        "pending": 0
+      },
+      "audit": [
+        {
+          "id": "e1",
+          "at": "2026-08-01T08:20:46.571Z",
+          "actor": "Citizen",
+          "actorName": "Birsa Oraon",
+          "action": "Problem reported with photos",
+          "automated": false
+        },
+        {
+          "id": "e2",
+          "at": "2026-08-01T08:20:46.571Z",
+          "actor": "AI",
+          "action": "Classified as Bridge Damage",
+          "detail": "89% confidence · flagged structural",
+          "automated": true
+        },
+        {
+          "id": "e3",
+          "at": "2026-08-02T08:20:46.571Z",
+          "actor": "System",
+          "action": "Escalated to district — structural risk rule",
+          "automated": true
+        },
+        {
+          "id": "e4",
+          "at": "2026-08-15T08:20:46.571Z",
+          "actor": "Industry",
+          "actorName": "Central Coalfields CSR Cell",
+          "action": "Declined sponsorship",
+          "automated": false
+        },
+        {
+          "id": "e5",
+          "at": "2026-08-16T08:20:46.571Z",
+          "actor": "System",
+          "action": "Government funding workflow triggered",
+          "automated": true
+        },
+        {
+          "id": "e6",
+          "at": "2026-08-17T08:20:46.571Z",
+          "actor": "Officer",
+          "actorName": "Rajesh Sharma",
+          "action": "Approved ₹28.4 L from State Bridge Renewal Fund",
+          "automated": false
+        },
+        {
+          "id": "e7",
+          "at": "2026-08-19T08:20:46.571Z",
+          "actor": "Officer",
+          "actorName": "Rekha Toppo",
+          "action": "Assigned to Rakesh Oraon · work order issued",
+          "automated": false
+        },
+        {
+          "id": "e8",
+          "at": "2026-09-07T12:20:46.571Z",
+          "actor": "Officer",
+          "actorName": "Rakesh Oraon",
+          "action": "Progress updated to 46%",
+          "detail": "Deck demolition complete",
+          "automated": false
+        }
+      ],
+      "assignedOfficerId": "off-02",
+      "project": {
+        "id": "PRJ-204",
+        "contractor": "Sahay Infrastructure Pvt Ltd",
+        "officerId": "off-02",
+        "phase": "implementation",
+        "progress": 46,
+        "budget": 2840000,
+        "spent": 1290000,
+        "startedAt": "2026-08-19T08:20:46.571Z",
+        "dueAt": "2026-10-24T08:20:46.571Z",
+        "dayOfPlan": 20,
+        "planDays": 66,
+        "milestones": [
+          {
+            "label": "Structural survey",
+            "done": true,
+            "at": "2026-08-20T08:20:46.571Z"
+          },
+          {
+            "label": "Load restriction & diversion",
+            "done": true,
+            "at": "2026-08-21T08:20:46.571Z"
+          },
+          {
+            "label": "Deck demolition",
+            "done": true,
+            "at": "2026-08-31T08:20:46.571Z"
+          },
+          {
+            "label": "Girder replacement",
+            "done": false
+          },
+          {
+            "label": "Re-decking & railing",
+            "done": false
+          },
+          {
+            "label": "Load test & handover",
+            "done": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "P-1008",
+      "title": "Chandaghasi Middle School roof leaking into classrooms",
+      "category": "school",
+      "status": "in_progress",
+      "severity": "high",
+      "stage": "implementation",
+      "jurisdictionId": "gp-nagri",
+      "villageIds": [
+        "v-chandaghasi"
+      ],
+      "reportCount": 29,
+      "duplicateCount": 6,
+      "affected": 480,
+      "createdAt": "2026-08-10T08:20:46.571Z",
+      "updatedAt": "2026-09-07T08:20:46.571Z",
+      "slaDueAt": "2026-09-26T08:20:46.571Z",
+      "factors": {
+        "populationImpact": 44,
+        "severity": 78,
+        "deprivation": 86,
+        "coverage": 22,
+        "duration": 80,
+        "recurrence": 40,
+        "repeatedDemand": 52
+      },
+      "adjustments": [
+        {
+          "label": "Child-safety weighting",
+          "points": 4,
+          "reason": "Affected population is entirely children in a government school; state policy weights child safety above raw headcount."
+        }
+      ],
+      "estimatedCost": 480000,
+      "departmentId": "dept-social",
+      "ai": {
+        "category": "school",
+        "categoryConfidence": 93,
+        "severity": "high",
+        "durationDays": 29,
+        "affected": 480,
+        "similarReports": 26,
+        "clusterLabel": "School Infrastructure — Chandaghasi",
+        "originalQuote": "Barish mein class room mein paani tapakta hai, bachche baithe nahi paate.",
+        "originalLanguage": "Hindi",
+        "interpretation": [
+          {
+            "label": "Problem",
+            "value": "Roof leakage in 3 classrooms"
+          },
+          {
+            "label": "Consequence",
+            "value": "Classes suspended on rain days"
+          },
+          {
+            "label": "Affected",
+            "value": "480 enrolled children"
+          }
+        ],
+        "routedDepartmentId": "dept-social",
+        "routingReason": "Category school → Education & Health Infrastructure"
+      },
+      "sponsorship": {
+        "status": "approved",
+        "eligible": true,
+        "invitedAt": "2026-08-15T08:20:46.571Z",
+        "approvedSponsorId": "sp-hindalco",
+        "approvedAmount": 480000,
+        "matches": [
+          {
+            "sponsorId": "sp-hindalco",
+            "score": 94,
+            "status": "approved",
+            "respondedAt": "2026-08-18T08:20:46.571Z",
+            "proposalAmount": 480000,
+            "reasons": [
+              "CSR theme: Education",
+              "Geography: Jharkhand",
+              "Adopted 6 schools in Ranchi block"
+            ]
+          },
+          {
+            "sponsorId": "sp-usha",
+            "score": 77,
+            "status": "declined",
+            "respondedAt": "2026-08-17T08:20:46.571Z",
+            "reasons": [
+              "CSR theme: Education"
+            ]
+          }
+        ]
+      },
+      "funding": {
+        "status": "not_required",
+        "required": 0,
+        "departmentBudgetAvailable": 560000,
+        "fundable": true,
+        "note": "Fully sponsored by Hindalco Community Trust."
+      },
+      "evidence": {
+        "before": {
+          "photos": 9,
+          "activeReports": 29,
+          "note": "Water ingress over 3 classrooms; ceiling plaster fallen."
+        }
+      },
+      "verification": {
+        "asked": 0,
+        "confirmed": 0,
+        "denied": 0,
+        "pending": 0
+      },
+      "audit": [
+        {
+          "id": "f1",
+          "at": "2026-08-10T08:20:46.571Z",
+          "actor": "Citizen",
+          "actorName": "Sunil Tirkey",
+          "action": "Problem reported by teacher",
+          "automated": false
+        },
+        {
+          "id": "f2",
+          "at": "2026-08-10T08:20:46.571Z",
+          "actor": "AI",
+          "action": "Classified as School Infrastructure",
+          "detail": "93% confidence",
+          "automated": true
+        },
+        {
+          "id": "f3",
+          "at": "2026-08-14T08:20:46.571Z",
+          "actor": "Officer",
+          "actorName": "Devendra Munda",
+          "action": "Validated problem",
+          "automated": false
+        },
+        {
+          "id": "f4",
+          "at": "2026-08-15T08:20:46.571Z",
+          "actor": "System",
+          "action": "Sponsorship invitations sent to 2 industries",
+          "automated": true
+        },
+        {
+          "id": "f5",
+          "at": "2026-08-18T08:20:46.571Z",
+          "actor": "Industry",
+          "actorName": "Hindalco Community Trust",
+          "action": "Proposal received — ₹4.8 L full cost",
+          "automated": false
+        },
+        {
+          "id": "f6",
+          "at": "2026-08-19T08:20:46.571Z",
+          "actor": "Officer",
+          "actorName": "Rekha Toppo",
+          "action": "Accepted sponsorship",
+          "automated": false
+        },
+        {
+          "id": "f7",
+          "at": "2026-09-07T08:20:46.571Z",
+          "actor": "Officer",
+          "actorName": "Priya Bhengra",
+          "action": "Progress updated to 82%",
+          "automated": false
+        }
+      ],
+      "assignedOfficerId": "off-05",
+      "project": {
+        "id": "PRJ-198",
+        "contractor": "Hindalco Community Trust (direct execution)",
+        "officerId": "off-05",
+        "phase": "implementation",
+        "progress": 82,
+        "budget": 480000,
+        "spent": 394000,
+        "startedAt": "2026-08-21T08:20:46.571Z",
+        "dueAt": "2026-09-14T08:20:46.571Z",
+        "dayOfPlan": 18,
+        "planDays": 24,
+        "milestones": [
+          {
+            "label": "Structural assessment",
+            "done": true,
+            "at": "2026-08-22T08:20:46.571Z"
+          },
+          {
+            "label": "Truss repair",
+            "done": true,
+            "at": "2026-08-28T08:20:46.571Z"
+          },
+          {
+            "label": "Roof sheeting replacement",
+            "done": true,
+            "at": "2026-09-04T08:20:46.571Z"
+          },
+          {
+            "label": "Ceiling & painting",
+            "done": false
+          },
+          {
+            "label": "Handover to school committee",
+            "done": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "P-1024",
+      "title": "Nagri bazaar public toilet unusable — water and cleaning stopped",
+      "category": "sanitation",
+      "status": "verification_pending",
+      "severity": "medium",
+      "stage": "verification",
+      "jurisdictionId": "gp-nagri",
+      "villageIds": [
+        "v-nagri"
+      ],
+      "reportCount": 22,
+      "duplicateCount": 5,
+      "affected": 1400,
+      "createdAt": "2026-08-18T08:20:46.571Z",
+      "updatedAt": "2026-09-07T02:20:46.571Z",
+      "slaDueAt": "2026-09-11T08:20:46.571Z",
+      "factors": {
+        "populationImpact": 48,
+        "severity": 56,
+        "deprivation": 52,
+        "coverage": 24,
+        "duration": 66,
+        "recurrence": 62,
+        "repeatedDemand": 46
+      },
+      "adjustments": [],
+      "estimatedCost": 120000,
+      "departmentId": "dept-water",
+      "ai": {
+        "category": "sanitation",
+        "categoryConfidence": 91,
+        "severity": "medium",
+        "durationDays": 21,
+        "affected": 1400,
+        "similarReports": 19,
+        "clusterLabel": "Sanitation — Nagri bazaar",
+        "originalQuote": "Bazaar ka shauchalay band pada hai, paani ka connection kaam nahi karta.",
+        "originalLanguage": "Hindi",
+        "interpretation": [
+          {
+            "label": "Problem",
+            "value": "Public toilet non-functional"
+          },
+          {
+            "label": "Cause",
+            "value": "Water connection failure + no caretaker"
+          },
+          {
+            "label": "Footfall",
+            "value": "~1,400 weekly market users"
+          }
+        ],
+        "routedDepartmentId": "dept-water",
+        "routingReason": "Category sanitation → Drinking Water & Sanitation"
+      },
+      "sponsorship": {
+        "status": "not_eligible",
+        "eligible": false,
+        "matches": [],
+        "failureReason": "Below the ₹2 L CSR minimum for matched sponsors — funded from the panchayat's own untied grant."
+      },
+      "funding": {
+        "status": "approved",
+        "required": 120000,
+        "departmentBudgetAvailable": 840000,
+        "fundable": true,
+        "source": "15th FC Untied Grant",
+        "approvedAt": "2026-08-27T08:20:46.571Z",
+        "approvedBy": "Smt. Rekha Toppo"
+      },
+      "evidence": {
+        "before": {
+          "photos": 6,
+          "activeReports": 22,
+          "note": "Blocked pans, no running water, doors damaged."
+        },
+        "after": {
+          "photos": 8,
+          "activeReports": 2,
+          "note": "Supply restored, daily cleaning contract in force since 2 days."
+        }
+      },
+      "verification": {
+        "requestedAt": "2026-09-07T04:20:46.571Z",
+        "asked": 22,
+        "confirmed": 14,
+        "denied": 1,
+        "pending": 7
+      },
+      "audit": [
+        {
+          "id": "g1",
+          "at": "2026-08-18T08:20:46.571Z",
+          "actor": "Citizen",
+          "actorName": "Kiran Devi",
+          "action": "Problem reported",
+          "automated": false
+        },
+        {
+          "id": "g2",
+          "at": "2026-08-27T08:20:46.571Z",
+          "actor": "Officer",
+          "actorName": "Rekha Toppo",
+          "action": "Approved ₹1.2 L from untied grant",
+          "automated": false
+        },
+        {
+          "id": "g3",
+          "at": "2026-08-29T08:20:46.571Z",
+          "actor": "Officer",
+          "actorName": "Anita Kujur",
+          "action": "Work started",
+          "automated": false
+        },
+        {
+          "id": "g4",
+          "at": "2026-09-07T02:20:46.571Z",
+          "actor": "System",
+          "action": "Project marked complete → verification requested",
+          "automated": true
+        },
+        {
+          "id": "g5",
+          "at": "2026-09-07T04:20:46.571Z",
+          "actor": "System",
+          "action": "Verification request sent to 22 reporters",
+          "automated": true
+        },
+        {
+          "id": "g6",
+          "at": "2026-09-08T03:20:46.571Z",
+          "actor": "Citizen",
+          "action": "14 confirmations, 1 denial received",
+          "automated": false
+        }
+      ],
+      "assignedOfficerId": "off-03",
+      "project": {
+        "id": "PRJ-211",
+        "contractor": "Nagri Gram Panchayat (departmental works)",
+        "officerId": "off-03",
+        "phase": "completed",
+        "progress": 100,
+        "budget": 120000,
+        "spent": 114500,
+        "startedAt": "2026-08-29T08:20:46.571Z",
+        "dueAt": "2026-09-07T02:20:46.571Z",
+        "dayOfPlan": 9,
+        "planDays": 10,
+        "milestones": [
+          {
+            "label": "Water connection restored",
+            "done": true,
+            "at": "2026-09-01T08:20:46.571Z"
+          },
+          {
+            "label": "Deep cleaning & repairs",
+            "done": true,
+            "at": "2026-09-04T08:20:46.571Z"
+          },
+          {
+            "label": "Caretaker engaged",
+            "done": true,
+            "at": "2026-09-06T08:20:46.571Z"
+          },
+          {
+            "label": "Reopened to public",
+            "done": true,
+            "at": "2026-09-07T02:20:46.571Z"
+          }
+        ]
+      }
+    },
+    {
+      "id": "P-1003",
+      "title": "Nagri PHC power backup failure during deliveries",
+      "category": "health",
+      "status": "resolved",
+      "severity": "critical",
+      "stage": "impact",
+      "jurisdictionId": "gp-nagri",
+      "villageIds": [
+        "v-nagri",
+        "v-hesag"
+      ],
+      "reportCount": 12,
+      "duplicateCount": 2,
+      "affected": 5200,
+      "createdAt": "2026-06-28T08:20:46.571Z",
+      "updatedAt": "2026-09-02T08:20:46.571Z",
+      "slaDueAt": "2026-07-30T08:20:46.571Z",
+      "factors": {
+        "populationImpact": 90,
+        "severity": 96,
+        "deprivation": 68,
+        "coverage": 46,
+        "duration": 40,
+        "recurrence": 24,
+        "repeatedDemand": 28
+      },
+      "adjustments": [
+        {
+          "label": "Life-safety weighting",
+          "points": 6,
+          "reason": "Night deliveries at the PHC were being conducted by torchlight; life-safety overrides headcount ordering."
+        }
+      ],
+      "estimatedCost": 890000,
+      "departmentId": "dept-social",
+      "ai": {
+        "category": "health",
+        "categoryConfidence": 95,
+        "severity": "critical",
+        "durationDays": 9,
+        "affected": 5200,
+        "similarReports": 10,
+        "clusterLabel": "Health Infrastructure — Nagri PHC",
+        "originalQuote": "Raat ko delivery ke waqt light chali jaati hai, torch se kaam karna padta hai.",
+        "originalLanguage": "Hindi",
+        "interpretation": [
+          {
+            "label": "Problem",
+            "value": "PHC generator and inverter both non-functional"
+          },
+          {
+            "label": "Consequence",
+            "value": "Night obstetric care without lighting"
+          },
+          {
+            "label": "Catchment",
+            "value": "5,200 people across 2 villages"
+          }
+        ],
+        "routedDepartmentId": "dept-social",
+        "routingReason": "Category health → Education & Health Infrastructure"
+      },
+      "sponsorship": {
+        "status": "approved",
+        "eligible": true,
+        "approvedSponsorId": "sp-tata",
+        "approvedAmount": 890000,
+        "matches": [
+          {
+            "sponsorId": "sp-tata",
+            "score": 96,
+            "status": "approved",
+            "respondedAt": "2026-07-12T08:20:46.571Z",
+            "proposalAmount": 890000,
+            "reasons": [
+              "CSR theme: Health",
+              "Geography: Jharkhand",
+              "Solar + battery package is a standard programme for them"
+            ]
+          }
+        ]
+      },
+      "funding": {
+        "status": "not_required",
+        "required": 0,
+        "departmentBudgetAvailable": 560000,
+        "fundable": true,
+        "note": "Fully sponsored — solar backup package."
+      },
+      "evidence": {
+        "before": {
+          "photos": 5,
+          "activeReports": 12,
+          "note": "Dead 15 kVA genset, inverter batteries beyond life."
+        },
+        "after": {
+          "photos": 11,
+          "activeReports": 0,
+          "note": "5 kW solar + 10 kWh battery; 42 nights without an outage."
+        }
+      },
+      "verification": {
+        "requestedAt": "2026-09-01T08:20:46.571Z",
+        "asked": 12,
+        "confirmed": 12,
+        "denied": 0,
+        "pending": 0
+      },
+      "audit": [
+        {
+          "id": "h1",
+          "at": "2026-06-28T08:20:46.571Z",
+          "actor": "Citizen",
+          "actorName": "ANM Sushma Kachhap",
+          "action": "Problem reported",
+          "automated": false
+        },
+        {
+          "id": "h2",
+          "at": "2026-06-30T08:20:46.571Z",
+          "actor": "System",
+          "action": "Sponsorship invitation sent",
+          "automated": true
+        },
+        {
+          "id": "h3",
+          "at": "2026-07-12T08:20:46.571Z",
+          "actor": "Industry",
+          "actorName": "Tata Steel Foundation",
+          "action": "Proposal accepted — ₹8.9 L",
+          "automated": false
+        },
+        {
+          "id": "h4",
+          "at": "2026-07-26T08:20:46.571Z",
+          "actor": "Officer",
+          "actorName": "Priya Bhengra",
+          "action": "Work commenced",
+          "automated": false
+        },
+        {
+          "id": "h5",
+          "at": "2026-08-31T08:20:46.571Z",
+          "actor": "Officer",
+          "actorName": "Priya Bhengra",
+          "action": "Project completed",
+          "automated": false
+        },
+        {
+          "id": "h6",
+          "at": "2026-09-01T08:20:46.571Z",
+          "actor": "System",
+          "action": "Citizen verification requested from 12 reporters",
+          "automated": true
+        },
+        {
+          "id": "h7",
+          "at": "2026-09-02T08:20:46.571Z",
+          "actor": "System",
+          "action": "Impact computed — demand reduction 100%",
+          "automated": true
+        }
+      ],
+      "assignedOfficerId": "off-05",
+      "project": {
+        "id": "PRJ-176",
+        "contractor": "Tata Steel Foundation · Suryodaya Energy",
+        "officerId": "off-05",
+        "phase": "completed",
+        "progress": 100,
+        "budget": 890000,
+        "spent": 872000,
+        "startedAt": "2026-07-26T08:20:46.571Z",
+        "dueAt": "2026-08-31T08:20:46.571Z",
+        "dayOfPlan": 36,
+        "planDays": 36,
+        "milestones": [
+          {
+            "label": "Load audit",
+            "done": true,
+            "at": "2026-07-27T08:20:46.571Z"
+          },
+          {
+            "label": "Solar array install",
+            "done": true,
+            "at": "2026-08-13T08:20:46.571Z"
+          },
+          {
+            "label": "Battery bank & changeover",
+            "done": true,
+            "at": "2026-08-25T08:20:46.571Z"
+          },
+          {
+            "label": "Commissioning & staff training",
+            "done": true,
+            "at": "2026-08-31T08:20:46.571Z"
+          }
+        ]
+      }
+    },
+    {
+      "id": "P-1046",
+      "title": "Drainage overflow into homes near Hesag weekly market",
+      "category": "drainage",
+      "status": "in_progress",
+      "severity": "high",
+      "stage": "implementation",
+      "jurisdictionId": "gp-nagri",
+      "villageIds": [
+        "v-hesag"
+      ],
+      "reportCount": 54,
+      "duplicateCount": 13,
+      "affected": 1650,
+      "createdAt": "2026-08-25T08:20:46.571Z",
+      "updatedAt": "2026-09-07T16:20:46.571Z",
+      "slaDueAt": "2026-09-09T02:20:46.571Z",
+      "factors": {
+        "populationImpact": 54,
+        "severity": 76,
+        "deprivation": 80,
+        "coverage": 30,
+        "duration": 74,
+        "recurrence": 76,
+        "repeatedDemand": 68
+      },
+      "adjustments": [
+        {
+          "label": "Health-risk escalation",
+          "points": 3,
+          "reason": "Three dengue cases reported in the same ward within 14 days of the overflow."
+        }
+      ],
+      "estimatedCost": 520000,
+      "departmentId": "dept-swm",
+      "ai": {
+        "category": "drainage",
+        "categoryConfidence": 90,
+        "severity": "high",
+        "durationDays": 14,
+        "affected": 1650,
+        "similarReports": 51,
+        "clusterLabel": "Drainage — Hesag market ward",
+        "originalQuote": "Naali ka gandaa paani ghar ke andar aa raha hai, bimari phail rahi hai.",
+        "originalLanguage": "Hindi",
+        "interpretation": [
+          {
+            "label": "Problem",
+            "value": "Drain blockage causing backflow into houses"
+          },
+          {
+            "label": "Health signal",
+            "value": "3 dengue cases in the ward"
+          },
+          {
+            "label": "Duration",
+            "value": "14 days"
+          }
+        ],
+        "routedDepartmentId": "dept-swm",
+        "routingReason": "Category drainage → Solid Waste & Drainage",
+        "routingOverridden": {
+          "byOfficerId": "off-01",
+          "departmentId": "dept-swm",
+          "reason": "Initially auto-routed to Water & Sanitation on the 'paani' keyword; corrected to Drainage after site check.",
+          "at": "2026-08-27T08:20:46.571Z"
+        }
+      },
+      "sponsorship": {
+        "status": "not_eligible",
+        "eligible": false,
+        "matches": [],
+        "failureReason": "Routine maintenance head — not eligible for CSR under state guidelines."
+      },
+      "funding": {
+        "status": "approved",
+        "required": 520000,
+        "departmentBudgetAvailable": 840000,
+        "fundable": true,
+        "source": "15th FC Tied Grant (Sanitation)",
+        "approvedAt": "2026-08-30T08:20:46.571Z",
+        "approvedBy": "Smt. Rekha Toppo"
+      },
+      "evidence": {
+        "before": {
+          "photos": 17,
+          "activeReports": 54,
+          "note": "Standing sewage 200 mm deep across 40 m of lane."
+        }
+      },
+      "verification": {
+        "asked": 0,
+        "confirmed": 0,
+        "denied": 0,
+        "pending": 0
+      },
+      "audit": [
+        {
+          "id": "i1",
+          "at": "2026-08-25T08:20:46.571Z",
+          "actor": "Citizen",
+          "actorName": "Fatima Khatoon",
+          "action": "Problem reported with photos",
+          "automated": false
+        },
+        {
+          "id": "i2",
+          "at": "2026-08-25T08:20:46.571Z",
+          "actor": "AI",
+          "action": "Classified as Drainage",
+          "detail": "90% confidence",
+          "automated": true
+        },
+        {
+          "id": "i3",
+          "at": "2026-08-26T08:20:46.571Z",
+          "actor": "System",
+          "action": "Auto-routed to Water & Sanitation",
+          "automated": true
+        },
+        {
+          "id": "i4",
+          "at": "2026-08-27T08:20:46.571Z",
+          "actor": "Officer",
+          "actorName": "Sunita Mahto",
+          "action": "Routing overridden → Solid Waste & Drainage",
+          "detail": "Corrected after site check",
+          "automated": false
+        },
+        {
+          "id": "i5",
+          "at": "2026-08-30T08:20:46.571Z",
+          "actor": "Officer",
+          "actorName": "Rekha Toppo",
+          "action": "Approved ₹5.2 L",
+          "automated": false
+        },
+        {
+          "id": "i6",
+          "at": "2026-09-07T16:20:46.571Z",
+          "actor": "Officer",
+          "actorName": "Anita Kujur",
+          "action": "Progress updated to 61%",
+          "automated": false
+        }
+      ],
+      "assignedOfficerId": "off-03",
+      "project": {
+        "id": "PRJ-207",
+        "contractor": "Ranchi Civil Works",
+        "officerId": "off-03",
+        "phase": "implementation",
+        "progress": 61,
+        "budget": 520000,
+        "spent": 302000,
+        "startedAt": "2026-09-01T08:20:46.571Z",
+        "dueAt": "2026-09-17T08:20:46.571Z",
+        "dayOfPlan": 7,
+        "planDays": 16,
+        "milestones": [
+          {
+            "label": "Desilting 400 m",
+            "done": true,
+            "at": "2026-09-04T08:20:46.571Z"
+          },
+          {
+            "label": "Broken slab replacement",
+            "done": true,
+            "at": "2026-09-07T08:20:46.571Z"
+          },
+          {
+            "label": "Outfall re-grading",
+            "done": false
+          },
+          {
+            "label": "Anti-larval treatment",
+            "done": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "P-1055",
+      "title": "Waste collection missed for 9 days in Kanke Chowk ward 4",
+      "category": "waste",
+      "status": "pending_validation",
+      "severity": "medium",
+      "stage": "ai_processed",
+      "jurisdictionId": "gp-nagri",
+      "villageIds": [
+        "v-kanke"
+      ],
+      "reportCount": 61,
+      "duplicateCount": 19,
+      "affected": 900,
+      "createdAt": "2026-09-04T08:20:46.571Z",
+      "updatedAt": "2026-09-08T01:20:46.571Z",
+      "slaDueAt": "2026-09-08T17:20:46.571Z",
+      "factors": {
+        "populationImpact": 32,
+        "severity": 54,
+        "deprivation": 30,
+        "coverage": 20,
+        "duration": 60,
+        "recurrence": 66,
+        "repeatedDemand": 84
+      },
+      "adjustments": [],
+      "estimatedCost": 90000,
+      "departmentId": "dept-swm",
+      "ai": {
+        "category": "waste",
+        "categoryConfidence": 88,
+        "severity": "medium",
+        "durationDays": 9,
+        "affected": 900,
+        "similarReports": 58,
+        "clusterLabel": "Waste Collection — Kanke Chowk ward 4",
+        "originalQuote": "9 din se kachra uthane wali gaadi nahi aayi, sadak par dher lag gaya hai.",
+        "originalLanguage": "Hindi",
+        "interpretation": [
+          {
+            "label": "Problem",
+            "value": "Door-to-door collection not performed"
+          },
+          {
+            "label": "Duration",
+            "value": "9 days"
+          },
+          {
+            "label": "Likely cause",
+            "value": "Collection vehicle off-road (matched to fleet log)"
+          }
+        ],
+        "routedDepartmentId": "dept-swm",
+        "routingReason": "Category waste → Solid Waste & Drainage"
+      },
+      "sponsorship": {
+        "status": "not_eligible",
+        "eligible": false,
+        "matches": []
+      },
+      "funding": {
+        "status": "not_required",
+        "required": 90000,
+        "departmentBudgetAvailable": 840000,
+        "fundable": true
+      },
+      "evidence": {
+        "before": {
+          "photos": 21,
+          "activeReports": 61,
+          "note": "Three open dumping points on the main road."
+        }
+      },
+      "verification": {
+        "asked": 0,
+        "confirmed": 0,
+        "denied": 0,
+        "pending": 0
+      },
+      "audit": [
+        {
+          "id": "j1",
+          "at": "2026-09-04T08:20:46.571Z",
+          "actor": "Citizen",
+          "actorName": "Ajay Sahu",
+          "action": "Problem reported with photos",
+          "automated": false
+        },
+        {
+          "id": "j2",
+          "at": "2026-09-04T08:20:46.571Z",
+          "actor": "AI",
+          "action": "Classified as Waste Collection",
+          "detail": "88% confidence",
+          "automated": true
+        },
+        {
+          "id": "j3",
+          "at": "2026-09-05T08:20:46.571Z",
+          "actor": "AI",
+          "action": "Clustered 58 reports, 19 duplicates",
+          "automated": true
+        },
+        {
+          "id": "j4",
+          "at": "2026-09-08T01:20:46.571Z",
+          "actor": "System",
+          "action": "Awaiting officer validation — SLA 9h",
+          "automated": true
+        }
+      ]
+    },
+    {
+      "id": "P-1060",
+      "title": "Handpump water discoloured at Tigra tola",
+      "category": "water",
+      "status": "pending_validation",
+      "severity": "critical",
+      "stage": "ai_processed",
+      "jurisdictionId": "gp-nagri",
+      "villageIds": [
+        "v-tigra"
+      ],
+      "reportCount": 15,
+      "duplicateCount": 2,
+      "affected": 2890,
+      "createdAt": "2026-09-07T08:20:46.571Z",
+      "updatedAt": "2026-09-08T05:20:46.571Z",
+      "slaDueAt": "2026-09-08T14:20:46.571Z",
+      "factors": {
+        "populationImpact": 74,
+        "severity": 94,
+        "deprivation": 92,
+        "coverage": 26,
+        "duration": 24,
+        "recurrence": 44,
+        "repeatedDemand": 36
+      },
+      "adjustments": [
+        {
+          "label": "Under-reporting correction",
+          "points": 5,
+          "reason": "Tigra is a low-reporting tola; 15 reports here map to ~50 in a high-reporting village."
+        },
+        {
+          "label": "Contamination protocol",
+          "points": 4,
+          "reason": "Suspected contamination triggers the state's water-quality protocol regardless of report volume."
+        }
+      ],
+      "estimatedCost": 260000,
+      "departmentId": "dept-water",
+      "ai": {
+        "category": "water",
+        "categoryConfidence": 87,
+        "severity": "critical",
+        "durationDays": 1,
+        "affected": 2890,
+        "similarReports": 13,
+        "clusterLabel": "Water Quality — Tigra tola",
+        "originalQuote": "Handpump ka paani peela aa raha hai aur badbu bhi hai, bachche bimar pad rahe hain.",
+        "originalLanguage": "Hindi",
+        "interpretation": [
+          {
+            "label": "Problem",
+            "value": "Suspected handpump contamination"
+          },
+          {
+            "label": "Signals",
+            "value": "Discolouration, odour, reported illness"
+          },
+          {
+            "label": "Action required",
+            "value": "Water sample test within 24h"
+          }
+        ],
+        "routedDepartmentId": "dept-water",
+        "routingReason": "Category water + contamination keywords → Drinking Water & Sanitation, priority lane"
+      },
+      "sponsorship": {
+        "status": "not_eligible",
+        "eligible": false,
+        "matches": []
+      },
+      "funding": {
+        "status": "not_required",
+        "required": 260000,
+        "departmentBudgetAvailable": 840000,
+        "fundable": true
+      },
+      "evidence": {
+        "before": {
+          "photos": 7,
+          "activeReports": 15,
+          "note": "Yellow-tinged samples from two handpumps."
+        }
+      },
+      "verification": {
+        "asked": 0,
+        "confirmed": 0,
+        "denied": 0,
+        "pending": 0
+      },
+      "audit": [
+        {
+          "id": "k1",
+          "at": "2026-09-07T08:20:46.571Z",
+          "actor": "Citizen",
+          "actorName": "Mangri Oraon",
+          "action": "Problem reported by voice",
+          "automated": false
+        },
+        {
+          "id": "k2",
+          "at": "2026-09-07T08:20:46.571Z",
+          "actor": "AI",
+          "action": "Classified as Water Quality",
+          "detail": "87% confidence · contamination protocol flagged",
+          "automated": true
+        },
+        {
+          "id": "k3",
+          "at": "2026-09-07T12:20:46.571Z",
+          "actor": "System",
+          "action": "SLA set to 6 hours — contamination lane",
+          "automated": true
+        },
+        {
+          "id": "k4",
+          "at": "2026-09-08T05:20:46.571Z",
+          "actor": "System",
+          "action": "Escalation warning — validation pending",
+          "automated": true
+        }
+      ]
+    },
+    {
+      "id": "P-1035",
+      "title": "Culvert collapse on Ormanjhi link road",
+      "category": "roads",
+      "status": "awaiting_sponsorship",
+      "severity": "high",
+      "stage": "sponsorship",
+      "jurisdictionId": "gp-ormanjhi",
+      "villageIds": [
+        "v-ormanjhi"
+      ],
+      "reportCount": 37,
+      "duplicateCount": 8,
+      "affected": 2450,
+      "createdAt": "2026-08-30T08:20:46.571Z",
+      "updatedAt": "2026-09-07T21:20:46.571Z",
+      "slaDueAt": "2026-09-10T12:20:46.571Z",
+      "factors": {
+        "populationImpact": 60,
+        "severity": 74,
+        "deprivation": 62,
+        "coverage": 38,
+        "duration": 70,
+        "recurrence": 36,
+        "repeatedDemand": 58
+      },
+      "adjustments": [],
+      "estimatedCost": 780000,
+      "departmentId": "dept-pwd",
+      "ai": {
+        "category": "roads",
+        "categoryConfidence": 92,
+        "severity": "high",
+        "durationDays": 9,
+        "affected": 2450,
+        "similarReports": 34,
+        "clusterLabel": "Road Damage — Ormanjhi link",
+        "originalQuote": "Pulia beth gayi hai, school bus doosre raaste se jaati hai.",
+        "originalLanguage": "Hindi",
+        "interpretation": [
+          {
+            "label": "Problem",
+            "value": "Culvert collapse, single lane lost"
+          },
+          {
+            "label": "Consequence",
+            "value": "School bus diverted, 6 km detour"
+          }
+        ],
+        "routedDepartmentId": "dept-pwd",
+        "routingReason": "Category roads + Ormanjhi GP → Rural Works Department"
+      },
+      "sponsorship": {
+        "status": "interested",
+        "eligible": true,
+        "invitedAt": "2026-09-04T08:20:46.571Z",
+        "responseDueAt": "2026-09-09T12:20:46.571Z",
+        "matches": [
+          {
+            "sponsorId": "sp-cclmine",
+            "score": 86,
+            "status": "interested",
+            "respondedAt": "2026-09-07T21:20:46.571Z",
+            "reasons": [
+              "CSR theme: Roads",
+              "Geography: Jharkhand",
+              "Ormanjhi falls inside their operational-area radius"
+            ],
+            "note": "Awaiting internal committee approval."
+          },
+          {
+            "sponsorId": "sp-jindal",
+            "score": 70,
+            "status": "invited",
+            "reasons": [
+              "CSR theme: Roads",
+              "Geography: Jharkhand"
+            ]
+          }
+        ]
+      },
+      "funding": {
+        "status": "pending",
+        "required": 780000,
+        "departmentBudgetAvailable": 2460000,
+        "fundable": true,
+        "source": "PMGSY Maintenance Head"
+      },
+      "evidence": {
+        "before": {
+          "photos": 11,
+          "activeReports": 37,
+          "note": "Culvert barrel collapsed; embankment scoured."
+        }
+      },
+      "verification": {
+        "asked": 0,
+        "confirmed": 0,
+        "denied": 0,
+        "pending": 0
+      },
+      "audit": [
+        {
+          "id": "l1",
+          "at": "2026-08-30T08:20:46.571Z",
+          "actor": "Citizen",
+          "actorName": "Dinesh Mahto",
+          "action": "Problem reported with photos",
+          "automated": false
+        },
+        {
+          "id": "l2",
+          "at": "2026-08-30T08:20:46.571Z",
+          "actor": "AI",
+          "action": "Classified as Road Damage",
+          "detail": "92% confidence",
+          "automated": true
+        },
+        {
+          "id": "l3",
+          "at": "2026-09-03T08:20:46.571Z",
+          "actor": "Officer",
+          "actorName": "Rekha Toppo",
+          "action": "Validated problem",
+          "automated": false
+        },
+        {
+          "id": "l4",
+          "at": "2026-09-04T08:20:46.571Z",
+          "actor": "System",
+          "action": "Sponsorship invitations sent to 2 industries",
+          "automated": true
+        },
+        {
+          "id": "l5",
+          "at": "2026-09-07T21:20:46.571Z",
+          "actor": "Industry",
+          "actorName": "Central Coalfields CSR Cell",
+          "action": "Marked interested",
+          "automated": false
+        }
+      ]
+    },
+    {
+      "id": "P-1049",
+      "title": "Anganwadi centre without toilet at Booty Basti",
+      "category": "sanitation",
+      "status": "awaiting_sponsorship",
+      "severity": "medium",
+      "stage": "prioritised",
+      "jurisdictionId": "gp-nagri",
+      "villageIds": [
+        "v-booty"
+      ],
+      "reportCount": 26,
+      "duplicateCount": 4,
+      "affected": 620,
+      "createdAt": "2026-09-01T08:20:46.571Z",
+      "updatedAt": "2026-09-07T10:20:46.571Z",
+      "slaDueAt": "2026-09-09T18:20:46.571Z",
+      "factors": {
+        "populationImpact": 34,
+        "severity": 58,
+        "deprivation": 48,
+        "coverage": 18,
+        "duration": 62,
+        "recurrence": 20,
+        "repeatedDemand": 44
+      },
+      "adjustments": [
+        {
+          "label": "Child-safety weighting",
+          "points": 3,
+          "reason": "Affected users are pre-school children and pregnant women attending the anganwadi."
+        }
+      ],
+      "estimatedCost": 210000,
+      "departmentId": "dept-water",
+      "ai": {
+        "category": "sanitation",
+        "categoryConfidence": 90,
+        "severity": "medium",
+        "durationDays": 7,
+        "affected": 620,
+        "similarReports": 23,
+        "clusterLabel": "Sanitation — Booty anganwadi",
+        "originalQuote": "Anganwadi mein shauchalay hi nahi hai, bachchon ko bahar jaana padta hai.",
+        "originalLanguage": "Hindi",
+        "interpretation": [
+          {
+            "label": "Problem",
+            "value": "No toilet facility at anganwadi centre"
+          },
+          {
+            "label": "Users",
+            "value": "62 children, 18 expectant mothers"
+          }
+        ],
+        "routedDepartmentId": "dept-water",
+        "routingReason": "Category sanitation → Drinking Water & Sanitation"
+      },
+      "sponsorship": {
+        "status": "awaiting",
+        "eligible": true,
+        "matches": [
+          {
+            "sponsorId": "sp-hindalco",
+            "score": 83,
+            "status": "matched",
+            "reasons": [
+              "CSR theme: Sanitation",
+              "Geography: Jharkhand",
+              "Runs a school-sanitation programme in this block"
+            ]
+          },
+          {
+            "sponsorId": "sp-usha",
+            "score": 66,
+            "status": "matched",
+            "reasons": [
+              "CSR theme: Health",
+              "Geography: Jharkhand"
+            ]
+          }
+        ]
+      },
+      "funding": {
+        "status": "not_required",
+        "required": 210000,
+        "departmentBudgetAvailable": 840000,
+        "fundable": true
+      },
+      "evidence": {
+        "before": {
+          "photos": 4,
+          "activeReports": 26,
+          "note": "No sanitation block on the anganwadi premises."
+        }
+      },
+      "verification": {
+        "asked": 0,
+        "confirmed": 0,
+        "denied": 0,
+        "pending": 0
+      },
+      "audit": [
+        {
+          "id": "m1",
+          "at": "2026-09-01T08:20:46.571Z",
+          "actor": "Citizen",
+          "actorName": "Sevika Rita Devi",
+          "action": "Problem reported",
+          "automated": false
+        },
+        {
+          "id": "m2",
+          "at": "2026-09-01T08:20:46.571Z",
+          "actor": "AI",
+          "action": "Classified as Sanitation",
+          "detail": "90% confidence",
+          "automated": true
+        },
+        {
+          "id": "m3",
+          "at": "2026-09-06T08:20:46.571Z",
+          "actor": "System",
+          "action": "Sponsorship eligibility confirmed",
+          "automated": true
+        }
+      ]
+    }
+  ],
+  "reports": [
+    {
+      "id": "P-1042-R1",
+      "problemId": "P-1042",
+      "citizenName": "Kiran Devi",
+      "channel": "voice",
+      "raw": "3 din se nal mein paani nahi aaya.",
+      "language": "Hindi",
+      "villageId": "v-nagri",
+      "lat": 23.3762,
+      "lng": 85.24860000000001,
+      "at": "2026-09-08T06:20:46.571Z",
+      "photos": 2,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1042-R2",
+      "problemId": "P-1042",
+      "citizenName": "Dinesh Mahto",
+      "channel": "text",
+      "raw": "Tanki khali hai, tanker bhi nahi aaya.",
+      "language": "Hindi",
+      "villageId": "v-hesag",
+      "lat": 23.3689,
+      "lng": 85.2396,
+      "at": "2026-09-08T01:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1042-R3",
+      "problemId": "P-1042",
+      "citizenName": "Jyoti Bhengra",
+      "channel": "photo",
+      "raw": "Handpump se paani nahi nikal raha.",
+      "language": "Hindi",
+      "villageId": "v-chandaghasi",
+      "lat": 23.3965,
+      "lng": 85.26820000000001,
+      "at": "2026-09-07T20:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1042-R4",
+      "problemId": "P-1042",
+      "citizenName": "Ramesh Munda",
+      "channel": "ivr",
+      "raw": "3 din se nal mein paani nahi aaya.",
+      "language": "Nagpuri",
+      "villageId": "v-nagri",
+      "lat": 23.3817,
+      "lng": 85.2581,
+      "at": "2026-09-07T15:20:46.571Z",
+      "photos": 2,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1042-R5",
+      "problemId": "P-1042",
+      "citizenName": "Fatima Khatoon",
+      "channel": "field",
+      "raw": "Tanki khali hai, tanker bhi nahi aaya.",
+      "language": "Hindi",
+      "villageId": "v-hesag",
+      "lat": 23.3644,
+      "lng": 85.23910000000001,
+      "at": "2026-09-07T10:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1042-R6",
+      "problemId": "P-1042",
+      "citizenName": "Kiran Devi",
+      "channel": "voice",
+      "raw": "Handpump se paani nahi nikal raha.",
+      "language": "Hindi",
+      "villageId": "v-chandaghasi",
+      "lat": 23.392,
+      "lng": 85.2677,
+      "at": "2026-09-07T05:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1042-R7",
+      "problemId": "P-1042",
+      "citizenName": "Dinesh Mahto",
+      "channel": "text",
+      "raw": "3 din se nal mein paani nahi aaya.",
+      "language": "Hindi",
+      "villageId": "v-nagri",
+      "lat": 23.3772,
+      "lng": 85.25760000000001,
+      "at": "2026-09-07T00:20:46.571Z",
+      "photos": 2,
+      "duplicateOf": "P-1042-R1",
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1042-R8",
+      "problemId": "P-1042",
+      "citizenName": "Jyoti Bhengra",
+      "channel": "photo",
+      "raw": "Tanki khali hai, tanker bhi nahi aaya.",
+      "language": "Nagpuri",
+      "villageId": "v-hesag",
+      "lat": 23.3699,
+      "lng": 85.2386,
+      "at": "2026-09-06T19:20:46.571Z",
+      "photos": 0,
+      "duplicateOf": "P-1042-R1",
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1038-R1",
+      "problemId": "P-1038",
+      "citizenName": "Kiran Devi",
+      "channel": "voice",
+      "raw": "Sadak par bade gaddhe ho gaye hain.",
+      "language": "Hindi",
+      "villageId": "v-pithoria",
+      "lat": 23.4439,
+      "lng": 85.18260000000001,
+      "at": "2026-09-08T06:20:46.571Z",
+      "photos": 2,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1038-R2",
+      "problemId": "P-1038",
+      "citizenName": "Dinesh Mahto",
+      "channel": "text",
+      "raw": "Bike nikalna mushkil hai, koi gir gaya kal.",
+      "language": "Hindi",
+      "villageId": "v-pithoria",
+      "lat": 23.452399999999997,
+      "lng": 85.1891,
+      "at": "2026-09-08T01:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1038-R3",
+      "problemId": "P-1038",
+      "citizenName": "Jyoti Bhengra",
+      "channel": "photo",
+      "raw": "Ambulance gaon tak nahi pahunch paati.",
+      "language": "Hindi",
+      "villageId": "v-pithoria",
+      "lat": 23.450899999999997,
+      "lng": 85.18560000000001,
+      "at": "2026-09-07T20:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1038-R4",
+      "problemId": "P-1038",
+      "citizenName": "Ramesh Munda",
+      "channel": "ivr",
+      "raw": "Sadak par bade gaddhe ho gaye hain.",
+      "language": "Nagpuri",
+      "villageId": "v-pithoria",
+      "lat": 23.449399999999997,
+      "lng": 85.1921,
+      "at": "2026-09-07T15:20:46.571Z",
+      "photos": 2,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1038-R5",
+      "problemId": "P-1038",
+      "citizenName": "Fatima Khatoon",
+      "channel": "field",
+      "raw": "Bike nikalna mushkil hai, koi gir gaya kal.",
+      "language": "Hindi",
+      "villageId": "v-pithoria",
+      "lat": 23.447899999999997,
+      "lng": 85.18860000000001,
+      "at": "2026-09-07T10:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1038-R6",
+      "problemId": "P-1038",
+      "citizenName": "Kiran Devi",
+      "channel": "voice",
+      "raw": "Ambulance gaon tak nahi pahunch paati.",
+      "language": "Hindi",
+      "villageId": "v-pithoria",
+      "lat": 23.446399999999997,
+      "lng": 85.1851,
+      "at": "2026-09-07T05:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1038-R7",
+      "problemId": "P-1038",
+      "citizenName": "Dinesh Mahto",
+      "channel": "text",
+      "raw": "Sadak par bade gaddhe ho gaye hain.",
+      "language": "Hindi",
+      "villageId": "v-pithoria",
+      "lat": 23.444899999999997,
+      "lng": 85.19160000000001,
+      "at": "2026-09-07T00:20:46.571Z",
+      "photos": 2,
+      "duplicateOf": "P-1038-R1",
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1038-R8",
+      "problemId": "P-1038",
+      "citizenName": "Jyoti Bhengra",
+      "channel": "photo",
+      "raw": "Bike nikalna mushkil hai, koi gir gaya kal.",
+      "language": "Nagpuri",
+      "villageId": "v-pithoria",
+      "lat": 23.4534,
+      "lng": 85.1881,
+      "at": "2026-09-06T19:20:46.571Z",
+      "photos": 0,
+      "duplicateOf": "P-1038-R1",
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1051-R1",
+      "problemId": "P-1051",
+      "citizenName": "Kiran Devi",
+      "channel": "voice",
+      "raw": "Poore mohalle ki light band hai.",
+      "language": "Hindi",
+      "villageId": "v-booty",
+      "lat": 23.4058,
+      "lng": 85.3114,
+      "at": "2026-09-08T06:20:46.571Z",
+      "photos": 2,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1051-R2",
+      "problemId": "P-1051",
+      "citizenName": "Dinesh Mahto",
+      "channel": "text",
+      "raw": "Raat mein andhera rehta hai.",
+      "language": "Hindi",
+      "villageId": "v-booty",
+      "lat": 23.414299999999997,
+      "lng": 85.3179,
+      "at": "2026-09-08T01:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1051-R3",
+      "problemId": "P-1051",
+      "citizenName": "Jyoti Bhengra",
+      "channel": "photo",
+      "raw": "Light ka khamba bhi jhuka hua hai.",
+      "language": "Hindi",
+      "villageId": "v-booty",
+      "lat": 23.412799999999997,
+      "lng": 85.3144,
+      "at": "2026-09-07T20:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1051-R4",
+      "problemId": "P-1051",
+      "citizenName": "Ramesh Munda",
+      "channel": "ivr",
+      "raw": "Poore mohalle ki light band hai.",
+      "language": "Nagpuri",
+      "villageId": "v-booty",
+      "lat": 23.411299999999997,
+      "lng": 85.3209,
+      "at": "2026-09-07T15:20:46.571Z",
+      "photos": 2,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1051-R5",
+      "problemId": "P-1051",
+      "citizenName": "Fatima Khatoon",
+      "channel": "field",
+      "raw": "Raat mein andhera rehta hai.",
+      "language": "Hindi",
+      "villageId": "v-booty",
+      "lat": 23.409799999999997,
+      "lng": 85.3174,
+      "at": "2026-09-07T10:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1051-R6",
+      "problemId": "P-1051",
+      "citizenName": "Kiran Devi",
+      "channel": "voice",
+      "raw": "Light ka khamba bhi jhuka hua hai.",
+      "language": "Hindi",
+      "villageId": "v-booty",
+      "lat": 23.408299999999997,
+      "lng": 85.3139,
+      "at": "2026-09-07T05:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1051-R7",
+      "problemId": "P-1051",
+      "citizenName": "Dinesh Mahto",
+      "channel": "text",
+      "raw": "Poore mohalle ki light band hai.",
+      "language": "Hindi",
+      "villageId": "v-booty",
+      "lat": 23.406799999999997,
+      "lng": 85.3204,
+      "at": "2026-09-07T00:20:46.571Z",
+      "photos": 2,
+      "duplicateOf": "P-1051-R1",
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1051-R8",
+      "problemId": "P-1051",
+      "citizenName": "Jyoti Bhengra",
+      "channel": "photo",
+      "raw": "Raat mein andhera rehta hai.",
+      "language": "Nagpuri",
+      "villageId": "v-booty",
+      "lat": 23.4153,
+      "lng": 85.3169,
+      "at": "2026-09-06T19:20:46.571Z",
+      "photos": 0,
+      "duplicateOf": "P-1051-R1",
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1012-R1",
+      "problemId": "P-1012",
+      "citizenName": "Kiran Devi",
+      "channel": "voice",
+      "raw": "Pul mein darar dikh rahi hai.",
+      "language": "Hindi",
+      "villageId": "v-tigra",
+      "lat": 23.397100000000002,
+      "lng": 85.2248,
+      "at": "2026-09-08T06:20:46.571Z",
+      "photos": 2,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1012-R2",
+      "problemId": "P-1012",
+      "citizenName": "Dinesh Mahto",
+      "channel": "text",
+      "raw": "Bhaari gaadi jaane par pul hilta hai.",
+      "language": "Hindi",
+      "villageId": "v-chandaghasi",
+      "lat": 23.398,
+      "lng": 85.2717,
+      "at": "2026-09-08T01:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1012-R3",
+      "problemId": "P-1012",
+      "citizenName": "Jyoti Bhengra",
+      "channel": "photo",
+      "raw": "Pul mein darar dikh rahi hai.",
+      "language": "Hindi",
+      "villageId": "v-tigra",
+      "lat": 23.4041,
+      "lng": 85.2278,
+      "at": "2026-09-07T20:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1012-R4",
+      "problemId": "P-1012",
+      "citizenName": "Ramesh Munda",
+      "channel": "ivr",
+      "raw": "Bhaari gaadi jaane par pul hilta hai.",
+      "language": "Nagpuri",
+      "villageId": "v-chandaghasi",
+      "lat": 23.395,
+      "lng": 85.2747,
+      "at": "2026-09-07T15:20:46.571Z",
+      "photos": 2,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1012-R5",
+      "problemId": "P-1012",
+      "citizenName": "Fatima Khatoon",
+      "channel": "field",
+      "raw": "Pul mein darar dikh rahi hai.",
+      "language": "Hindi",
+      "villageId": "v-tigra",
+      "lat": 23.4011,
+      "lng": 85.2308,
+      "at": "2026-09-07T10:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1012-R6",
+      "problemId": "P-1012",
+      "citizenName": "Kiran Devi",
+      "channel": "voice",
+      "raw": "Bhaari gaadi jaane par pul hilta hai.",
+      "language": "Hindi",
+      "villageId": "v-chandaghasi",
+      "lat": 23.392,
+      "lng": 85.2677,
+      "at": "2026-09-07T05:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1012-R7",
+      "problemId": "P-1012",
+      "citizenName": "Dinesh Mahto",
+      "channel": "text",
+      "raw": "Pul mein darar dikh rahi hai.",
+      "language": "Hindi",
+      "villageId": "v-tigra",
+      "lat": 23.3981,
+      "lng": 85.2338,
+      "at": "2026-09-07T00:20:46.571Z",
+      "photos": 2,
+      "duplicateOf": "P-1012-R1",
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1012-R8",
+      "problemId": "P-1012",
+      "citizenName": "Jyoti Bhengra",
+      "channel": "photo",
+      "raw": "Bhaari gaadi jaane par pul hilta hai.",
+      "language": "Nagpuri",
+      "villageId": "v-chandaghasi",
+      "lat": 23.399,
+      "lng": 85.2707,
+      "at": "2026-09-06T19:20:46.571Z",
+      "photos": 0,
+      "duplicateOf": "P-1012-R1",
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1008-R1",
+      "problemId": "P-1008",
+      "citizenName": "Kiran Devi",
+      "channel": "voice",
+      "raw": "School ki chhat tapak rahi hai.",
+      "language": "Hindi",
+      "villageId": "v-chandaghasi",
+      "lat": 23.3895,
+      "lng": 85.26520000000001,
+      "at": "2026-09-08T06:20:46.571Z",
+      "photos": 2,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1008-R2",
+      "problemId": "P-1008",
+      "citizenName": "Dinesh Mahto",
+      "channel": "text",
+      "raw": "Barish mein class nahi hoti.",
+      "language": "Hindi",
+      "villageId": "v-chandaghasi",
+      "lat": 23.398,
+      "lng": 85.2717,
+      "at": "2026-09-08T01:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1008-R3",
+      "problemId": "P-1008",
+      "citizenName": "Jyoti Bhengra",
+      "channel": "photo",
+      "raw": "School ki chhat tapak rahi hai.",
+      "language": "Hindi",
+      "villageId": "v-chandaghasi",
+      "lat": 23.3965,
+      "lng": 85.26820000000001,
+      "at": "2026-09-07T20:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1008-R4",
+      "problemId": "P-1008",
+      "citizenName": "Ramesh Munda",
+      "channel": "ivr",
+      "raw": "Barish mein class nahi hoti.",
+      "language": "Nagpuri",
+      "villageId": "v-chandaghasi",
+      "lat": 23.395,
+      "lng": 85.2747,
+      "at": "2026-09-07T15:20:46.571Z",
+      "photos": 2,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1008-R5",
+      "problemId": "P-1008",
+      "citizenName": "Fatima Khatoon",
+      "channel": "field",
+      "raw": "School ki chhat tapak rahi hai.",
+      "language": "Hindi",
+      "villageId": "v-chandaghasi",
+      "lat": 23.3935,
+      "lng": 85.27120000000001,
+      "at": "2026-09-07T10:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1008-R6",
+      "problemId": "P-1008",
+      "citizenName": "Kiran Devi",
+      "channel": "voice",
+      "raw": "Barish mein class nahi hoti.",
+      "language": "Hindi",
+      "villageId": "v-chandaghasi",
+      "lat": 23.392,
+      "lng": 85.2677,
+      "at": "2026-09-07T05:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1008-R7",
+      "problemId": "P-1008",
+      "citizenName": "Dinesh Mahto",
+      "channel": "text",
+      "raw": "School ki chhat tapak rahi hai.",
+      "language": "Hindi",
+      "villageId": "v-chandaghasi",
+      "lat": 23.3905,
+      "lng": 85.27420000000001,
+      "at": "2026-09-07T00:20:46.571Z",
+      "photos": 2,
+      "duplicateOf": "P-1008-R1",
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1008-R8",
+      "problemId": "P-1008",
+      "citizenName": "Jyoti Bhengra",
+      "channel": "photo",
+      "raw": "Barish mein class nahi hoti.",
+      "language": "Nagpuri",
+      "villageId": "v-chandaghasi",
+      "lat": 23.399,
+      "lng": 85.2707,
+      "at": "2026-09-06T19:20:46.571Z",
+      "photos": 0,
+      "duplicateOf": "P-1008-R1",
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1024-R1",
+      "problemId": "P-1024",
+      "citizenName": "Kiran Devi",
+      "channel": "voice",
+      "raw": "Shauchalay mein paani nahi hai.",
+      "language": "Hindi",
+      "villageId": "v-nagri",
+      "lat": 23.3762,
+      "lng": 85.24860000000001,
+      "at": "2026-09-08T06:20:46.571Z",
+      "photos": 2,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1024-R2",
+      "problemId": "P-1024",
+      "citizenName": "Dinesh Mahto",
+      "channel": "text",
+      "raw": "Safai nahi hoti, taala band rehta hai.",
+      "language": "Hindi",
+      "villageId": "v-nagri",
+      "lat": 23.3847,
+      "lng": 85.2551,
+      "at": "2026-09-08T01:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1024-R3",
+      "problemId": "P-1024",
+      "citizenName": "Jyoti Bhengra",
+      "channel": "photo",
+      "raw": "Shauchalay mein paani nahi hai.",
+      "language": "Hindi",
+      "villageId": "v-nagri",
+      "lat": 23.3832,
+      "lng": 85.25160000000001,
+      "at": "2026-09-07T20:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1024-R4",
+      "problemId": "P-1024",
+      "citizenName": "Ramesh Munda",
+      "channel": "ivr",
+      "raw": "Safai nahi hoti, taala band rehta hai.",
+      "language": "Nagpuri",
+      "villageId": "v-nagri",
+      "lat": 23.3817,
+      "lng": 85.2581,
+      "at": "2026-09-07T15:20:46.571Z",
+      "photos": 2,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1024-R5",
+      "problemId": "P-1024",
+      "citizenName": "Fatima Khatoon",
+      "channel": "field",
+      "raw": "Shauchalay mein paani nahi hai.",
+      "language": "Hindi",
+      "villageId": "v-nagri",
+      "lat": 23.3802,
+      "lng": 85.25460000000001,
+      "at": "2026-09-07T10:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1024-R6",
+      "problemId": "P-1024",
+      "citizenName": "Kiran Devi",
+      "channel": "voice",
+      "raw": "Safai nahi hoti, taala band rehta hai.",
+      "language": "Hindi",
+      "villageId": "v-nagri",
+      "lat": 23.3787,
+      "lng": 85.25110000000001,
+      "at": "2026-09-07T05:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1024-R7",
+      "problemId": "P-1024",
+      "citizenName": "Dinesh Mahto",
+      "channel": "text",
+      "raw": "Shauchalay mein paani nahi hai.",
+      "language": "Hindi",
+      "villageId": "v-nagri",
+      "lat": 23.3772,
+      "lng": 85.25760000000001,
+      "at": "2026-09-07T00:20:46.571Z",
+      "photos": 2,
+      "duplicateOf": "P-1024-R1",
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1024-R8",
+      "problemId": "P-1024",
+      "citizenName": "Jyoti Bhengra",
+      "channel": "photo",
+      "raw": "Safai nahi hoti, taala band rehta hai.",
+      "language": "Nagpuri",
+      "villageId": "v-nagri",
+      "lat": 23.3857,
+      "lng": 85.25410000000001,
+      "at": "2026-09-06T19:20:46.571Z",
+      "photos": 0,
+      "duplicateOf": "P-1024-R1",
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1003-R1",
+      "problemId": "P-1003",
+      "citizenName": "Kiran Devi",
+      "channel": "voice",
+      "raw": "PHC mein raat ko bijli nahi rehti.",
+      "language": "Hindi",
+      "villageId": "v-nagri",
+      "lat": 23.3762,
+      "lng": 85.24860000000001,
+      "at": "2026-09-08T06:20:46.571Z",
+      "photos": 2,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1003-R2",
+      "problemId": "P-1003",
+      "citizenName": "Dinesh Mahto",
+      "channel": "text",
+      "raw": "Generator kharab pada hai.",
+      "language": "Hindi",
+      "villageId": "v-hesag",
+      "lat": 23.3689,
+      "lng": 85.2396,
+      "at": "2026-09-08T01:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1003-R3",
+      "problemId": "P-1003",
+      "citizenName": "Jyoti Bhengra",
+      "channel": "photo",
+      "raw": "PHC mein raat ko bijli nahi rehti.",
+      "language": "Hindi",
+      "villageId": "v-nagri",
+      "lat": 23.3832,
+      "lng": 85.25160000000001,
+      "at": "2026-09-07T20:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1003-R4",
+      "problemId": "P-1003",
+      "citizenName": "Ramesh Munda",
+      "channel": "ivr",
+      "raw": "Generator kharab pada hai.",
+      "language": "Nagpuri",
+      "villageId": "v-hesag",
+      "lat": 23.3659,
+      "lng": 85.2426,
+      "at": "2026-09-07T15:20:46.571Z",
+      "photos": 2,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1003-R5",
+      "problemId": "P-1003",
+      "citizenName": "Fatima Khatoon",
+      "channel": "field",
+      "raw": "PHC mein raat ko bijli nahi rehti.",
+      "language": "Hindi",
+      "villageId": "v-nagri",
+      "lat": 23.3802,
+      "lng": 85.25460000000001,
+      "at": "2026-09-07T10:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1003-R6",
+      "problemId": "P-1003",
+      "citizenName": "Kiran Devi",
+      "channel": "voice",
+      "raw": "Generator kharab pada hai.",
+      "language": "Hindi",
+      "villageId": "v-hesag",
+      "lat": 23.3629,
+      "lng": 85.2356,
+      "at": "2026-09-07T05:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1003-R7",
+      "problemId": "P-1003",
+      "citizenName": "Dinesh Mahto",
+      "channel": "text",
+      "raw": "PHC mein raat ko bijli nahi rehti.",
+      "language": "Hindi",
+      "villageId": "v-nagri",
+      "lat": 23.3772,
+      "lng": 85.25760000000001,
+      "at": "2026-09-07T00:20:46.571Z",
+      "photos": 2,
+      "duplicateOf": "P-1003-R1",
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1003-R8",
+      "problemId": "P-1003",
+      "citizenName": "Jyoti Bhengra",
+      "channel": "photo",
+      "raw": "Generator kharab pada hai.",
+      "language": "Nagpuri",
+      "villageId": "v-hesag",
+      "lat": 23.3699,
+      "lng": 85.2386,
+      "at": "2026-09-06T19:20:46.571Z",
+      "photos": 0,
+      "duplicateOf": "P-1003-R1",
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1046-R1",
+      "problemId": "P-1046",
+      "citizenName": "Kiran Devi",
+      "channel": "voice",
+      "raw": "Naali ka paani ghar ke saamne bhar gaya.",
+      "language": "Hindi",
+      "villageId": "v-hesag",
+      "lat": 23.360400000000002,
+      "lng": 85.23310000000001,
+      "at": "2026-09-08T06:20:46.571Z",
+      "photos": 2,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1046-R2",
+      "problemId": "P-1046",
+      "citizenName": "Dinesh Mahto",
+      "channel": "text",
+      "raw": "Badbu ke maare rehna mushkil hai.",
+      "language": "Hindi",
+      "villageId": "v-hesag",
+      "lat": 23.3689,
+      "lng": 85.2396,
+      "at": "2026-09-08T01:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1046-R3",
+      "problemId": "P-1046",
+      "citizenName": "Jyoti Bhengra",
+      "channel": "photo",
+      "raw": "Machchar bahut ho gaye hain.",
+      "language": "Hindi",
+      "villageId": "v-hesag",
+      "lat": 23.3674,
+      "lng": 85.23610000000001,
+      "at": "2026-09-07T20:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1046-R4",
+      "problemId": "P-1046",
+      "citizenName": "Ramesh Munda",
+      "channel": "ivr",
+      "raw": "Naali ka paani ghar ke saamne bhar gaya.",
+      "language": "Nagpuri",
+      "villageId": "v-hesag",
+      "lat": 23.3659,
+      "lng": 85.2426,
+      "at": "2026-09-07T15:20:46.571Z",
+      "photos": 2,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1046-R5",
+      "problemId": "P-1046",
+      "citizenName": "Fatima Khatoon",
+      "channel": "field",
+      "raw": "Badbu ke maare rehna mushkil hai.",
+      "language": "Hindi",
+      "villageId": "v-hesag",
+      "lat": 23.3644,
+      "lng": 85.23910000000001,
+      "at": "2026-09-07T10:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1046-R6",
+      "problemId": "P-1046",
+      "citizenName": "Kiran Devi",
+      "channel": "voice",
+      "raw": "Machchar bahut ho gaye hain.",
+      "language": "Hindi",
+      "villageId": "v-hesag",
+      "lat": 23.3629,
+      "lng": 85.2356,
+      "at": "2026-09-07T05:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1046-R7",
+      "problemId": "P-1046",
+      "citizenName": "Dinesh Mahto",
+      "channel": "text",
+      "raw": "Naali ka paani ghar ke saamne bhar gaya.",
+      "language": "Hindi",
+      "villageId": "v-hesag",
+      "lat": 23.3614,
+      "lng": 85.24210000000001,
+      "at": "2026-09-07T00:20:46.571Z",
+      "photos": 2,
+      "duplicateOf": "P-1046-R1",
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1046-R8",
+      "problemId": "P-1046",
+      "citizenName": "Jyoti Bhengra",
+      "channel": "photo",
+      "raw": "Badbu ke maare rehna mushkil hai.",
+      "language": "Nagpuri",
+      "villageId": "v-hesag",
+      "lat": 23.3699,
+      "lng": 85.2386,
+      "at": "2026-09-06T19:20:46.571Z",
+      "photos": 0,
+      "duplicateOf": "P-1046-R1",
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1055-R1",
+      "problemId": "P-1055",
+      "citizenName": "Kiran Devi",
+      "channel": "voice",
+      "raw": "Kachra gaadi nahi aa rahi.",
+      "language": "Hindi",
+      "villageId": "v-kanke",
+      "lat": 23.4221,
+      "lng": 85.3173,
+      "at": "2026-09-08T06:20:46.571Z",
+      "photos": 2,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1055-R2",
+      "problemId": "P-1055",
+      "citizenName": "Dinesh Mahto",
+      "channel": "text",
+      "raw": "Sadak par kachre ka dher lag gaya.",
+      "language": "Hindi",
+      "villageId": "v-kanke",
+      "lat": 23.4306,
+      "lng": 85.32379999999999,
+      "at": "2026-09-08T01:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1055-R3",
+      "problemId": "P-1055",
+      "citizenName": "Jyoti Bhengra",
+      "channel": "photo",
+      "raw": "Kutte kachra failaa rahe hain.",
+      "language": "Hindi",
+      "villageId": "v-kanke",
+      "lat": 23.4291,
+      "lng": 85.3203,
+      "at": "2026-09-07T20:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1055-R4",
+      "problemId": "P-1055",
+      "citizenName": "Ramesh Munda",
+      "channel": "ivr",
+      "raw": "Kachra gaadi nahi aa rahi.",
+      "language": "Nagpuri",
+      "villageId": "v-kanke",
+      "lat": 23.427599999999998,
+      "lng": 85.32679999999999,
+      "at": "2026-09-07T15:20:46.571Z",
+      "photos": 2,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1055-R5",
+      "problemId": "P-1055",
+      "citizenName": "Fatima Khatoon",
+      "channel": "field",
+      "raw": "Sadak par kachre ka dher lag gaya.",
+      "language": "Hindi",
+      "villageId": "v-kanke",
+      "lat": 23.426099999999998,
+      "lng": 85.3233,
+      "at": "2026-09-07T10:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1055-R6",
+      "problemId": "P-1055",
+      "citizenName": "Kiran Devi",
+      "channel": "voice",
+      "raw": "Kutte kachra failaa rahe hain.",
+      "language": "Hindi",
+      "villageId": "v-kanke",
+      "lat": 23.424599999999998,
+      "lng": 85.3198,
+      "at": "2026-09-07T05:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1055-R7",
+      "problemId": "P-1055",
+      "citizenName": "Dinesh Mahto",
+      "channel": "text",
+      "raw": "Kachra gaadi nahi aa rahi.",
+      "language": "Hindi",
+      "villageId": "v-kanke",
+      "lat": 23.423099999999998,
+      "lng": 85.3263,
+      "at": "2026-09-07T00:20:46.571Z",
+      "photos": 2,
+      "duplicateOf": "P-1055-R1",
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1055-R8",
+      "problemId": "P-1055",
+      "citizenName": "Jyoti Bhengra",
+      "channel": "photo",
+      "raw": "Sadak par kachre ka dher lag gaya.",
+      "language": "Nagpuri",
+      "villageId": "v-kanke",
+      "lat": 23.4316,
+      "lng": 85.3228,
+      "at": "2026-09-06T19:20:46.571Z",
+      "photos": 0,
+      "duplicateOf": "P-1055-R1",
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1060-R1",
+      "problemId": "P-1060",
+      "citizenName": "Kiran Devi",
+      "channel": "voice",
+      "raw": "3 din se nal mein paani nahi aaya.",
+      "language": "Hindi",
+      "villageId": "v-tigra",
+      "lat": 23.397100000000002,
+      "lng": 85.2248,
+      "at": "2026-09-08T06:20:46.571Z",
+      "photos": 2,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1060-R2",
+      "problemId": "P-1060",
+      "citizenName": "Dinesh Mahto",
+      "channel": "text",
+      "raw": "Tanki khali hai, tanker bhi nahi aaya.",
+      "language": "Hindi",
+      "villageId": "v-tigra",
+      "lat": 23.4056,
+      "lng": 85.23129999999999,
+      "at": "2026-09-08T01:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1060-R3",
+      "problemId": "P-1060",
+      "citizenName": "Jyoti Bhengra",
+      "channel": "photo",
+      "raw": "Handpump se paani nahi nikal raha.",
+      "language": "Hindi",
+      "villageId": "v-tigra",
+      "lat": 23.4041,
+      "lng": 85.2278,
+      "at": "2026-09-07T20:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1060-R4",
+      "problemId": "P-1060",
+      "citizenName": "Ramesh Munda",
+      "channel": "ivr",
+      "raw": "3 din se nal mein paani nahi aaya.",
+      "language": "Nagpuri",
+      "villageId": "v-tigra",
+      "lat": 23.4026,
+      "lng": 85.23429999999999,
+      "at": "2026-09-07T15:20:46.571Z",
+      "photos": 2,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1060-R5",
+      "problemId": "P-1060",
+      "citizenName": "Fatima Khatoon",
+      "channel": "field",
+      "raw": "Tanki khali hai, tanker bhi nahi aaya.",
+      "language": "Hindi",
+      "villageId": "v-tigra",
+      "lat": 23.4011,
+      "lng": 85.2308,
+      "at": "2026-09-07T10:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1060-R6",
+      "problemId": "P-1060",
+      "citizenName": "Kiran Devi",
+      "channel": "voice",
+      "raw": "Handpump se paani nahi nikal raha.",
+      "language": "Hindi",
+      "villageId": "v-tigra",
+      "lat": 23.3996,
+      "lng": 85.2273,
+      "at": "2026-09-07T05:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1060-R7",
+      "problemId": "P-1060",
+      "citizenName": "Dinesh Mahto",
+      "channel": "text",
+      "raw": "3 din se nal mein paani nahi aaya.",
+      "language": "Hindi",
+      "villageId": "v-tigra",
+      "lat": 23.3981,
+      "lng": 85.2338,
+      "at": "2026-09-07T00:20:46.571Z",
+      "photos": 2,
+      "duplicateOf": "P-1060-R1",
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1060-R8",
+      "problemId": "P-1060",
+      "citizenName": "Jyoti Bhengra",
+      "channel": "photo",
+      "raw": "Tanki khali hai, tanker bhi nahi aaya.",
+      "language": "Nagpuri",
+      "villageId": "v-tigra",
+      "lat": 23.4066,
+      "lng": 85.2303,
+      "at": "2026-09-06T19:20:46.571Z",
+      "photos": 0,
+      "duplicateOf": "P-1060-R1",
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1035-R1",
+      "problemId": "P-1035",
+      "citizenName": "Kiran Devi",
+      "channel": "voice",
+      "raw": "Sadak par bade gaddhe ho gaye hain.",
+      "language": "Hindi",
+      "villageId": "v-ormanjhi",
+      "lat": 23.4662,
+      "lng": 85.4311,
+      "at": "2026-09-08T06:20:46.571Z",
+      "photos": 2,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1035-R2",
+      "problemId": "P-1035",
+      "citizenName": "Dinesh Mahto",
+      "channel": "text",
+      "raw": "Bike nikalna mushkil hai, koi gir gaya kal.",
+      "language": "Hindi",
+      "villageId": "v-ormanjhi",
+      "lat": 23.4747,
+      "lng": 85.43759999999999,
+      "at": "2026-09-08T01:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1035-R3",
+      "problemId": "P-1035",
+      "citizenName": "Jyoti Bhengra",
+      "channel": "photo",
+      "raw": "Ambulance gaon tak nahi pahunch paati.",
+      "language": "Hindi",
+      "villageId": "v-ormanjhi",
+      "lat": 23.4732,
+      "lng": 85.4341,
+      "at": "2026-09-07T20:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1035-R4",
+      "problemId": "P-1035",
+      "citizenName": "Ramesh Munda",
+      "channel": "ivr",
+      "raw": "Sadak par bade gaddhe ho gaye hain.",
+      "language": "Nagpuri",
+      "villageId": "v-ormanjhi",
+      "lat": 23.4717,
+      "lng": 85.44059999999999,
+      "at": "2026-09-07T15:20:46.571Z",
+      "photos": 2,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1035-R5",
+      "problemId": "P-1035",
+      "citizenName": "Fatima Khatoon",
+      "channel": "field",
+      "raw": "Bike nikalna mushkil hai, koi gir gaya kal.",
+      "language": "Hindi",
+      "villageId": "v-ormanjhi",
+      "lat": 23.4702,
+      "lng": 85.4371,
+      "at": "2026-09-07T10:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1035-R6",
+      "problemId": "P-1035",
+      "citizenName": "Kiran Devi",
+      "channel": "voice",
+      "raw": "Ambulance gaon tak nahi pahunch paati.",
+      "language": "Hindi",
+      "villageId": "v-ormanjhi",
+      "lat": 23.4687,
+      "lng": 85.4336,
+      "at": "2026-09-07T05:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1035-R7",
+      "problemId": "P-1035",
+      "citizenName": "Dinesh Mahto",
+      "channel": "text",
+      "raw": "Sadak par bade gaddhe ho gaye hain.",
+      "language": "Hindi",
+      "villageId": "v-ormanjhi",
+      "lat": 23.4672,
+      "lng": 85.4401,
+      "at": "2026-09-07T00:20:46.571Z",
+      "photos": 2,
+      "duplicateOf": "P-1035-R1",
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1035-R8",
+      "problemId": "P-1035",
+      "citizenName": "Jyoti Bhengra",
+      "channel": "photo",
+      "raw": "Bike nikalna mushkil hai, koi gir gaya kal.",
+      "language": "Nagpuri",
+      "villageId": "v-ormanjhi",
+      "lat": 23.4757,
+      "lng": 85.4366,
+      "at": "2026-09-06T19:20:46.571Z",
+      "photos": 0,
+      "duplicateOf": "P-1035-R1",
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1049-R1",
+      "problemId": "P-1049",
+      "citizenName": "Kiran Devi",
+      "channel": "voice",
+      "raw": "Shauchalay mein paani nahi hai.",
+      "language": "Hindi",
+      "villageId": "v-booty",
+      "lat": 23.4058,
+      "lng": 85.3114,
+      "at": "2026-09-08T06:20:46.571Z",
+      "photos": 2,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1049-R2",
+      "problemId": "P-1049",
+      "citizenName": "Dinesh Mahto",
+      "channel": "text",
+      "raw": "Safai nahi hoti, taala band rehta hai.",
+      "language": "Hindi",
+      "villageId": "v-booty",
+      "lat": 23.414299999999997,
+      "lng": 85.3179,
+      "at": "2026-09-08T01:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1049-R3",
+      "problemId": "P-1049",
+      "citizenName": "Jyoti Bhengra",
+      "channel": "photo",
+      "raw": "Shauchalay mein paani nahi hai.",
+      "language": "Hindi",
+      "villageId": "v-booty",
+      "lat": 23.412799999999997,
+      "lng": 85.3144,
+      "at": "2026-09-07T20:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1049-R4",
+      "problemId": "P-1049",
+      "citizenName": "Ramesh Munda",
+      "channel": "ivr",
+      "raw": "Safai nahi hoti, taala band rehta hai.",
+      "language": "Nagpuri",
+      "villageId": "v-booty",
+      "lat": 23.411299999999997,
+      "lng": 85.3209,
+      "at": "2026-09-07T15:20:46.571Z",
+      "photos": 2,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1049-R5",
+      "problemId": "P-1049",
+      "citizenName": "Fatima Khatoon",
+      "channel": "field",
+      "raw": "Shauchalay mein paani nahi hai.",
+      "language": "Hindi",
+      "villageId": "v-booty",
+      "lat": 23.409799999999997,
+      "lng": 85.3174,
+      "at": "2026-09-07T10:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1049-R6",
+      "problemId": "P-1049",
+      "citizenName": "Kiran Devi",
+      "channel": "voice",
+      "raw": "Safai nahi hoti, taala band rehta hai.",
+      "language": "Hindi",
+      "villageId": "v-booty",
+      "lat": 23.408299999999997,
+      "lng": 85.3139,
+      "at": "2026-09-07T05:20:46.571Z",
+      "photos": 0,
+      "aiConfidence": 91
+    },
+    {
+      "id": "P-1049-R7",
+      "problemId": "P-1049",
+      "citizenName": "Dinesh Mahto",
+      "channel": "text",
+      "raw": "Shauchalay mein paani nahi hai.",
+      "language": "Hindi",
+      "villageId": "v-booty",
+      "lat": 23.406799999999997,
+      "lng": 85.3204,
+      "at": "2026-09-07T00:20:46.571Z",
+      "photos": 2,
+      "duplicateOf": "P-1049-R1",
+      "aiConfidence": 84
+    },
+    {
+      "id": "P-1049-R8",
+      "problemId": "P-1049",
+      "citizenName": "Jyoti Bhengra",
+      "channel": "photo",
+      "raw": "Safai nahi hoti, taala band rehta hai.",
+      "language": "Nagpuri",
+      "villageId": "v-booty",
+      "lat": 23.4153,
+      "lng": 85.3169,
+      "at": "2026-09-06T19:20:46.571Z",
+      "photos": 0,
+      "duplicateOf": "P-1049-R1",
+      "aiConfidence": 91
+    }
+  ],
+  "automations": [
+    {
+      "id": "au-classify",
+      "name": "Report classification",
+      "description": "Every incoming report is read, translated where needed, and assigned a category and severity.",
+      "status": "healthy",
+      "enabled": true,
+      "lastRunAt": "2026-09-08T08:08:46.571Z",
+      "nextAction": "Runs on each new report",
+      "affectedRecords": 486,
+      "runsToday": 486
+    },
+    {
+      "id": "au-dedupe",
+      "name": "Duplicate detection & clustering",
+      "description": "Reports describing the same fault at the same place are folded into one problem cluster.",
+      "status": "healthy",
+      "enabled": true,
+      "lastRunAt": "2026-09-08T07:56:46.571Z",
+      "nextAction": "Runs on each new report",
+      "affectedRecords": 133,
+      "runsToday": 133
+    },
+    {
+      "id": "au-priority",
+      "name": "Priority recalculation",
+      "description": "Scores every open problem against the published weighting whenever its inputs change.",
+      "status": "healthy",
+      "enabled": true,
+      "lastRunAt": "2026-09-08T07:20:46.571Z",
+      "nextAction": "Next sweep in 45 min",
+      "affectedRecords": 12,
+      "runsToday": 24
+    },
+    {
+      "id": "au-route",
+      "name": "Department routing",
+      "description": "Maps category plus jurisdiction to the owning department. Overrides are logged against the officer.",
+      "status": "healthy",
+      "enabled": true,
+      "lastRunAt": "2026-09-08T05:20:46.571Z",
+      "nextAction": "Runs on validation",
+      "affectedRecords": 12,
+      "runsToday": 9
+    },
+    {
+      "id": "au-officer",
+      "name": "Officer recommendation",
+      "description": "Suggests the assignee with the lowest weighted load and the right ward experience.",
+      "status": "healthy",
+      "enabled": true,
+      "lastRunAt": "2026-09-08T04:20:46.571Z",
+      "nextAction": "Runs on assignment screen",
+      "affectedRecords": 5,
+      "runsToday": 7
+    },
+    {
+      "id": "au-csr-eligibility",
+      "name": "Sponsorship eligibility check",
+      "description": "Tests each validated problem against state CSR guidelines and the ₹2 L floor.",
+      "status": "healthy",
+      "enabled": true,
+      "lastRunAt": "2026-09-08T02:20:46.571Z",
+      "nextAction": "Runs on validation",
+      "affectedRecords": 7,
+      "runsToday": 4
+    },
+    {
+      "id": "au-csr-match",
+      "name": "Industry match generation",
+      "description": "Scores sponsors on CSR theme, geography, unspent budget and historic response rate.",
+      "status": "healthy",
+      "enabled": true,
+      "lastRunAt": "2026-09-08T02:20:46.571Z",
+      "nextAction": "Runs on eligibility pass",
+      "affectedRecords": 7,
+      "runsToday": 4
+    },
+    {
+      "id": "au-csr-remind",
+      "name": "Sponsorship reminders",
+      "description": "Reminds invited sponsors at 50% and 85% of the response window.",
+      "status": "attention",
+      "enabled": true,
+      "lastRunAt": "2026-09-07T23:20:46.571Z",
+      "nextAction": "P-1035 reminder due in 4h",
+      "affectedRecords": 2,
+      "runsToday": 3
+    },
+    {
+      "id": "au-fallback",
+      "name": "Government funding fallback",
+      "description": "When the industry window closes without an acceptance, the problem moves itself into the funding queue with a recommended source.",
+      "status": "healthy",
+      "enabled": true,
+      "lastRunAt": "2026-09-07T02:20:46.571Z",
+      "nextAction": "P-1042 window closes in 20h",
+      "affectedRecords": 2,
+      "runsToday": 1
+    },
+    {
+      "id": "au-sla",
+      "name": "SLA escalation",
+      "description": "Escalates a breached problem one administrative level and notifies the next officer.",
+      "status": "attention",
+      "enabled": true,
+      "lastRunAt": "2026-09-08T06:20:46.571Z",
+      "nextAction": "P-1060 breaches in 6h",
+      "affectedRecords": 3,
+      "runsToday": 5
+    },
+    {
+      "id": "au-notify",
+      "name": "Citizen progress notifications",
+      "description": "Tells every reporter when their problem changes stage, in the language they reported in.",
+      "status": "healthy",
+      "enabled": true,
+      "lastRunAt": "2026-09-08T06:50:46.571Z",
+      "nextAction": "Runs on stage change",
+      "affectedRecords": 214,
+      "runsToday": 214
+    },
+    {
+      "id": "au-verify",
+      "name": "Resolution verification requests",
+      "description": "Asks the original reporters to confirm a completed fix before it can be closed.",
+      "status": "healthy",
+      "enabled": true,
+      "lastRunAt": "2026-09-07T04:20:46.571Z",
+      "nextAction": "7 reminders queued for P-1024",
+      "affectedRecords": 22,
+      "runsToday": 22
+    },
+    {
+      "id": "au-impact",
+      "name": "Impact computation",
+      "description": "Compares before and after report volume, cost and beneficiaries once verification closes.",
+      "status": "healthy",
+      "enabled": true,
+      "lastRunAt": "2026-09-02T08:20:46.571Z",
+      "nextAction": "Runs on verification close",
+      "affectedRecords": 2,
+      "runsToday": 0
+    }
+  ],
+  "alerts": [
+    {
+      "id": "al-1",
+      "kind": "sla_breach",
+      "title": "SLA breach imminent — water quality",
+      "detail": "P-1060 Tigra handpump contamination must be validated within 6 hours under the water-quality protocol.",
+      "at": "2026-09-08T07:20:46.571Z",
+      "problemId": "P-1060",
+      "actionLabel": "Validate now",
+      "read": false
+    },
+    {
+      "id": "al-2",
+      "kind": "sponsorship_expiring",
+      "title": "Industry response window closing",
+      "detail": "Tata Steel Foundation and Jindal have 20 hours left to respond on P-1042. Funding fallback is armed.",
+      "at": "2026-09-08T06:20:46.571Z",
+      "problemId": "P-1042",
+      "actionLabel": "Open sponsorship",
+      "read": false
+    },
+    {
+      "id": "al-3",
+      "kind": "priority_changed",
+      "title": "Priority changed: #4 → #1",
+      "detail": "Water supply interruption rose after 18 new reports from Chandaghasi and the deprivation weighting.",
+      "at": "2026-09-08T03:20:46.571Z",
+      "problemId": "P-1042",
+      "actionLabel": "See why",
+      "read": false
+    },
+    {
+      "id": "al-4",
+      "kind": "funding_ready",
+      "title": "Government funding recommended",
+      "detail": "P-1038 Pithoria road: industry sponsorship failed, ₹14.5 L required against ₹24.6 L available.",
+      "at": "2026-09-07T02:20:46.571Z",
+      "problemId": "P-1038",
+      "actionLabel": "Review funding",
+      "read": false
+    },
+    {
+      "id": "al-5",
+      "kind": "verification_pending",
+      "title": "7 citizens have not confirmed a fix",
+      "detail": "P-1024 Nagri bazaar toilet: 14 of 22 reporters confirmed, 1 denied, 7 pending.",
+      "at": "2026-09-07T04:20:46.571Z",
+      "problemId": "P-1024",
+      "actionLabel": "Open verification",
+      "read": true
+    },
+    {
+      "id": "al-6",
+      "kind": "sla_breach",
+      "title": "Drainage project SLA at risk",
+      "detail": "P-1046 Hesag drainage is 61% complete with 18 hours to the committed date.",
+      "at": "2026-09-07T16:20:46.571Z",
+      "problemId": "P-1046",
+      "actionLabel": "Open project",
+      "read": true
+    }
+  ],
+  "weeklyTrend": [
+    {
+      "week": "W1",
+      "reported": 128,
+      "resolved": 96,
+      "priorityAvg": 58
+    },
+    {
+      "week": "W2",
+      "reported": 141,
+      "resolved": 104,
+      "priorityAvg": 61
+    },
+    {
+      "week": "W3",
+      "reported": 119,
+      "resolved": 112,
+      "priorityAvg": 57
+    },
+    {
+      "week": "W4",
+      "reported": 163,
+      "resolved": 121,
+      "priorityAvg": 64
+    },
+    {
+      "week": "W5",
+      "reported": 158,
+      "resolved": 134,
+      "priorityAvg": 62
+    },
+    {
+      "week": "W6",
+      "reported": 187,
+      "resolved": 142,
+      "priorityAvg": 68
+    },
+    {
+      "week": "W7",
+      "reported": 172,
+      "resolved": 151,
+      "priorityAvg": 66
+    },
+    {
+      "week": "W8",
+      "reported": 194,
+      "resolved": 163,
+      "priorityAvg": 71
+    },
+    {
+      "week": "W9",
+      "reported": 211,
+      "resolved": 178,
+      "priorityAvg": 73
+    },
+    {
+      "week": "W10",
+      "reported": 198,
+      "resolved": 186,
+      "priorityAvg": 70
+    },
+    {
+      "week": "W11",
+      "reported": 224,
+      "resolved": 201,
+      "priorityAvg": 74
+    },
+    {
+      "week": "W12",
+      "reported": 236,
+      "resolved": 218,
+      "priorityAvg": 76
+    }
+  ]
+}

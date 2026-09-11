@@ -48,7 +48,7 @@ export default function ReviewPage() {
         </dl>
       </Card>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <Card className="p-6">
           <h2 className="headline-md text-ink">Team</h2>
           <ul className="mt-4 flex flex-col gap-3">
@@ -61,7 +61,7 @@ export default function ReviewPage() {
                 </span>
               </li>
             ))}
-            <li className="rounded-md border border-dashed border-line-strong px-4 py-3 text-center text-sm text-ink-faint">
+            <li className="rounded-lg bg-card-muted px-4 py-3 text-center text-sm text-ink-muted">
               2 slots stay open for later invites
             </li>
           </ul>

@@ -1,0 +1,29 @@
+# dependencies
+/node_modules
+
+# build
+/dist
+/build
+
+# prisma
+/prisma/*.db
+
+# env — the template (.env.example) is committed, nothing else is
+.env
+.env.*
+!.env.example
+
+# test / coverage
+/coverage
+*.tsbuildinfo
+
+# generated openapi is committed; local scratch is not
+/openapi.local.json
+
+# editor
+.DS_Store
+.idea
+*.log
+
+# local npm cache override (machine-specific)
+.npmrc

@@ -1,0 +1,1359 @@
+// Jan Setu — database schema.
+//
+// Mirrors the domain model the web app already carries in
+// apps/web/src/lib/gov/types.ts and apps/web/src/lib/industry/types.ts, plus the
+// identity / RBAC tables the frontend never had. See the approved plan §6 for
+// the ERD and the reasoning.
+//
+// Conventions
+//   - String ids. New rows get a uuid; seeded rows keep the human ids the web
+//     fixtures use ("P-1042", "gp-nagri", "dept-water") so existing web links
+//     and the seed map 1:1.
+//   - createdAt / updatedAt on every table.
+//   - deletedAt (soft delete) on user-authored content.
+//   - Enums mirror the string unions in the web types, snake_cased where the
+//     web used snake_case already.
+//   - Deep value-object arrays with no query need (AI interpretation lines, gov
+//     project milestones, pilot telemetry) are Json; everything filtered,
+//     sorted or joined is a column.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ===========================================================================
+// Identity & access
+// ===========================================================================
+
+enum UserKind {
+  citizen
+  staff
+  admin
+}
+
+enum UserStatus {
+  active
+  suspended
+  pending
+}
+
+enum Locale {
+  en
+  hi
+}
+
+model User {
+  id              String     @id @default(uuid())
+  kind            UserKind
+  status          UserStatus @default(active)
+  displayName     String
+  email           String?    @unique
+  phone           String?    @unique
+  passwordHash    String?
+  photoUrl        String?
+  locale          Locale     @default(en)
+  phoneVerifiedAt DateTime?
+  emailVerifiedAt DateTime?
+  lastLoginAt     DateTime?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  roles              UserRole[]
+  refreshTokens      RefreshToken[]
+  passwordResets     PasswordResetToken[]
+  officer            Officer?
+  faculty            Faculty?
+  teamMemberships    TeamMember[]
+  reports            CitizenReport[]
+  auditEntries       AuditEntry[]
+  notifications      Notification[]
+  attachments        Attachment[]
+  rankingObjections  RankingObjection[]
+  verifications      Verification[]
+  impactPoints       ImpactPointsEntry[]
+  achievements       Achievement[]
+  weightSetsCreated  PriorityWeightSet[]
+  fundingApprovals   Funding[]           @relation("FundingApprovedBy")
+  allocationsApprved Allocation[]        @relation("AllocationApprovedBy")
+
+  @@index([kind])
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  userAgent String?
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+enum OtpPurpose {
+  login
+  phone_verify
+  password_reset
+}
+
+model OtpCode {
+  id         String     @id @default(uuid())
+  phone      String
+  codeHash   String
+  purpose    OtpPurpose
+  attempts   Int        @default(0)
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime   @default(now())
+
+  @@index([phone, purpose])
+  @@map("otp_codes")
+}
+
+/// A single-use email password-reset token. Hashed at rest; in development the
+/// raw token is returned in the response so the flow works without an email
+/// provider wired up.
+model PasswordResetToken {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  consumedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@map("password_reset_tokens")
+}
+
+/// Roles are a closed set; see prisma/seed/rbac.ts. A user holds a role
+/// optionally scoped to one organisation (an officer in a department, a student
+/// in an institution).
+model Role {
+  id          String           @id @default(uuid())
+  key         String           @unique
+  label       String
+  permissions RolePermission[]
+  users       UserRole[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("roles")
+}
+
+model Permission {
+  id    String           @id @default(uuid())
+  key   String           @unique
+  label String
+  roles RolePermission[]
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId       String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+/// A role a user holds, optionally scoped. `orgId` scopes it to one
+/// organisation (an industry user, a student in an institution); `jurisdictionId`
+/// scopes it to a point in the administrative tree (a panchayat secretary, a
+/// BDO, a DC). Both null = a platform-wide role (admin).
+model UserRole {
+  id             String        @id @default(uuid())
+  userId         String
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roleId         String
+  role           Role          @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  orgId          String?
+  org            Organization? @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  jurisdictionId String?
+  jurisdiction   Jurisdiction? @relation(fields: [jurisdictionId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, roleId, orgId, jurisdictionId])
+  @@index([userId])
+  @@map("user_roles")
+}
+
+// ===========================================================================
+// Geography
+// ===========================================================================
+
+enum GovLevel {
+  state
+  district
+  block
+  panchayat
+}
+
+model Jurisdiction {
+  id         String         @id @default(uuid())
+  level      GovLevel
+  name       String
+  parentId   String?
+  parent     Jurisdiction?  @relation("JurisdictionTree", fields: [parentId], references: [id])
+  children   Jurisdiction[] @relation("JurisdictionTree")
+  population Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  villages      Village[]
+  problems      Problem[]
+  organizations Organization[]
+  officers      Officer[]
+  weightSets    PriorityWeightSet[]
+  userRoles     UserRole[]
+
+  @@index([parentId])
+  @@map("jurisdictions")
+}
+
+model Village {
+  id             String       @id @default(uuid())
+  name           String
+  jurisdictionId String
+  jurisdiction   Jurisdiction @relation(fields: [jurisdictionId], references: [id])
+  population     Int
+  /// SECC multidimensional deprivation, 0 (well served) → 1 (most deprived).
+  deprivation    Float
+  lat            Float
+  lng            Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  problems ProblemVillage[]
+  reports  CitizenReport[]
+
+  @@index([jurisdictionId])
+  @@map("villages")
+}
+
+// ===========================================================================
+// Organizations
+// ===========================================================================
+
+enum OrgType {
+  institution
+  government_body
+  industry
+  department
+}
+
+model Organization {
+  id             String         @id @default(uuid())
+  type           OrgType
+  name           String
+  legalName      String?
+  sector         String?
+  about          String?
+  jurisdictionId String?
+  jurisdiction   Jurisdiction?  @relation(fields: [jurisdictionId], references: [id])
+  parentOrgId    String?
+  parentOrg      Organization?  @relation("OrgTree", fields: [parentOrgId], references: [id])
+  childOrgs      Organization[] @relation("OrgTree")
+  /// Type-specific profile (CSR budget, accreditation, labs, …). Shape depends
+  /// on `type`; the API layer narrows it.
+  profile        Json?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  department     Department?
+  sponsor        Sponsor?
+  userRoles      UserRole[]
+  studentTeams   StudentTeam[]
+  faculty        Faculty[]
+  fundingCommits FundingCommitment[]
+
+  @@index([type])
+  @@map("organizations")
+}
+
+model Department {
+  id              String            @id @default(uuid())
+  orgId           String?           @unique
+  org             Organization?     @relation(fields: [orgId], references: [id])
+  name            String
+  shortName       String
+  /// Problem categories this department owns — the basis of automatic routing.
+  categories      ProblemCategory[]
+  headOfficerId   String?
+  budgetAllocated Decimal           @db.Decimal(14, 2)
+  budgetCommitted Decimal           @db.Decimal(14, 2)
+  budgetSpent     Decimal           @db.Decimal(14, 2)
+  slaHours        Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  officers Officer[]
+  problems Problem[]
+
+  @@map("departments")
+}
+
+model Officer {
+  userId            String       @id
+  user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  departmentId      String
+  department        Department   @relation(fields: [departmentId], references: [id])
+  jurisdictionId    String
+  jurisdiction      Jurisdiction @relation(fields: [jurisdictionId], references: [id])
+  designation       String
+  phone             String
+  capacity          Int
+  activeTasks       Int          @default(0)
+  criticalTasks     Int          @default(0)
+  overdue           Int          @default(0)
+  completionRate    Float        @default(0)
+  avgResolutionDays Float        @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assignedProblems Problem[] @relation("ProblemAssignedOfficer")
+
+  @@index([departmentId])
+  @@index([jurisdictionId])
+  @@map("officers")
+}
+
+model Sponsor {
+  id                 String        @id @default(uuid())
+  orgId              String?       @unique
+  org                Organization? @relation(fields: [orgId], references: [id])
+  name               String
+  sector             String
+  csrThemes          String[]
+  csrGeographies     String[]
+  csrBudgetRemaining Decimal       @db.Decimal(14, 2)
+  responseRate       Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  matches SponsorshipMatch[]
+
+  @@map("sponsors")
+}
+
+// ===========================================================================
+// Reports & problems
+// ===========================================================================
+
+enum ProblemCategory {
+  water
+  roads
+  drainage
+  streetlight
+  waste
+  bridge
+  sanitation
+  school
+  health
+}
+
+enum Severity {
+  critical
+  high
+  medium
+  low
+}
+
+enum Stage {
+  reported
+  ai_processed
+  validated
+  prioritised
+  sponsorship
+  funded
+  assigned
+  implementation
+  verification
+  impact
+}
+
+enum ProblemStatus {
+  pending_validation
+  awaiting_sponsorship
+  funding_required
+  in_progress
+  verification_pending
+  resolved
+  rejected
+}
+
+enum ReportChannel {
+  voice
+  text
+  photo
+  ivr
+  field
+}
+
+model CitizenReport {
+  id            String          @id @default(uuid())
+  problemId     String?
+  problem       Problem?        @relation(fields: [problemId], references: [id])
+  reporterId    String?
+  reporter      User?           @relation(fields: [reporterId], references: [id])
+  /// Display name captured at intake (kept even when reporterId is null — IVR,
+  /// field-collected). Never crosses to industry.
+  citizenName   String
+  channel       ReportChannel
+  /// Verbatim citizen text, in their language. Never logged, never crosses.
+  raw           String
+  language      String
+  villageId     String
+  village       Village         @relation(fields: [villageId], references: [id])
+  lat           Float
+  lng           Float
+  photos        Int             @default(0)
+  duplicateOfId String?
+  duplicateOf   CitizenReport?  @relation("ReportDuplicates", fields: [duplicateOfId], references: [id])
+  duplicates    CitizenReport[] @relation("ReportDuplicates")
+  aiConfidence  Float
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([problemId])
+  @@index([villageId])
+  @@map("citizen_reports")
+}
+
+model Problem {
+  id                String          @id @default(uuid())
+  title             String
+  category          ProblemCategory
+  status            ProblemStatus   @default(pending_validation)
+  severity          Severity        @default(medium)
+  stage             Stage           @default(ai_processed)
+  jurisdictionId    String
+  jurisdiction      Jurisdiction    @relation(fields: [jurisdictionId], references: [id])
+  reportCount       Int             @default(0)
+  duplicateCount    Int             @default(0)
+  affected          Int             @default(0)
+  slaDueAt          DateTime?
+  estimatedCost     Decimal         @default(0) @db.Decimal(14, 2)
+  departmentId      String?
+  department        Department?     @relation(fields: [departmentId], references: [id])
+  assignedOfficerId String?
+  assignedOfficer   Officer?        @relation("ProblemAssignedOfficer", fields: [assignedOfficerId], references: [userId])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  villages            ProblemVillage[]
+  reports             CitizenReport[]
+  ai                  ProblemAi?
+  factors             ProblemFactors?
+  adjustments         PriorityAdjustment[]
+  sponsorship         Sponsorship?
+  sponsorMatches      SponsorshipMatch[]
+  funding             Funding?
+  fundingCommits      FundingCommitment[]
+  projects            Project[]
+  evidence            Evidence?
+  verificationRequest VerificationRequest?
+  verifications       Verification[]
+  rankingObjections   RankingObjection[]
+  audit               AuditEntry[]
+  clusters            ClusterProblem[]
+  ledgerEntries       LedgerEntry[]
+  allocations         Allocation[]
+  mentorshipRequests  MentorshipRequest[]
+
+  @@index([status])
+  @@index([jurisdictionId])
+  @@index([category])
+  @@index([departmentId])
+  @@map("problems")
+}
+
+model ProblemVillage {
+  problemId String
+  problem   Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  villageId String
+  village   Village @relation(fields: [villageId], references: [id], onDelete: Cascade)
+
+  @@id([problemId, villageId])
+  @@map("problem_villages")
+}
+
+/// The structured reading the intake model produced. 1:1 with a problem.
+model ProblemAi {
+  problemId          String          @id
+  problem            Problem         @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  category           ProblemCategory
+  categoryConfidence Float
+  severity           Severity
+  durationDays       Int
+  affected           Int
+  similarReports     Int
+  clusterLabel       String
+  /// One representative citizen utterance, verbatim. Internal — never crosses.
+  originalQuote      String
+  originalLanguage   String
+  /// [{ label, value }] — the structured interpretation lines.
+  interpretation     Json
+  routedDepartmentId String?
+  routingReason      String
+  /// { byOfficerId, departmentId, reason, at } when an officer overrode routing.
+  routingOverridden  Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("problem_ai")
+}
+
+/// The seven need signals, each normalised 0–100. 1:1 with a problem.
+model ProblemFactors {
+  problemId        String  @id
+  problem          Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  populationImpact Float
+  severity         Float
+  deprivation      Float
+  coverage         Float
+  duration         Float
+  recurrence       Float
+  repeatedDemand   Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("problem_factors")
+}
+
+/// Named, bounded corrections applied after the weighted sum — each shown to
+/// the officer with its reason so the score stays auditable.
+model PriorityAdjustment {
+  id        String  @id @default(uuid())
+  problemId String
+  problem   Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  label     String
+  points    Float
+  reason    String
+
+  createdAt DateTime @default(now())
+
+  @@index([problemId])
+  @@map("priority_adjustments")
+}
+
+/// A weighting for the priority engine. The published set for a jurisdiction is
+/// `published = true`; a null jurisdictionId is the state-wide default.
+model PriorityWeightSet {
+  id             String        @id @default(uuid())
+  jurisdictionId String?
+  jurisdiction   Jurisdiction? @relation(fields: [jurisdictionId], references: [id])
+  published      Boolean       @default(false)
+  /// { populationImpact, severity, deprivation, coverage, duration, recurrence, repeatedDemand }
+  weights        Json
+  createdById    String?
+  createdBy      User?         @relation(fields: [createdById], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([jurisdictionId, published])
+  @@map("priority_weight_sets")
+}
+
+// ===========================================================================
+// Clustering
+// ===========================================================================
+
+model Cluster {
+  id               String          @id @default(uuid())
+  code             String          @unique
+  title            String
+  category         ProblemCategory
+  label            String
+  reportCount      Int             @default(0)
+  mergedDuplicates Int             @default(0)
+  affected         Int             @default(0)
+  centroidLat      Float
+  centroidLng      Float
+  radiusM          Float
+  rank             Int?
+  totalRanked      Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  problems      ClusterProblem[]
+  ledgerEntries LedgerEntry[]
+  allocations   Allocation[]
+
+  @@map("clusters")
+}
+
+model ClusterProblem {
+  clusterId String
+  cluster   Cluster @relation(fields: [clusterId], references: [id], onDelete: Cascade)
+  problemId String
+  problem   Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@id([clusterId, problemId])
+  @@map("cluster_problems")
+}
+
+// ===========================================================================
+// Sponsorship & funding
+// ===========================================================================
+
+enum SponsorshipStatus {
+  not_eligible
+  awaiting
+  invited
+  interested
+  proposal
+  approved
+  declined
+}
+
+enum SponsorMatchStatus {
+  matched
+  invited
+  interested
+  proposal
+  declined
+  approved
+}
+
+enum FundingStatus {
+  not_required
+  pending
+  recommended
+  approved
+  rejected
+}
+
+model Sponsorship {
+  problemId         String            @id
+  problem           Problem           @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  status            SponsorshipStatus @default(not_eligible)
+  eligible          Boolean           @default(false)
+  invitedAt         DateTime?
+  responseDueAt     DateTime?
+  approvedSponsorId String?
+  approvedAmount    Decimal?          @db.Decimal(14, 2)
+  failureReason     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("sponsorships")
+}
+
+model SponsorshipMatch {
+  id             String             @id @default(uuid())
+  problemId      String
+  problem        Problem            @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  sponsorId      String
+  sponsor        Sponsor            @relation(fields: [sponsorId], references: [id])
+  score          Float
+  reasons        String[]
+  status         SponsorMatchStatus @default(matched)
+  respondedAt    DateTime?
+  proposalAmount Decimal?           @db.Decimal(14, 2)
+  note           String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([problemId, sponsorId])
+  @@index([problemId])
+  @@map("sponsorship_matches")
+}
+
+model Funding {
+  problemId                 String        @id
+  problem                   Problem       @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  status                    FundingStatus @default(not_required)
+  required                  Decimal       @default(0) @db.Decimal(14, 2)
+  source                    String?
+  departmentBudgetAvailable Decimal       @default(0) @db.Decimal(14, 2)
+  fundable                  Boolean       @default(false)
+  approvedAt                DateTime?
+  approvedById              String?
+  approvedBy                User?         @relation("FundingApprovedBy", fields: [approvedById], references: [id])
+  /// Display name captured at approval time (fixtures record a name, not an id).
+  approvedByName            String?
+  note                      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("funding")
+}
+
+enum CommitmentStatus {
+  intent
+  proposal_submitted
+  awaiting_government
+  committed
+  disbursing
+  closed
+}
+
+model FundingCommitment {
+  id           String           @id @default(uuid())
+  problemId    String
+  problem      Problem          @relation(fields: [problemId], references: [id])
+  sponsorOrgId String
+  sponsorOrg   Organization     @relation(fields: [sponsorOrgId], references: [id])
+  amount       Decimal          @db.Decimal(14, 2)
+  status       CommitmentStatus @default(intent)
+  alsoOffering String[]
+  approvedAt   DateTime?
+  approvedBy   String?
+  note         String?
+  /// [{ label, amount, releasedOn, released }]
+  tranches     Json             @default("[]")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([problemId])
+  @@map("funding_commitments")
+}
+
+// ===========================================================================
+// Public ledger
+// ===========================================================================
+
+enum LedgerStage {
+  allocated
+  committed
+  disbursed
+  verified
+}
+
+model LedgerEntry {
+  id                 String      @id @default(uuid())
+  problemId          String?
+  problem            Problem?    @relation(fields: [problemId], references: [id])
+  clusterId          String?
+  cluster            Cluster?    @relation(fields: [clusterId], references: [id])
+  title              String
+  amount             Decimal     @db.Decimal(14, 2)
+  currency           String      @default("INR")
+  department         String
+  fiscalYear         String
+  stage              LedgerStage
+  verifiedByCitizens Boolean     @default(false)
+  at                 DateTime
+
+  createdAt DateTime @default(now())
+
+  @@index([fiscalYear])
+  @@map("ledger_entries")
+}
+
+enum AllocationStatus {
+  proposed
+  approved
+  released
+}
+
+model Allocation {
+  id           String           @id @default(uuid())
+  clusterId    String?
+  cluster      Cluster?         @relation(fields: [clusterId], references: [id])
+  problemId    String?
+  problem      Problem?         @relation(fields: [problemId], references: [id])
+  amount       Decimal          @db.Decimal(14, 2)
+  approvedById String
+  approvedBy   User             @relation("AllocationApprovedBy", fields: [approvedById], references: [id])
+  status       AllocationStatus @default(proposed)
+  approvedAt   DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@map("allocations")
+}
+
+// ===========================================================================
+// Delivery
+// ===========================================================================
+
+enum ProjectKind {
+  gov
+  industry
+}
+
+enum ProjectPhase {
+  planning
+  implementation
+  testing
+  completed
+}
+
+enum ProjectStage {
+  discovery
+  team_formed
+  funded
+  research
+  prototype
+  testing
+  pilot
+  deployment
+  impact
+}
+
+model Project {
+  id             String        @id @default(uuid())
+  kind           ProjectKind
+  problemId      String?
+  problem        Problem?      @relation(fields: [problemId], references: [id])
+  title          String
+  phase          ProjectPhase  @default(planning)
+  stage          ProjectStage?
+  progress       Int           @default(0)
+  budget         Decimal       @default(0) @db.Decimal(14, 2)
+  spent          Decimal       @default(0) @db.Decimal(14, 2)
+  contractor     String?
+  officerId      String?
+  universityId   String?
+  teamId         String?
+  team           StudentTeam?  @relation(fields: [teamId], references: [id])
+  governmentBody String?
+  startedAt      DateTime?
+  dueAt          DateTime?
+  planDays       Int?
+  dayOfPlan      Int?
+  /// gov projects carry a simple [{ label, done, at? }] milestone list; the
+  /// richer industry milestone lands as its own table in stage 7.
+  govMilestones  Json          @default("[]")
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  milestones         Milestone[]
+  pilot              Pilot?
+  documents          ProjectDocument[]
+  threads            MessageThread[]
+  mentorshipRequests MentorshipRequest[]
+  mentorAssignments  MentorAssignment[]
+
+  @@index([problemId])
+  @@map("projects")
+}
+
+enum MilestoneStatus {
+  complete
+  active
+  pending
+  changes_requested
+}
+
+model Milestone {
+  id             String          @id @default(uuid())
+  projectId      String
+  project        Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  label          String
+  detail         String?
+  status         MilestoneStatus @default(pending)
+  percent        Int             @default(0)
+  dueAt          DateTime?
+  completedAt    DateTime?
+  deliverables   String[]
+  awaitingReview Boolean         @default(false)
+  reviewedById   String?
+  reviewNote     String?
+  trancheAmount  Decimal?        @db.Decimal(14, 2)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId])
+  @@map("milestones")
+}
+
+model Pilot {
+  projectId    String  @id
+  project      Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  location     String
+  villages     Int
+  durationDays Int
+  dayOfPlan    Int
+  users        Int
+  adoption     Float
+  reliability  Float
+  /// [{ label, value, target, met }]
+  metrics      Json    @default("[]")
+  /// [{ id, label, severity, open }]
+  issues       Json    @default("[]")
+  /// [{ quote, from, village }]
+  feedback     Json    @default("[]")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("pilots")
+}
+
+enum ProjectDocumentKind {
+  spec
+  report
+  approval
+  data
+  financial
+}
+
+model ProjectDocument {
+  id         String              @id @default(uuid())
+  projectId  String
+  project    Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name       String
+  kind       ProjectDocumentKind
+  sizeKb     Int
+  uploadedBy String
+  sharedWith String[]
+  at         DateTime
+
+  createdAt DateTime @default(now())
+
+  @@index([projectId])
+  @@map("project_documents")
+}
+
+// ===========================================================================
+// People & collaboration
+// ===========================================================================
+
+model Faculty {
+  userId      String       @id
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orgId       String
+  org         Organization @relation(fields: [orgId], references: [id])
+  designation String
+  expertise   String[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  teams StudentTeam[]
+
+  @@map("faculty")
+}
+
+model StudentTeam {
+  id                String       @id @default(uuid())
+  orgId             String
+  org               Organization @relation(fields: [orgId], references: [id])
+  facultyId         String?
+  faculty           Faculty?     @relation(fields: [facultyId], references: [userId])
+  name              String
+  skills            String[]
+  stage             ProjectStage @default(discovery)
+  memberCount       Int          @default(0)
+  mentorRolesWanted String[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members            TeamMember[]
+  projects           Project[]
+  applications       Application[]
+  mentorshipRequests MentorshipRequest[]
+  mentorAssignments  MentorAssignment[]
+
+  @@index([orgId])
+  @@map("student_teams")
+}
+
+model TeamMember {
+  id         String      @id @default(uuid())
+  teamId     String
+  team       StudentTeam @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  userId     String?
+  user       User?       @relation(fields: [userId], references: [id])
+  firstName  String
+  year       String
+  discipline String
+
+  createdAt DateTime @default(now())
+
+  @@index([teamId])
+  @@map("team_members")
+}
+
+enum ApplicationStatus {
+  draft
+  submitted
+  under_review
+  shortlisted
+  accepted
+  rejected
+  withdrawn
+}
+
+model Application {
+  id             String            @id @default(uuid())
+  studentId      String
+  teamId         String?
+  team           StudentTeam?      @relation(fields: [teamId], references: [id])
+  challengeId    String?
+  opportunityRef String?
+  status         ApplicationStatus @default(draft)
+  note           String?
+  submittedAt    DateTime?
+  decidedAt      DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([studentId])
+  @@map("applications")
+}
+
+// ===========================================================================
+// Mentorship & messaging
+// ===========================================================================
+
+model MentorshipRequest {
+  id            String       @id @default(uuid())
+  problemId     String?
+  problem       Problem?     @relation(fields: [problemId], references: [id])
+  projectId     String?
+  project       Project?     @relation(fields: [projectId], references: [id])
+  teamId        String
+  team          StudentTeam  @relation(fields: [teamId], references: [id])
+  roles         String[]
+  hoursPerMonth Int
+  stage         ProjectStage
+  need          String
+  askedAt       DateTime     @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assignments MentorAssignment[]
+
+  @@map("mentorship_requests")
+}
+
+model MentorAssignment {
+  id           String            @id @default(uuid())
+  requestId    String
+  request      MentorshipRequest @relation(fields: [requestId], references: [id])
+  mentorUserId String
+  teamId       String
+  team         StudentTeam       @relation(fields: [teamId], references: [id])
+  projectId    String
+  project      Project           @relation(fields: [projectId], references: [id])
+  roles        String[]
+  since        DateTime          @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessions MentorSession[]
+
+  @@map("mentor_assignments")
+}
+
+model MentorSession {
+  id           String           @id @default(uuid())
+  assignmentId String
+  assignment   MentorAssignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  at           DateTime
+  topic        String
+  minutes      Int
+  done         Boolean          @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@index([assignmentId])
+  @@map("mentor_sessions")
+}
+
+model MessageThread {
+  id        String   @id @default(uuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  subject   String
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  participants ThreadParticipant[]
+  messages     Message[]
+
+  @@index([projectId])
+  @@map("message_threads")
+}
+
+model ThreadParticipant {
+  id       String        @id @default(uuid())
+  threadId String
+  thread   MessageThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  userId   String
+  role     String
+
+  @@unique([threadId, userId])
+  @@map("thread_participants")
+}
+
+model Message {
+  id           String        @id @default(uuid())
+  threadId     String
+  thread       MessageThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  authorId     String
+  body         String
+  attachmentId String?
+  at           DateTime      @default(now())
+
+  createdAt DateTime @default(now())
+
+  @@index([threadId])
+  @@map("messages")
+}
+
+// ===========================================================================
+// Verification, evidence, engagement
+// ===========================================================================
+
+enum VerificationKind {
+  citizen
+  field
+}
+
+model Verification {
+  id         String           @id @default(uuid())
+  problemId  String
+  problem    Problem          @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  verifierId String
+  verifier   User             @relation(fields: [verifierId], references: [id])
+  kind       VerificationKind
+  fixed      Boolean
+  checklist  Json?
+  geoLat     Float?
+  geoLng     Float?
+  at         DateTime         @default(now())
+
+  createdAt DateTime @default(now())
+
+  @@index([problemId])
+  @@map("verifications")
+}
+
+model VerificationRequest {
+  problemId   String    @id
+  problem     Problem   @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  requestedAt DateTime?
+  asked       Int       @default(0)
+  confirmed   Int       @default(0)
+  denied      Int       @default(0)
+  pending     Int       @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("verification_requests")
+}
+
+enum ObjectionStatus {
+  open
+  reviewing
+  upheld
+  dismissed
+}
+
+model RankingObjection {
+  id        String          @id @default(uuid())
+  problemId String
+  problem   Problem         @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User            @relation(fields: [userId], references: [id])
+  reason    String
+  status    ObjectionStatus @default(open)
+  at        DateTime        @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([problemId])
+  @@map("ranking_objections")
+}
+
+model Evidence {
+  problemId String  @id
+  problem   Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  /// { photos, activeReports, note }
+  before    Json
+  /// { photos, activeReports, note } — set once work completes.
+  after     Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("evidence")
+}
+
+model Achievement {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  key       String
+  points    Int      @default(0)
+  awardedAt DateTime @default(now())
+
+  @@unique([userId, key])
+  @@map("achievements")
+}
+
+model ImpactPointsEntry {
+  id     String   @id @default(uuid())
+  userId String
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  source String
+  points Int
+  at     DateTime @default(now())
+
+  @@index([userId])
+  @@map("impact_points_ledger")
+}
+
+// ===========================================================================
+// Platform
+// ===========================================================================
+
+model Attachment {
+  id          String  @id @default(uuid())
+  ownerId     String
+  owner       User    @relation(fields: [ownerId], references: [id])
+  r2Key       String  @unique
+  contentType String
+  sizeBytes   Int
+  purpose     String
+  entityType  String?
+  entityId    String?
+
+  createdAt DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@map("attachments")
+}
+
+model Notification {
+  id          String  @id @default(uuid())
+  userId      String
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind        String
+  title       String
+  detail      String
+  read        Boolean @default(false)
+  actionLabel String?
+  actionHref  String?
+  entityType  String?
+  entityId    String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, read])
+  @@map("notifications")
+}
+
+enum AutomationScope {
+  gov
+  industry
+}
+
+enum AutomationStatus {
+  healthy
+  attention
+  paused
+}
+
+model Automation {
+  id              String           @id @default(uuid())
+  scope           AutomationScope
+  orgId           String?
+  name            String
+  description     String
+  category        String?
+  status          AutomationStatus @default(healthy)
+  enabled         Boolean          @default(true)
+  lastRunAt       DateTime?
+  nextAction      String?
+  affectedRecords Int              @default(0)
+  runsToday       Int              @default(0)
+  requiresHuman   Boolean          @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([scope])
+  @@map("automations")
+}
+
+enum AuditActor {
+  AI
+  System
+  Officer
+  Citizen
+  Industry
+}
+
+model AuditEntry {
+  id          String     @id @default(uuid())
+  entityType  String
+  entityId    String
+  problemId   String?
+  problem     Problem?   @relation(fields: [problemId], references: [id])
+  at          DateTime   @default(now())
+  actor       AuditActor
+  actorUserId String?
+  actorUser   User?      @relation(fields: [actorUserId], references: [id])
+  actorName   String?
+  action      String
+  detail      String?
+  automated   Boolean    @default(false)
+
+  @@index([entityType, entityId])
+  @@index([problemId])
+  @@map("audit_entries")
+}
+
+/// Twelve weeks of intake vs resolution, for the analytics screens. A denormal
+/// read model recomputed by a job; a plain time series here.
+model WeeklyTrendPoint {
+  id          String @id @default(uuid())
+  week        String @unique
+  reported    Int
+  resolved    Int
+  priorityAvg Int
+
+  createdAt DateTime @default(now())
+
+  @@map("weekly_trend_points")
+}
