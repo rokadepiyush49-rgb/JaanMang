@@ -11,6 +11,8 @@
 import { PrismaClient } from '@prisma/client';
 import { seedRbac } from './seed/rbac';
 import { seedGov } from './seed/gov';
+import { seedOnboarding } from './seed/onboarding';
+import { seedInstitute } from './seed/institute';
 
 const prisma = new PrismaClient();
 
@@ -34,6 +36,8 @@ async function main(): Promise<void> {
   await wipe();
   await seedRbac(prisma);
   const { devLogins } = await seedGov(prisma);
+  const { devLogins: identityLogins } = await seedOnboarding(prisma);
+  const { devLogins: instituteLogins } = await seedInstitute(prisma);
 
   const counts = {
     users: await prisma.user.count(),
@@ -49,7 +53,9 @@ async function main(): Promise<void> {
       Object.entries(counts)
         .map(([k, v]) => `  ${v.toString().padStart(4)}  ${k}`)
         .join('\n') +
-      `\n\nDev government logins (password: jansetu-dev):\n` +
+      `\n\nDemo logins — every account uses the password  jansetu-dev\n\n` +
+      identityLogins.concat(instituteLogins).map((l) => `  ${l}`).join('\n') +
+      '\n' +
       devLogins.map((l) => `  ${l}`).join('\n') +
       '\n',
   );

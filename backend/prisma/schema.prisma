@@ -48,6 +48,20 @@ enum Locale {
   hi
 }
 
+/// Which workspace a role sends its holder to after sign-in.
+///
+/// The home surface is a property of the *role*, not of the user, so adding a
+/// new audience later (institute, NGO, mentor) is a seeded row plus a route
+/// group — never a change to the session, the guard or the token.
+enum Surface {
+  citizen
+  student
+  gov
+  industry
+  institute
+  admin
+}
+
 model User {
   id              String     @id @default(uuid())
   kind            UserKind
@@ -71,6 +85,10 @@ model User {
   passwordResets     PasswordResetToken[]
   officer            Officer?
   faculty            Faculty?
+  studentProfile     StudentProfile?
+  orgMemberships     OrgMembership[]
+  verificationsFiled AccountVerification[] @relation("VerificationSubmittedBy")
+  verificationsRead  AccountVerification[] @relation("VerificationReviewedBy")
   teamMemberships    TeamMember[]
   reports            CitizenReport[]
   auditEntries       AuditEntry[]
@@ -81,8 +99,8 @@ model User {
   impactPoints       ImpactPointsEntry[]
   achievements       Achievement[]
   weightSetsCreated  PriorityWeightSet[]
-  fundingApprovals   Funding[]           @relation("FundingApprovedBy")
-  allocationsApprved Allocation[]        @relation("AllocationApprovedBy")
+  fundingApprovals   Funding[]             @relation("FundingApprovedBy")
+  allocationsApprved Allocation[]          @relation("AllocationApprovedBy")
 
   @@index([kind])
   @@map("users")
@@ -126,13 +144,13 @@ model OtpCode {
 /// raw token is returned in the response so the flow works without an email
 /// provider wired up.
 model PasswordResetToken {
-  id        String    @id @default(uuid())
-  userId    String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tokenHash String    @unique
-  expiresAt DateTime
+  id         String    @id @default(uuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash  String    @unique
+  expiresAt  DateTime
   consumedAt DateTime?
-  createdAt DateTime  @default(now())
+  createdAt  DateTime  @default(now())
 
   @@index([userId])
   @@map("password_reset_tokens")
@@ -145,6 +163,10 @@ model Role {
   id          String           @id @default(uuid())
   key         String           @unique
   label       String
+  /// Where a holder of this role lands after sign-in.
+  surface     Surface          @default(citizen)
+  /// Breaks the tie when a user holds several roles — highest rank wins.
+  rank        Int              @default(0)
   permissions RolePermission[]
   users       UserRole[]
 
@@ -204,6 +226,10 @@ enum GovLevel {
   district
   block
   panchayat
+  /// Urban local body — nagar panchayat, municipal council, municipal
+  /// corporation. Sits under a district (corporations) or a block (the rest),
+  /// so the existing parent/child scoping needs no special case.
+  ulb
 }
 
 model Jurisdiction {
@@ -283,10 +309,18 @@ model Organization {
 
   department     Department?
   sponsor        Sponsor?
+  govBody        GovernmentBodyProfile?
+  industryInfo   IndustryProfile?
+  institution    InstitutionProfile?
+  locations      OrgLocation[]
+  memberships    OrgMembership[]
+  students       StudentProfile[]
   userRoles      UserRole[]
   studentTeams   StudentTeam[]
   faculty        Faculty[]
   fundingCommits FundingCommitment[]
+  departments    InstituteDepartment[]
+  programs       Program[]
 
   @@index([type])
   @@map("organizations")
@@ -488,6 +522,7 @@ model Problem {
   ledgerEntries       LedgerEntry[]
   allocations         Allocation[]
   mentorshipRequests  MentorshipRequest[]
+  studentTeams        StudentTeam[]
 
   @@index([status])
   @@index([jurisdictionId])
@@ -958,12 +993,42 @@ model Faculty {
   designation String
   expertise   String[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  /// The academic department they belong to. Null while an institution has not
+  /// drawn its departments yet — a faculty member is useful before that.
+  departmentId String?
+  department   InstituteDepartment? @relation(fields: [departmentId], references: [id])
+
+  /// Official contact, as the institution publishes it. Distinct from
+  /// `User.email`, which is the login and may be personal.
+  officialEmail String?
+  officialPhone String?
+
+  /// How many teams this person can guide at once. The team assignment screen
+  /// reads it to show who is already at capacity.
+  guideCapacity Int @default(4)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   teams StudentTeam[]
 
+  @@index([orgId])
+  @@index([departmentId])
   @@map("faculty")
+}
+
+enum TeamStatus {
+  /// Created, still gathering members or a guide.
+  forming
+  /// Approved by the institution and working.
+  active
+  /// Final deliverable submitted, awaiting the institution's decision.
+  submitted
+  /// Signed off.
+  completed
+  /// Wound up without completing.
+  archived
 }
 
 model StudentTeam {
@@ -978,8 +1043,27 @@ model StudentTeam {
   memberCount       Int          @default(0)
   mentorRolesWanted String[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  /// What the team is actually working on, and the validated citizen problem
+  /// behind it. Both null for a team formed before it picked a brief.
+  title     String?
+  problemId String?
+  problem   Problem? @relation(fields: [problemId], references: [id])
+
+  /// The academic department accountable for the team.
+  departmentId String?
+  department   InstituteDepartment? @relation(fields: [departmentId], references: [id])
+
+  status TeamStatus @default(forming)
+
+  /// The institution's two decisions on a team: it may work, and it is done.
+  approvedAt   DateTime?
+  approvedById String?
+  submittedAt  DateTime?
+  completedAt  DateTime?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   members            TeamMember[]
   projects           Project[]
@@ -988,6 +1072,8 @@ model StudentTeam {
   mentorAssignments  MentorAssignment[]
 
   @@index([orgId])
+  @@index([facultyId])
+  @@index([departmentId])
   @@map("student_teams")
 }
 
@@ -1356,4 +1442,442 @@ model WeeklyTrendPoint {
   createdAt DateTime @default(now())
 
   @@map("weekly_trend_points")
+}
+
+// ===========================================================================
+// Identity profiles — one table per audience
+// ===========================================================================
+//
+// `Officer` and `Faculty` already establish the pattern: a 1:1 table keyed on
+// userId that carries what *that* audience's screens need and nothing else.
+// The three tables below complete it for students, government bodies and
+// industry partners.
+//
+// Nothing here duplicates `User`. Name, email, phone, password and photo live
+// on `User` because every audience has them; everything below exists because a
+// specific screen reads it.
+
+/// A student's profile. Every field is read by a student screen:
+/// institution + branch + year drive team search and `TeamMember`; state and
+/// district drive the opportunity and challenge region filters; skills drive
+/// the match percentage on every opportunity card.
+///
+/// Deliberately absent: date of birth (no consumer, and students are often
+/// minors), semester (`currentYear` is the granularity every consumer uses)
+/// and any social link that no screen renders yet.
+model StudentProfile {
+  userId String @id
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// The institution as a platform organisation, when it is already on the
+  /// register. Null for a college a student typed in themselves.
+  orgId           String?
+  org             Organization? @relation(fields: [orgId], references: [id])
+  /// Always set — the display string, whether or not `orgId` resolved.
+  institutionName String
+
+  degree         String
+  branch         String
+  currentYear    Int
+  graduationYear Int
+  /// Only ever used as evidence when an institution verifies the student.
+  enrollmentNo   String?
+
+  state    String
+  district String
+
+  skills    String[]
+  interests String[]
+
+  /// Where the institution has placed this student in its own structure. Set
+  /// by the institute roster screen, never by the student — a student cannot
+  /// put themselves in a department they are not in.
+  departmentId String?
+  department   InstituteDepartment? @relation(fields: [departmentId], references: [id])
+  programId    String?
+  program      Program?             @relation(fields: [programId], references: [id])
+
+  /// The institution confirming this person is really enrolled. Until it is
+  /// set the student is on the roster as *claimed*, and the institute screen
+  /// shows them in a queue rather than in the roll.
+  verifiedAt   DateTime?
+  verifiedById String?
+
+  /// Collected later from the profile screen, never at signup.
+  resumeUrl    String?
+  githubUrl    String?
+  linkedinUrl  String?
+  portfolioUrl String?
+
+  /// Set when the onboarding wizard completes. Null = still onboarding.
+  onboardedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([orgId])
+  @@index([departmentId])
+  @@map("student_profiles")
+}
+
+enum GovBodyType {
+  gram_panchayat
+  nagar_panchayat
+  municipal_council
+  municipal_corporation
+  block_office
+  district_office
+  line_department
+  other
+}
+
+/// A government authority, as distinct from the person who signs in for it.
+///
+/// `lgdCode` is the Local Government Directory identifier the platform already
+/// names as its government key (see the citizen app's method page). It is
+/// optional on purpose: the product publicly states that every geographic unit
+/// currently carries a null LGD code, so requiring one would make signup
+/// impossible for exactly the bodies it is meant to serve.
+model GovernmentBodyProfile {
+  orgId String       @id
+  org   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  bodyType GovBodyType
+  lgdCode  String?     @unique
+
+  state    String
+  district String
+  block    String?
+  bodyName String
+
+  officeAddress String?
+  pincode       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([state, district])
+  @@map("government_body_profiles")
+}
+
+enum OrgSize {
+  startup
+  sme
+  enterprise
+  mnc
+  psu
+  csr_trust
+  other
+}
+
+/// An industry partner's matchable profile.
+///
+/// Every array here is an input to `apps/web/src/lib/industry/match.ts`:
+/// csrThemes 25 points, technologyDomains 25, geographies 20, the funding
+/// range 15, capabilities 15. They are columns rather than `Organization.profile`
+/// Json precisely because the match engine filters on them.
+model IndustryProfile {
+  orgId String       @id
+  org   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  orgSize         OrgSize
+  sector          String
+  website         String?
+  yearEstablished Int?
+  employeeCount   Int?
+
+  csrThemes         String[]
+  geographies       String[]
+  technologyDomains String[]
+  capabilities      String[]
+  sdgPreferences    Int[]
+  provenDomains     String[]
+
+  fundingMin Decimal @default(0) @db.Decimal(14, 2)
+  fundingMax Decimal @default(0) @db.Decimal(14, 2)
+
+  csrFinancialYear    String?
+  csrAllocated        Decimal? @db.Decimal(14, 2)
+  csrPreferredCeiling Decimal? @db.Decimal(14, 2)
+
+  onboardedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("industry_profiles")
+}
+
+/// A university or college. Feeds `/industry/universities` and the institution
+/// picker in student onboarding. Added now so the institution register exists
+/// before the Institute surface does.
+enum InstitutionType {
+  university
+  college
+  polytechnic
+  iti
+  training_institute
+  other
+}
+
+model InstitutionProfile {
+  orgId String       @id
+  org   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  shortName     String
+  city          String
+  state         String
+  district      String?
+  accreditation String?
+  aisheCode     String?
+  focusAreas    String[]
+  labs          String[]
+  /// Domains that prove a student belongs here, e.g. ["bitmesra.ac.in"].
+  emailDomains  String[]
+
+  institutionType InstitutionType @default(college)
+  website         String?
+  officialEmail   String?
+  officialPhone   String?
+  establishedYear Int?
+  logoUrl         String?
+
+  /// Set when the institute wizard completes. Null = still onboarding, which
+  /// is what `AuthService.isOnboarded` reads for this surface.
+  onboardedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([state])
+  @@map("institution_profiles")
+}
+
+// ===========================================================================
+// Academic structure
+// ===========================================================================
+//
+// `Department` above is a *government line department* — it owns problem
+// categories, carries a budget and routes citizen demand. An academic
+// department shares nothing with it but the English word, so it is its own
+// table. Merging them would give a Civil Engineering department an SLA and a
+// crore of public money.
+
+model InstituteDepartment {
+  id    String       @id @default(uuid())
+  orgId String
+  org   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  name String
+  /// Short code the institution already uses internally, e.g. "CSE".
+  code String
+
+  /// Head of department — a faculty member of the same institution. Not a
+  /// relation to `Faculty` because that would make the two tables mutually
+  /// required; the API validates it.
+  hodFacultyId String?
+
+  /// Declared teaching strength. Faculty *rows* are counted live; this is the
+  /// establishment figure, which is a different and also useful number.
+  facultyStrength Int?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  programs Program[]
+  faculty  Faculty[]
+  students StudentProfile[]
+  teams    StudentTeam[]
+
+  @@unique([orgId, code])
+  @@index([orgId])
+  @@map("institute_departments")
+}
+
+enum ProgramLevel {
+  certificate
+  diploma
+  undergraduate
+  postgraduate
+  doctoral
+}
+
+enum ProgramStatus {
+  active
+  paused
+  archived
+}
+
+model Program {
+  id           String              @id @default(uuid())
+  orgId        String
+  org          Organization        @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  departmentId String
+  department   InstituteDepartment @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+
+  name          String
+  level         ProgramLevel
+  durationYears Int
+  /// Sanctioned seats per year. Enrolment is counted from the roster.
+  intake        Int?
+  eligibility   String?
+  status        ProgramStatus @default(active)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  students StudentProfile[]
+
+  @@index([orgId])
+  @@index([departmentId])
+  @@map("programs")
+}
+
+enum OrgLocationKind {
+  headquarters
+  branch
+  plant
+  office
+}
+
+/// Where an organisation physically is.
+///
+/// A branch is a *location* of one legal entity; a subsidiary is a different
+/// entity and already has `Organization.parentOrgId`. Keeping them apart is
+/// what lets the dashboard carry branch-wise jobs, contacts and analytics
+/// without giving every branch its own users, verification and CSR budget.
+model OrgLocation {
+  id    String       @id @default(uuid())
+  orgId String
+  org   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  kind        OrgLocationKind @default(branch)
+  label       String?
+  addressLine String?
+  state       String
+  district    String?
+  city        String
+  pincode     String?
+  lat         Float?
+  lng         Float?
+  isPrimary   Boolean         @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([orgId])
+  @@map("org_locations")
+}
+
+/// Who a person is *inside* an organisation.
+///
+/// `UserRole(orgId)` already answers what they may do. This answers who they
+/// are — designation, official contact, whether they are the contact the
+/// platform writes to. Splitting the two is what makes
+/// organisation → representative → login account three things rather than one,
+/// and what lets a second CSR officer be invited later with no new signup flow.
+model OrgMembership {
+  id     String       @id @default(uuid())
+  userId String
+  user   User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orgId  String
+  org    Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  designation      String
+  officialEmail    String?
+  officialPhone    String?
+  isPrimaryContact Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, orgId])
+  @@index([orgId])
+  @@map("org_memberships")
+}
+
+enum VerificationSubject {
+  user
+  organization
+}
+
+enum VerificationStatus {
+  pending
+  verified
+  rejected
+  info_requested
+}
+
+/// The review record for an account that claims authority.
+///
+/// Government and industry accounts hold power over other people's money and
+/// other people's data, so the role they ask for is recorded as a *request*
+/// and granted by a reviewer. `signals` holds what the server could check by
+/// itself (email domain class, website/email domain match, duplicate bodies),
+/// so a reviewer reads evidence rather than guessing.
+model AccountVerification {
+  id String @id @default(uuid())
+
+  subjectType VerificationSubject
+  subjectId   String
+  status      VerificationStatus  @default(pending)
+
+  /// The role key the applicant asked for. Granted, downgraded or refused.
+  requestedRoleKey String?
+  /// Jurisdiction the applicant claims, for a government body.
+  jurisdictionId   String?
+
+  submittedById String?
+  submittedBy   User?   @relation("VerificationSubmittedBy", fields: [submittedById], references: [id])
+
+  /// { emailDomainClass, websiteMatchesEmail, duplicateOrgIds, … }
+  signals Json @default("{}")
+
+  reviewedById String?
+  reviewedBy   User?     @relation("VerificationReviewedBy", fields: [reviewedById], references: [id])
+  reviewedAt   DateTime?
+  reason       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([subjectType, subjectId])
+  @@map("account_verifications")
+}
+
+// ===========================================================================
+// Public statistics
+// ===========================================================================
+
+/// One year of platform-wide figures, for the public landing page.
+///
+/// Live counts (problems, reports, villages) are queried from their own tables.
+/// This table holds the *historical series* — the years before the data in this
+/// database — and every row carries its own provenance string, which the
+/// landing page renders beside the figure. The platform's rule is that no
+/// number appears without its source; a marketing page is not an exception.
+model PlatformYearStat {
+  year Int @id
+
+  reportsSubmitted  Int
+  problemsValidated Int
+  problemsResolved  Int
+  citizensVerifying Int
+  villagesCovered   Int
+  panchayatsOnboard Int
+  studentsEngaged   Int
+  partnerOrgs       Int
+  /// Rupees moved through the public ledger that year.
+  fundsRouted       Decimal @db.Decimal(16, 2)
+
+  /// Rendered verbatim under the figures it explains.
+  provenance String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("platform_year_stats")
 }
