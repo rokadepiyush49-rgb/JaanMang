@@ -11,8 +11,7 @@ There is **one** backend. It is not duplicated per client.
 
 NestJS 11 (Fastify) · TypeScript · PostgreSQL 16 (Neon) · Prisma 6 · JWT auth
 (argon2id) · CASL for RBAC · zod validation · OpenAPI 3 · Vitest. See
-[`../.claude/plans`](../) — the full architecture rationale is in the approved
-plan, and [`DESIGN.md`](../DESIGN.md) for the product model the schema mirrors.
+[`DESIGN.md`](../DESIGN.md) for the product model the schema mirrors.
 
 ## Layout
 
