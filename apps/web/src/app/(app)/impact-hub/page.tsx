@@ -32,7 +32,7 @@ export default function ImpactHubPage() {
         title="Impact Hub"
       />
 
-      <div className="grid gap-6 xl:grid-cols-[1.6fr_1fr]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.6fr_1fr]">
         <div className="flex flex-col gap-6">
           <Card className="p-6">
             <div className="flex flex-wrap items-center justify-between gap-6">

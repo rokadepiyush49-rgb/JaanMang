@@ -19,15 +19,22 @@ export default function IndustryHubPage() {
     <div className="mx-auto flex max-w-7xl flex-col gap-6">
       <PageHeading
         actions={
-          <ButtonLink href="/collaborate/new" icon="plus" tone="outline">
-            Propose a partnership
-          </ButtonLink>
+          <>
+            <ButtonLink href="/collaborate/new" icon="plus" tone="outline">
+              Propose a partnership
+            </ButtonLink>
+            {/* The partner's own side of this page. A student sees who is
+                offering; a company sees the challenges they could carry. */}
+            <ButtonLink href="/industry" icon="factory">
+              Open the Industry Portal
+            </ButtonLink>
+          </>
         }
         subtitle="Industry partners posting sponsored challenges, internships, and mentorship across the state."
         title="Industry Hub"
       />
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatTile
           icon="factory"
           label="Active Partners"
@@ -43,7 +50,7 @@ export default function IndustryHubPage() {
         <StatTile icon="banknote" label="Pooled Stipend" tone="community" value="₹8.4L" />
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
         {PARTNERS.map((partner) => (
           <Card className="p-6" key={partner.name}>
             <div className="flex items-start gap-4">
