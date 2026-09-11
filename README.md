@@ -1,173 +1,102 @@
-# JanMaang
+# Jan Setu
 
-A civic demand-to-budget platform. A citizen reports a local need in their own
-voice; AI structures it; identical reports are clustered so forty people asking
-for the same handpump count as one demand with the weight of forty; the demand
-is ranked against every other demand in the district on five published factors;
-government funds down the ranked list; and the citizens who reported it decide
-whether it was actually fixed.
+A societal innovation platform for Jharkhand. Citizens report local problems;
+identical reports are folded into one demand carrying the weight of everyone who
+raised it; government ranks demands on five published factors and funds down the
+list; institutions put student teams on the work; industry sponsors it; and the
+citizens who reported the problem decide whether it was actually fixed.
 
-**Speak → Analyze → Cluster → Prioritise → Fund → Execute → Citizen Verify**
+**Report → Cluster → Prioritise → Sponsor → Fund → Deliver → Citizen verify**
 
-## The map
+Four surfaces, one account model. Where you land after signing in is decided by
+your account, never by the door you came through.
 
-Issues are plotted at their coordinates and **aggregated by location**: forty
-citizens reporting the same handpump become one pin carrying the weight of
-forty. Concentration is ranked across four tiers — green, amber, orange, red —
-taken directly from the five colour bars under the logo wordmark, so the map
-legend and the brand mark are the same palette.
+| Surface | Route | Who | State |
+| --- | --- | --- | --- |
+| Government workspace | `/gov` | Panchayat, block and district administration | **Live against the API** |
+| Institute portal | `/institute` | Registrars, faculty, student teams | **Live against the API** |
+| Student workspace | `/dashboard` | Students | Fixtures — labelled in the UI |
+| Industry portal | `/industry` | CSR and partnership teams | Fixtures — labelled in the UI |
+| Citizen app | `apps/citizen-app` | Citizens, in the field | Flutter, in-memory, not wired to this backend |
 
-Colour is never the only signal. Pin diameter (34 → 64px), ring weight and the
-count badge all move with the tier, so the ranking survives greyscale and
-colour-blindness. Only the critical tier pulses; animating every marker would
-make the map unreadable. Nearby sites cluster while zoomed out and resolve into
-individual pins past zoom 14, with cluster weight measured in total reports
-rather than number of sites.
+## Layout
 
-## The assistant
-
-One conversational surface does two jobs: it answers questions about the
-platform and civic reporting, and it walks a citizen through filing a report —
-description, category, urgency, location — before showing a summary card. The
-report is written only when the citizen presses Confirm; the model can say a
-draft looks complete, but the server refuses anything that does not carry an
-explicit confirmation, and it re-derives the missing fields itself rather than
-believing the reply.
-
-**The conversation is never stored.** It lives in Riverpod state and nowhere
-else — no collection, no `shared_preferences`, no logs. A reload clears it. A
-confirmed report is the one thing that outlives the chat, and it goes through
-the existing report submission flow, so it is indistinguishable from one filed
-on the Report screen.
-
-Voice input uses the same speech recogniser the report flow uses, and drops its
-words into the text field for the citizen to check rather than sending them.
-Spoken replies use the browser voice by default; ElevenLabs is optional and
-falls back to that voice on any failure, including a spent free quota.
-
-The Gemini key lives in `server/` — four HTTP endpoints deployed to Vercel's
-free tier rather than to Cloud Functions, which need a billing plan this
-project does not have. With no deployment configured the assistant runs against
-the in-memory implementation, so a fresh clone works with no keys and no
-account. See [CHATBOT_SETUP.md](docs/CHATBOT_SETUP.md).
-
-## Data transparency
-
-`docs/SOURCES.md` is the source of truth for provenance, and the app renders it
-at `/method`: every dataset, its licence, what it feeds, what was rejected and
-why, and the two landmines that shaped the product.
-
-Every seeded record is labelled. A provenance line — *"Synthetic rural ·
-Approximate location"* — sits beside the figures it explains, and tapping it
-opens the dataset, its licence and the "realistic, not real" caveat.
-
-**No SLA or time-to-resolution metric appears anywhere.** The BBMP grievance
-schema carries a grievance date and a status string but no closure timestamp,
-so that number is not computable and would have to be invented. Supported
-metrics — reports by category, ward, quarter, status and volume — are used
-instead.
-
-## Design provenance
-
-Every screen is built from the Stitch project *JanMaang Civic Intelligence
-System* (`projects/5610348960166970948`). The colour roles, type scale, spacing,
-radii and elevation recipe in `lib/core/theme/` are transcribed from that
-design system rather than approximated — see
-[docs/STITCH_INVENTORY.md](docs/STITCH_INVENTORY.md) for the screen-by-screen
-mapping and the full token table.
-
-## Stack
-
-Flutter · Dart · Material 3 · Riverpod 3 · go_router · flutter_map +
-OpenStreetMap · Firebase (Auth, Firestore, Storage, Functions, Messaging,
-Analytics, Crashlytics) · Google Sign-In · Gemini (server-side only)
-
-The brief asked for Framer Motion and Leaflet. Both are React libraries and
-cannot run in Flutter, so their roles are filled by the platform equivalents:
-**flutter_map** renders the same OpenStreetMap tiles under the same ODbL
-attribution, and the motion system in `lib/core/theme/motion.dart` provides the
-page transitions, staggered entrances, counters and press feedback. Every
-animation honours the platform reduce-motion setting.
+```
+backend/          NestJS + Prisma + Postgres — 77 endpoints, the source of truth
+apps/web/         Next.js App Router — all four web surfaces
+apps/citizen-app/ Flutter citizen app (see its own README; see also the note below)
+docs/             DEPLOY.md, structure.md, CHATBOT_SETUP.md
+DESIGN.md         The design system and the domain model behind it
+COMPLETION_PLAN.md  The audited gap list between here and production
+```
 
 ## Running it
 
-The app runs out of the box against in-memory repositories seeded with the same
-figures the designs were reviewed with, so no Firebase project is needed to see
-or test the whole UI:
+You need Node 20 and a Postgres. The API and the web app are separate npm
+projects; there is no workspace root yet.
 
 ```bash
-flutter run
+cd backend && npm ci && cp .env.example .env
 ```
 
-For demos and screenshots, skip the OTP step:
+Point `DATABASE_URL` and `DIRECT_URL` at your database, then:
 
 ```bash
-flutter run --dart-define=DEMO_SIGNED_IN=true
+npx prisma migrate deploy && npm run db:seed && npm run start:dev
 ```
 
-Against live Firebase:
+In another shell:
 
 ```bash
-flutterfire configure --project=<your-project-id>
-# then follow the TODO in lib/bootstrap.dart
-flutter run --dart-define=USE_MOCKS=false
+cd apps/web && npm ci && echo "BACKEND_API_URL=http://localhost:4000" > .env.local && npm run dev
 ```
 
-Google Maps surfaces stay as styled placeholders until a platform key is
-provisioned; enable them with `--dart-define=MAPS_ENABLED=true`.
-
-## Architecture
-
-```
-lib/
-  core/        config · constants · theme · routing · services · errors · utils
-  features/    onboarding auth home report demands ledger verification profile
-                 assistant, each with data/ domain/ presentation/
-  shared/      models · widgets (the design-system component library)
-server/        the assistant API — Gemini, ElevenLabs and the ConvAI webhook
-```
-
-Presentation never imports `cloud_firestore`. Repositories are interfaces in
-`domain/`, implemented twice in `data/` — against Firebase and in memory — and
-selected at the composition root in `lib/core/providers.dart`. Swapping one out
-is a one-line override, which is also how the tests inject fakes.
-
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the data model, the
-Firestore collections and the Cloud Function boundaries.
-
-## Brand and photography
-
-Two asset slots, both with graceful fallbacks so the build never breaks on a
-missing file:
-
-- `assets/brand/` — the logo lockup and square mark. `JmLogo` falls back to a
-  typographic lockup. Launcher icons, favicon and splash are generated from the
-  mark via `flutter_launcher_icons.yaml` and `flutter_native_splash.yaml`.
-- `assets/gallery/` — the four infrastructure photographs behind the
-  auto-scrolling gallery on Home (`roads.jpg`, `transit.jpg`, `civic.jpg`,
-  `water.jpg`). Until they land, each slide renders a designed gradient card
-  with its icon and caption.
-
-See the README in each directory for sizes and export settings.
-
-## Security
-
-No server-side credential ships in the app. The Gemini key lives in Secret
-Manager and is reachable only through the `analyzeReport` callable; ranking,
-clustering, funding and verification are all server-write-only, enforced by
-`firebase/firestore.rules`. See [SECURITY.md](SECURITY.md).
+The web app is on `:3000`, the API on `:4000`. Every seeded account uses the
+password `jansetu-dev`; the sign-in page lists them, so you do not have to go
+looking. `user-district@jansetu.local` is the one with the most to look at.
 
 ## Checks
 
 ```bash
-flutter analyze
-flutter test
+cd backend && npm run lint && npx tsc --noEmit && npm test && npm run test:e2e
 ```
 
-## Platform status
+```bash
+cd apps/web && npx tsc --noEmit && npm run lint && npm run build
+```
 
-| Target | State |
-|---|---|
-| Android | builds; toolchain configured against SDK 36.1.0 + JDK 17 |
-| Web | builds and runs; used for UI verification in this environment |
-| iOS | needs a full Xcode install (only Command Line Tools present) plus CocoaPods |
+Both run in CI on every push (`.github/workflows/`). The backend job also fails
+if `openapi.json` is stale, so regenerate it (`npm run openapi:gen`) whenever a
+route changes.
+
+## Deploying
+
+Neon + Railway + Vercel, all free tier. Step by step, including the smoke test
+and what is *not* wired yet: **[docs/DEPLOY.md](docs/DEPLOY.md)**.
+
+## Design
+
+[DESIGN.md](DESIGN.md) is the specification the surfaces are built from — the
+colour and type systems, the shell, the accessibility rules, and the domain
+design behind the priority engine, the visibility boundary and the AI Project
+Council. Read §6 before changing anything about how problems are ranked or how
+much of a challenge an industry partner is allowed to see.
+
+## Security
+
+No server credential ships in a client. The backend validates its whole
+environment at boot and refuses to start on a missing secret; RBAC, jurisdiction
+scoping and the surface guard are enforced server-side, and the web app's
+layouts re-check every request rather than trusting the edge cookie. Report
+issues per [SECURITY.md](SECURITY.md).
+
+## A note on the citizen app
+
+`apps/citizen-app/` is a complete Flutter client built against **Firebase** —
+Firestore rules and four Cloud Functions that duplicate the ranking, clustering
+and verification logic this backend already owns. It runs entirely on in-memory
+repositories and has never talked to a server. It is kept because the UI is
+finished and worth keeping; it is not part of this deployment. Reconciling the
+two backends is the first decision in
+[COMPLETION_PLAN.md](COMPLETION_PLAN.md) §7, and the recommendation there is to
+keep NestJS and retire the Cloud Functions.

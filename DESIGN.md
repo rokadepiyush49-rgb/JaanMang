@@ -22,7 +22,7 @@ and its screen-by-screen Stitch mapping in
 
 ## 1. Surfaces
 
-Four audiences, one product. Each surface is designed around what its user is
+Five audiences, one product. Each surface is designed around what its user is
 accountable for, not around a shared feature list.
 
 | Surface | Who | Where | Built on |
@@ -31,10 +31,18 @@ accountable for, not around a shared feature list.
 | **Student web** | Students, teams, campuses | `apps/web/src/app/(app)/`, `/collaborate` | Next.js App Router · React 19 · Tailwind v4 |
 | **Government workspace** | Officers, from panchayat secretary to DC | `apps/web/src/app/gov/` | same |
 | **Industry portal** | CSR teams, funders, corporate mentors | `apps/web/src/app/industry/` | same |
+| **Institute portal** | Registrars and faculty guides at universities, colleges, polytechnics, ITIs and training institutes | `apps/web/src/app/institute/` | same |
 
-The three web surfaces are one Next.js application (`apps/web`) sharing one
+The four web surfaces are one Next.js application (`apps/web`) sharing one
 token file, one component library and one icon set. They are separated by route
 group and by their own shell, not by deployment.
+
+The institute portal is the only surface with two roles inside it.
+`institute_admin` is the registrar — they verify the student roster, add
+faculty and edit the institution. `faculty` is a guide — the same
+`institute.team.manage` permission, but scoped by the server to the teams they
+actually guide. The distinction is enforced in `InstituteService`, not by which
+buttons the client renders.
 
 The citizen app is a separate binary because its job is different: offline
 tolerance, voice input, a map, and a person standing in front of a broken
@@ -534,11 +542,31 @@ silently break speaker selection.
 
 ## 12. Known gaps
 
-- No authentication. `rbac.ts` is the single place that decides visibility;
-  when sessions arrive, `currentUser` comes from the session and nothing else
-  in that module changes.
-- No persistence. Both stores are in-memory and reset on reload.
-- `backend/` and `packages/` are empty by intent.
-- Student screens are fixtures; only gov and industry have real state machines.
-- `src/features/<role>/` exists for six roles; student code still lives under
-  `src/app/(app)/` and moves as the other roles are built.
+Accurate as of the deployment described in `docs/DEPLOY.md`. Three of the five
+entries below used to say something stronger; they are narrower now because the
+work landed, and the ones that remain are the honest list.
+
+- **Fifteen government mutations do not persist.** Sponsorship, funding, officer
+  assignment, project progress, verification and automation toggles are reducer
+  cases in `lib/gov/store.tsx` and are lost on reload. `validate`, `reject`,
+  `route` and `weights/publish` are the four that reach the API. The backend
+  modules behind the other eleven do not exist yet.
+- **The industry portal and the student surface run on fixtures.**
+  `lib/industry/service.ts` is `USING_MOCK_DATA = true`; the student screens
+  render from `lib/data.ts`. Both surfaces carry a `DemoBanner` saying so — the
+  banner is what makes shipping them honest, and it comes out when they are
+  wired.
+- **The citizen app is on a different backend.** `apps/citizen-app/` is built
+  against Firebase and duplicates the ranking, clustering and verification this
+  backend owns. It has never called a server.
+- **`packages/` and `src/features/<role>/` are still empty.** Six role folders
+  and five shared-layer folders, all `.gitkeep`. Either populate them from the
+  OpenAPI contract or delete them and amend `docs/structure.md`; leaving them is
+  a third option that has been taken for too long.
+- **Nothing verifies the accessibility rules in §5.** No axe pass, no
+  keyboard-navigation audit, no focus-trap check on the dialogs. The rules are
+  written and followed by hand.
+
+Authentication, session handling and persistence are no longer gaps. Every
+surface is behind `proxy.ts` at the edge and `requireSurface()` in its layout;
+the government and institute surfaces read and write real rows.
