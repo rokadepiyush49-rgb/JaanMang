@@ -348,14 +348,14 @@ const PROMPT = {
  * unanswered.
  */
 function buildSystemPrompt(context: PromptContext): string {
-  const { state, speakerId, phase, topic, memory } = context;
+  const { state, speakerId, phase, topic, memory, locale } = context;
   const agent = getAgent(speakerId);
-  const identities = identitiesFor(state.seatedAgentIds);
+  const identities = localizedIdentities(state.seatedAgentIds, locale);
   const own = memory.byAgent[speakerId];
   const { brief } = state;
 
   const sections: string[] = [
-    personaFor(speakerId),
+    personaForLocale(speakerId, locale),
     "",
     `YOUR OBJECTIVE IN THIS SESSION: ${agent.goal}`,
     "",
@@ -379,10 +379,10 @@ function buildSystemPrompt(context: PromptContext): string {
       ].filter((line): line is string => Boolean(line)),
     ),
     "",
-    `SESSION PHASE: ${PHASE_LABEL[phase]}`,
-    PHASE_BRIEF[phase],
+    `SESSION PHASE: ${phaseName(phase, locale)}`,
+    phaseBrief(phase, locale),
     "",
-    `WHAT THE ROOM IS ON RIGHT NOW: ${TOPIC_LABEL[topic.topic]}`,
+    `WHAT THE ROOM IS ON RIGHT NOW: ${topicLabel(topic.topic, locale)}`,
   ];
 
   // --- who else is at the table, so colleagues can be addressed by name
@@ -583,7 +583,7 @@ export async function advanceSession(
 
   const speaker = getAgent(speakerId);
   const raw = await generateAgentReply({
-    systemPrompt: buildSystemPrompt({ state, speakerId, phase, topic, memory }),
+    systemPrompt: buildSystemPrompt({ state, speakerId, phase, topic, memory, locale: state.locale ?? DEFAULT_LOCALE }),
     conversation,
     speakerLabel: `${speaker.personName} (${speaker.name})`,
     phase,
