@@ -1,58 +1,144 @@
 @import "tailwindcss";
 
 /*
- * Jan Setu — Jharkhand's Societal Innovation OS
- * Design tokens transcribed from the Stitch DESIGN.md spec.
+ * Jan Setu Student Web — design tokens.
+ *
+ * Every value here is transcribed from the JanMaang Citizen app's Flutter
+ * theme (`apps/citizen-app/lib/core/theme/`) so the two surfaces are the same
+ * product. The app's file names are quoted beside each block; when a token
+ * changes there it must change here.
+ *
+ * The model the app is built on, and the one this file preserves:
+ *   the page is periwinkle, cards are pure white and float on it, ink is
+ *   near-black indigo, and depth comes from a tinted value gap plus one very
+ *   soft navy-tinted shadow — never from borders or grey drop shadows.
  */
 @theme {
-  /* Surfaces */
-  --color-surface: #f8f9ff;
-  --color-surface-dim: #cbdbf5;
-  --color-card: #ffffff;
-  --color-card-muted: #f2f3f9;
-  --color-line: #e2e8f0;
-  --color-line-strong: #c4c6cf;
+  /* ---- Core brand — janmaang_colors.dart ------------------------------ */
+  --color-ink-brand: #191a2e;      /* brandNavy — the ink everything presses */
+  --color-periwinkle: #6b85f0;     /* brandPeriwinkle */
+  --color-orchid: #c77bee;         /* brandOrchid */
+  --color-amber: #e5b54e;          /* brandAmber */
+  --color-clay: #e29448;           /* brandOrange */
+  --color-mint: #2fae6a;           /* brandGreen */
+  --color-brand-blue: #4f68d8;
+  --color-brand-red: #d9534f;
 
-  /* Ink */
-  --color-ink: #0b1c30;
-  --color-ink-muted: #44474e;
-  --color-ink-faint: #74777f;
+  /* ---- Surfaces ------------------------------------------------------- */
+  --color-surface: #dae3fb;        /* the page — periwinkle, not white */
+  --color-surface-dim: #c6d2f3;
+  --color-card: #ffffff;           /* surfaceContainerLowest */
+  --color-card-muted: #f4f6fd;     /* surfaceContainerLow */
+  --color-container: #e6ebfa;      /* surfaceContainer */
+  --color-container-high: #dce3fb; /* surfaceContainerHigh / primaryFixed */
+  --color-track: #cbd6f6;          /* surfaceContainerHighest — progress track */
 
-  /* Brand */
-  --color-primary: #000a1e;
-  --color-navy: #002147;
-  --color-navy-soft: #d6e3ff;
-  --color-navy-tint: #708ab5;
+  --color-line: #e2e6f4;           /* outlineVariant — the hairline */
+  --color-line-strong: #8b90a5;    /* outline */
 
-  /* Impact green */
-  --color-impact: #10b981;
-  --color-impact-deep: #006c49;
-  --color-impact-soft: #6cf8bb;
-  --color-impact-wash: #e7fbf1;
+  /* ---- Ink ------------------------------------------------------------ */
+  --color-ink: #1b1d2e;            /* onSurface */
+  --color-ink-muted: #5a6076;      /* onSurfaceVariant */
+  --color-ink-faint: #5f6478;      /* onSurfaceVariant, one step lighter */
 
-  /* Community orange */
-  --color-community: #f97316;
-  --color-community-deep: #e16300;
-  --color-community-soft: #ffdbca;
+  /* ---- Primary — the ink button / active nav pill --------------------- */
+  --color-primary: #191a2e;
+  --color-primary-hover: #2c2e4a;  /* primaryContainer */
+  --color-primary-fixed: #dce3fb;  /* the pale pill behind an active item */
+  --color-on-primary-fixed: #1b1d33;
+  --color-on-primary-fixed-variant: #3a3d5e;
 
-  /* Status */
-  --color-danger: #ba1a1a;
-  --color-danger-soft: #ffdad6;
-  --color-danger-wash: #fdecea;
+  /* Accent / link blue — the app's `secondary`, darkened one step so small
+     text on white clears 4.5:1 (onSecondaryFixedVariant). */
+  --color-navy: #3a4bb5;
+  --color-navy-soft: #dce3fb;
+  --color-navy-tint: #c3d3f8;
 
-  /* Shape — 4px baseline, rounded-8px standard */
-  --radius-sm: 0.25rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.5rem;
+  /* ---- Tile tints — JmTint. Wash + a foreground dark enough for 4.5:1 -- */
+  --color-tint-navy: #c3d3f8;
+  --color-on-tint-navy: #1e2a6b;
+  --color-tint-orchid: #e9cef9;
+  --color-on-tint-orchid: #4a1d6b;
+  --color-tint-amber: #f7e4b5;
+  --color-on-tint-amber: #5a3e00;
+  --color-tint-blue: #cce6f7;
+  --color-on-tint-blue: #10456b;
+  --color-tint-clay: #f8dcc2;
+  --color-on-tint-clay: #6b3a08;
+  --color-tint-mint: #cfeedc;
+  --color-on-tint-mint: #0f4a28;
 
-  /* Elevation — level 1 ambient, level 2 floating */
-  --shadow-level1: 0 1px 2px rgb(11 28 48 / 0.03), 0 4px 12px rgb(11 28 48 / 0.04);
-  --shadow-level2: 0 2px 4px rgb(11 28 48 / 0.04), 0 12px 28px rgb(11 28 48 / 0.08);
-  --shadow-glow: 0 0 0 2px rgb(0 33 71 / 0.06);
+  /* ---- Semantic status — JmSemantic ----------------------------------- */
+  --color-success: #1e8f56;
+  --color-success-tint: #cfeedc;
+  --color-on-success-tint: #0f4a28;
+  --color-warning: #b07a00;
+  --color-warning-tint: #f7e4b5;
+  --color-on-warning-tint: #5a3e00;
+  --color-critical: #c93e3a;
+  --color-critical-tint: #f8d7d7;
+  --color-on-critical-tint: #7a1f1d;
+  --color-info: #4f5fd8;
+  --color-info-tint: #dce3fb;
+  --color-on-info-tint: #1e2a6b;
+  --color-gold: #9a7400;
+  --color-gold-tint: #f7e9c4;
+  --color-on-gold-tint: #5a3e00;
+  --color-neutral: #5a6076;
+  --color-neutral-tint: #eceef6;
+  --color-on-neutral-tint: #2b2e3d;
 
+  /* ---- Legacy aliases -------------------------------------------------
+     The pages that predate this redesign spell the palette `impact`,
+     `community` and `danger`. Rather than rewrite 400 class names, the old
+     names now resolve to the app's mint, clay and critical — so every screen
+     inherits the identity without touching its markup. Deep variants are
+     pulled one step darker than the app's saturated hue so small text on a
+     white card clears 4.5:1 on every surface in the system — the periwinkle
+     page included, which is the tightest of them. */
+  --color-impact: #2fae6a;
+  --color-impact-deep: #12683c;
+  --color-impact-soft: #cfeedc;
+  --color-impact-wash: #eaf7f0;
+  --color-community: #e29448;
+  --color-community-deep: #6b3a08;
+  --color-community-soft: #f8dcc2;
+  --color-danger: #b92e2a;
+  --color-danger-soft: #f8d7d7;
+  --color-danger-wash: #fdf0f0;
+
+  /* ---- Shape — app_spacing.dart `Corners` -----------------------------
+     sm 10 · base 16 · lg 28 · xl 34 · pill. Soft and generous: the radius is
+     what makes a white card read as an object on the tinted page. */
+  --radius-sm: 0.625rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.75rem;
+  --radius-xl: 2.125rem;
+  --radius-2xl: 2.125rem;
+
+  /* ---- Elevation — app_spacing.dart `Shadows` -------------------------
+     Wide, faint, tinted with the brand ink. Never a grey drop shadow. */
+  --shadow-level1: 0 8px 24px -10px rgb(25 26 46 / 0.06),
+    0 2px 6px -2px rgb(25 26 46 / 0.04);
+  --shadow-level2: 0 12px 28px -10px rgb(25 26 46 / 0.12);
+  --shadow-level3: 0 14px 40px -12px rgb(25 26 46 / 0.14),
+    0 2px 8px -2px rgb(25 26 46 / 0.06);
+  --shadow-glow: 0 0 0 3px rgb(107 133 240 / 0.18);
+
+  /* ---- Type — janmaang_typography.dart --------------------------------
+     Dual family: DM Sans carries display and headline for brand character,
+     Inter is the workhorse for titles, body, labels and every number. */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-dm-sans), var(--font-inter), ui-sans-serif,
+    system-ui, sans-serif;
+
+  /* ---- Motion — motion.dart ------------------------------------------- */
+  --ease-jm: cubic-bezier(0.215, 0.61, 0.355, 1); /* easeOutCubic */
+  --duration-fast: 140ms;
+  --duration-medium: 260ms;
+  --duration-slow: 360ms;
+
 }
 
 html {
@@ -63,45 +149,164 @@ body {
   background-color: var(--color-surface);
   color: var(--color-ink);
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-/* Typography scale from DESIGN.md */
-@utility headline-xl {
-  font-size: 2rem;
+/* ---- Type scale ------------------------------------------------------
+   Transcribed level for level. The web gets one extra step above the app's
+   mobile display size, because a 1440px page can carry it and a 390px one
+   cannot — the ramp below the top is identical. */
+
+@utility display-xl {
+  font-family: var(--font-display);
+  font-size: 3rem;              /* displayLg 48/56 */
+  line-height: 1.167;
   font-weight: 700;
-  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+@utility headline-xl {
+  font-family: var(--font-display);
+  font-size: 2rem;              /* displayLgMobile 32/40 */
+  line-height: 1.25;
+  font-weight: 700;
   letter-spacing: -0.02em;
 }
 @utility headline-lg {
-  font-size: 1.5rem;
+  font-family: var(--font-display);
+  font-size: 1.5rem;            /* headlineSm 24/32 */
+  line-height: 1.333;
   font-weight: 600;
-  line-height: 1.3;
   letter-spacing: -0.01em;
 }
 @utility headline-md {
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-family: var(--font-sans);
+  font-size: 1.25rem;           /* titleLg 20/28 */
   line-height: 1.4;
+  font-weight: 600;
 }
 @utility label-caps {
-  font-size: 0.75rem;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;           /* labelMd 12/16, +0.05em */
   font-weight: 600;
-  line-height: 1;
+  line-height: 1.333;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 @utility mono-data {
-  font-size: 0.8125rem;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;          /* tabularNums 14/20 */
   font-weight: 500;
-  line-height: 1;
+  line-height: 1.43;
   letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;
 }
+@utility stat-number {
+  font-family: var(--font-sans);
+  font-size: 1.875rem;          /* statNumber 30/38 */
+  line-height: 1.267;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
 
-/* Interactive elements rely on colour fills, not heavy shadows */
+/* ---- Base ------------------------------------------------------------- */
 @layer base {
   :focus-visible {
-    outline: 2px solid var(--color-navy);
+    outline: 2px solid var(--color-periwinkle);
     outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Numbers align across rows wherever they are stacked. */
+  .tabular-nums,
+  th,
+  td {
+    font-variant-numeric: tabular-nums;
+  }
+
+  ::selection {
+    background: var(--color-primary-fixed);
+    color: var(--color-on-primary-fixed);
+  }
+
+  /* The tinted page never shows a white scroll gutter under the cards. */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(25 26 46 / 0.14);
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(25 26 46 / 0.24);
+    background-clip: content-box;
+  }
+}
+
+/* ---- Motion ----------------------------------------------------------
+   JmEnter: the fade-and-rise every dashboard card, list row and stat tile
+   uses in the app, staggered by position. Held still under reduce-motion. */
+/*
+ * The rise, without the fade.
+ *
+ * `JmEnter` in the app fades and rises together, and on a phone that is safe —
+ * the animation always runs. On the web it is not: a backgrounded tab, a
+ * prerender, or an extension that suppresses animation can leave a keyframe
+ * frozen on its first frame. An entrance that starts at `opacity: 0` renders
+ * the whole page blank in that case, which is how this was caught.
+ *
+ * Animating transform alone makes the worst case a 12px offset instead of
+ * invisible content. The motion still reads as rising in, and nothing on the
+ * page depends on an animation completing in order to be legible.
+ */
+@keyframes jm-enter {
+  from {
+    transform: translateY(12px);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes jm-sweep {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@utility jm-enter {
+  /* `backwards` covers the stagger delay only. Never `both`: holding the end
+     frame would make the animation's state the element's resting state. */
+  animation: jm-enter var(--duration-medium) var(--ease-jm) backwards;
+}
+
+@utility jm-skeleton {
+  background-image: linear-gradient(
+    90deg,
+    var(--color-container) 20%,
+    var(--color-card-muted) 50%,
+    var(--color-container) 80%
+  );
+  background-size: 200% 100%;
+  animation: jm-sweep 1.4s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
