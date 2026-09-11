@@ -20,6 +20,7 @@
  */
 
 import { NextResponse } from "next/server";
+import { guardCouncil } from "@/lib/council/guard";
 import { EdgeTtsError, synthesise } from "@/lib/council/edge-tts";
 import { isKnownVoice } from "@/lib/council/voices";
 import type { ApiError } from "@/lib/council/types";
@@ -37,6 +38,10 @@ export const maxDuration = 30;
 const MAX_CHARS = 1_200;
 
 export async function POST(request: Request) {
+  // Authentication and per-account rate limiting, before a single token is spent.
+  const denied = await guardCouncil();
+  if (denied) return denied;
+
   const body = (await request.json().catch(() => ({}))) as {
     agentId?: unknown;
     text?: unknown;
