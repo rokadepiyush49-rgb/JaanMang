@@ -49,7 +49,7 @@ The Gemini key lives in `server/` — four HTTP endpoints deployed to Vercel's
 free tier rather than to Cloud Functions, which need a billing plan this
 project does not have. With no deployment configured the assistant runs against
 the in-memory implementation, so a fresh clone works with no keys and no
-account. See [CHATBOT_SETUP.md](CHATBOT_SETUP.md).
+account. See [CHATBOT_SETUP.md](docs/CHATBOT_SETUP.md).
 
 ## Data transparency
 
