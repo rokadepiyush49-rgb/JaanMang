@@ -42,17 +42,17 @@ const PRESETS: { label: string; hint: string; weights: PriorityWeights }[] = [
   {
     label: "Deprivation first",
     hint: "Under-served habitations lead",
-    weights: { populationImpact: 20, severity: 18, deprivation: 38, coverage: 8, duration: 8, recurrence: 4, repeatedDemand: 4 },
+    weights: { populationImpact: 20, severity: 18, deprivation: 38, coverage: 8, duration: 8, recurrence: 4, repeatedDemand: 2, citizenVotes: 2 },
   },
   {
     label: "Life safety",
     hint: "Consequence over headcount",
-    weights: { populationImpact: 18, severity: 44, deprivation: 16, coverage: 6, duration: 8, recurrence: 4, repeatedDemand: 4 },
+    weights: { populationImpact: 18, severity: 44, deprivation: 16, coverage: 6, duration: 8, recurrence: 4, repeatedDemand: 2, citizenVotes: 2 },
   },
   {
     label: "Volume led",
     hint: "What a complaint-count ranking would do",
-    weights: { populationImpact: 10, severity: 10, deprivation: 4, coverage: 6, duration: 10, recurrence: 10, repeatedDemand: 50 },
+    weights: { populationImpact: 10, severity: 10, deprivation: 4, coverage: 6, duration: 10, recurrence: 10, repeatedDemand: 30, citizenVotes: 20 },
   },
 ];
 

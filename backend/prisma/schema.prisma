@@ -452,6 +452,10 @@ enum ReportChannel {
   photo
   ivr
   field
+  /// The public web intake form. Distinct from `text` because provenance is a
+  /// thing a district will ask about: a report typed into a browser by someone
+  /// who found the site is not the same signal as one a field worker collected.
+  web
 }
 
 model CitizenReport {
@@ -582,7 +586,7 @@ model ProblemAi {
   @@map("problem_ai")
 }
 
-/// The seven need signals, each normalised 0–100. 1:1 with a problem.
+/// The eight need signals, each normalised 0–100. 1:1 with a problem.
 model ProblemFactors {
   problemId        String  @id
   problem          Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
@@ -592,7 +596,12 @@ model ProblemFactors {
   coverage         Float
   duration         Float
   recurrence       Float
+  /// Volume of citizen reports — "I have this problem".
   repeatedDemand   Float
+  /// Volume of citizen votes — "I agree this matters". A separate signal from
+  /// repeatedDemand and weighted separately, because the two disagree: the
+  /// most-reported problem in the register is rarely the most-voted one.
+  citizenVotes     Float   @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

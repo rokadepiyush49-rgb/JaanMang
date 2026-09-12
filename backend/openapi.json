@@ -2837,6 +2837,13 @@
                 "exclusiveMinimum": false,
                 "maximum": 100,
                 "exclusiveMaximum": false
+              },
+              "citizenVotes": {
+                "type": "number",
+                "minimum": 0,
+                "exclusiveMinimum": false,
+                "maximum": 100,
+                "exclusiveMaximum": false
               }
             },
             "required": [
@@ -2846,7 +2853,8 @@
               "coverage",
               "duration",
               "recurrence",
-              "repeatedDemand"
+              "repeatedDemand",
+              "citizenVotes"
             ]
           },
           "jurisdictionId": {

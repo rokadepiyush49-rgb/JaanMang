@@ -31,6 +31,7 @@ export function toProblemDto(row: ProblemRow): ProblemDto {
     duration: row.factors?.duration ?? 0,
     recurrence: row.factors?.recurrence ?? 0,
     repeatedDemand: row.factors?.repeatedDemand ?? 0,
+    citizenVotes: row.factors?.citizenVotes ?? 0,
   };
 
   const ai: AiIntelligence = {

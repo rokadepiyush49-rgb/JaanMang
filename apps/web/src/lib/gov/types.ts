@@ -152,7 +152,8 @@ export type PriorityFactorKey =
   | "coverage"
   | "duration"
   | "recurrence"
-  | "repeatedDemand";
+  | "repeatedDemand"
+  | "citizenVotes";
 
 export type PriorityFactors = Record<PriorityFactorKey, number>;
 export type PriorityWeights = Record<PriorityFactorKey, number>;

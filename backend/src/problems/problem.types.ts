@@ -49,6 +49,7 @@ export interface PriorityFactors {
   duration: number;
   recurrence: number;
   repeatedDemand: number;
+  citizenVotes: number;
 }
 
 export interface PriorityAdjustment {
