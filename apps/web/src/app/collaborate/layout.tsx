@@ -1,13 +1,18 @@
 import Link from "next/link";
 import { Icon } from "@/components/icon";
+import { getSession } from "@/lib/auth/session";
 import { Avatar } from "@/components/ui";
+import { StudentProvider } from "@/lib/student/store";
 
-export default function CollaborateLayout({
+export default async function CollaborateLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // The signed-in student, not a name typed into the layout.
+  const session = await getSession();
   return (
+    <StudentProvider>
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-30 flex h-18 items-center gap-4 border-b border-line bg-surface/85 px-4 backdrop-blur lg:px-8">
         <Link
@@ -34,11 +39,12 @@ export default function CollaborateLayout({
           >
             <Icon name="help" size={20} />
           </button>
-          <Avatar name="Aisha Patel" size={40} tone="navy" />
+          <Avatar name={session?.displayName ?? ""} size={40} tone="navy" />
         </div>
       </header>
 
       <main className="flex-1 px-4 py-8 lg:px-8">{children}</main>
     </div>
+    </StudentProvider>
   );
 }

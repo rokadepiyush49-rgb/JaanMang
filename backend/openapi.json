@@ -3129,6 +3129,46 @@
         ]
       }
     },
+    "/api/v1/student/candidates": {
+      "get": {
+        "description": "Name, college, skills and earned points. Narrower than the institute roster on purpose: enough to decide whether to ask somebody, not enough to contact them off-platform.",
+        "operationId": "StudentController_candidates_v1",
+        "parameters": [
+          {
+            "name": "skill",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Classmates open to teaming up",
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/v1/student/partners": {
+      "get": {
+        "operationId": "StudentController_partners_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Industry partners, and what they have published about themselves",
+        "tags": [
+          "student"
+        ]
+      }
+    },
     "/api/v1/student/proposals": {
       "get": {
         "operationId": "StudentController_proposals_v1",

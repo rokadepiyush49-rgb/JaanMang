@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { BOTTOM_NAV, NAV_EXPLORE, NAV_MAIN, STUDENT } from "@/lib/data";
-import { DemoBanner } from "./demo-banner";
+import { BOTTOM_NAV, NAV_EXPLORE, NAV_MAIN } from "@/lib/student/vocabulary";
+import { useStudent } from "@/lib/student/store";
 import { Brand } from "./brand";
 import { Icon, type IconName } from "./icon";
 import { LanguageSwitcher } from "./language-switcher";
@@ -71,8 +71,10 @@ function NavItem({
 function SidebarBody({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const session = useSession();
-  const name = session?.displayName ?? STUDENT.name;
-  const subtitle = session?.student?.institutionName ?? STUDENT.institution;
+  const { state, unread } = useStudent();
+  const name = session?.displayName ?? state.profile?.name ?? "";
+  const subtitle =
+    session?.student?.institutionName ?? state.profile?.institution.name ?? "";
 
   return (
     <div className="flex h-full flex-col gap-5 overflow-y-auto px-4 py-5">
@@ -91,7 +93,7 @@ function SidebarBody({ onNavigate }: { onNavigate?: () => void }) {
         {NAV_MAIN.map((item) => (
           <NavItem
             active={isActive(pathname, item.href)}
-            badge={item.badge}
+            badge={item.href === "/notifications" ? unread : undefined}
             href={item.href}
             icon={item.icon}
             key={item.href}
@@ -159,7 +161,8 @@ function SidebarBody({ onNavigate }: { onNavigate?: () => void }) {
 
 function Topbar({ onMenu }: { onMenu: () => void }) {
   const session = useSession();
-  const name = session?.displayName ?? STUDENT.name;
+  const { unread } = useStudent();
+  const name = session?.displayName ?? "";
   return (
     <header className="sticky top-0 z-30 flex h-18 items-center gap-3 border-b border-line/70 bg-surface/85 px-4 backdrop-blur-md lg:px-8">
       <button
@@ -183,7 +186,7 @@ function Topbar({ onMenu }: { onMenu: () => void }) {
       />
 
       <div className="ml-auto flex items-center gap-2">
-        <CircleButton badge href="/notifications" icon="bell" label="Notifications" />
+        <CircleButton badge={unread > 0} href="/notifications" icon="bell" label="Notifications" />
         <span className="hidden lg:block">
           <CircleButton href="/achievements" icon="trophy" label="Achievements" />
         </span>
@@ -301,7 +304,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {/* pb-28 is the app's `navClearance`: the floating bar must never sit
             on top of the last element of a page. */}
         <main className="flex-1 px-4 pt-6 pb-28 sm:px-6 lg:px-8 lg:pt-8 lg:pb-10">
-          <DemoBanner surface="student" />
           {children}
         </main>
       </div>

@@ -146,6 +146,23 @@ export class StudentController {
     return this.student.markNotificationRead(user, id);
   }
 
+  @Get('candidates')
+  @ApiOperation({
+    summary: 'Classmates open to teaming up',
+    description:
+      'Name, college, skills and earned points. Narrower than the institute roster on purpose: ' +
+      'enough to decide whether to ask somebody, not enough to contact them off-platform.',
+  })
+  candidates(@CurrentUser() user: AuthPrincipal, @Query('skill') skill?: string) {
+    return this.collab.candidates(user, skill);
+  }
+
+  @Get('partners')
+  @ApiOperation({ summary: 'Industry partners, and what they have published about themselves' })
+  partners() {
+    return this.collab.partners();
+  }
+
   /* ----------------------------------------------- open innovation */
 
   @Get('proposals')

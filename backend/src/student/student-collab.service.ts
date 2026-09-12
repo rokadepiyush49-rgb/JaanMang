@@ -55,6 +55,103 @@ export class StudentCollabService {
     }));
   }
 
+  /**
+   * Students at the same institution who are open to teaming up.
+   *
+   * Deliberately narrower than the institute's own roster, which holds
+   * surnames, enrolment numbers and email addresses. A classmate looking for
+   * collaborators gets a name, a college, their skills and their earned points
+   * — everything needed to decide whether to ask, and nothing that lets them
+   * be contacted off-platform.
+   */
+  async candidates(principal: AuthPrincipal, skill?: string) {
+    const me = await this.prisma.studentProfile.findUnique({
+      where: { userId: principal.userId },
+      select: { orgId: true, state: true },
+    });
+
+    const rows = await this.prisma.studentProfile.findMany({
+      where: {
+        userId: { not: principal.userId },
+        // Verified students only. An unverified profile is a claim the
+        // institution has not confirmed, and it should not be recruited from.
+        verifiedAt: { not: null },
+        ...(me?.orgId ? { orgId: me.orgId } : { state: me?.state }),
+        ...(skill ? { skills: { has: skill } } : {}),
+      },
+      select: {
+        userId: true,
+        institutionName: true,
+        branch: true,
+        currentYear: true,
+        skills: true,
+        interests: true,
+        verifiedContributions: true,
+        user: { select: { displayName: true } },
+      },
+      take: 60,
+    });
+
+    const points = await this.prisma.impactPointsEntry.groupBy({
+      by: ['userId'],
+      where: { userId: { in: rows.map((r) => r.userId) } },
+      _sum: { points: true },
+    });
+    const byUser = new Map(points.map((p) => [p.userId, p._sum.points ?? 0]));
+
+    return rows
+      .map((r) => ({
+        id: r.userId,
+        name: r.user.displayName,
+        college: r.institutionName,
+        branch: r.branch,
+        year: r.currentYear,
+        skills: r.skills,
+        interests: r.interests,
+        points: byUser.get(r.userId) ?? 0,
+        verifiedContributions: r.verifiedContributions,
+      }))
+      .sort((a, b) => b.points - a.points);
+  }
+
+  /**
+   * Industry partners open to student work.
+   *
+   * What a partner has published about themselves plus a count of what they
+   * are actually carrying — never their CSR budget, which is commercially
+   * sensitive and belongs to their own portal.
+   */
+  async partners() {
+    const rows = await this.prisma.organization.findMany({
+      where: { type: 'industry', deletedAt: null },
+      select: {
+        id: true,
+        name: true,
+        industryInfo: {
+          select: { sector: true, csrThemes: true, technologyDomains: true, capabilities: true },
+        },
+        sponsor: {
+          select: {
+            _count: { select: { matches: true } },
+          },
+        },
+      },
+      orderBy: { name: 'asc' },
+    });
+
+    return rows
+      .filter((o) => o.industryInfo)
+      .map((o) => ({
+        id: o.id,
+        name: o.name,
+        sector: o.industryInfo?.sector ?? '',
+        focus: o.industryInfo?.csrThemes ?? [],
+        technologies: o.industryInfo?.technologyDomains ?? [],
+        /** Challenges they are engaged on — an activity signal, not a budget. */
+        engagements: o.sponsor?._count.matches ?? 0,
+      }));
+  }
+
   /* --------------------------------------------------------- proposals */
 
   async proposals(principal: AuthPrincipal) {

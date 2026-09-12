@@ -18,9 +18,10 @@ import {
   cx,
 } from "@/components/ui";
 import { Modal, Tabs } from "@/components/ui-interactive";
-import { APPLICATIONS, type Application } from "@/lib/data";
+import { toViewApplication, type ViewApplication } from "@/lib/student/adapters";
+import { useStudent } from "@/lib/student/store";
 
-const STAGE_ICON: Record<Application["stage"], "clock" | "eye" | "message" | "check-circle" | "x"> = {
+const STAGE_ICON: Record<string, "clock" | "eye" | "message" | "check-circle" | "x"> = {
   Submitted: "clock",
   "Under Review": "eye",
   Interview: "message",
@@ -33,7 +34,7 @@ function ApplicationCard({
   item,
   onWithdraw,
 }: {
-  item: Application;
+  item: ViewApplication;
   onWithdraw: () => void;
 }) {
   return (
@@ -70,15 +71,17 @@ function ApplicationCard({
 }
 
 export default function ApplicationsPage() {
+  const { state } = useStudent();
+  const applications = state.applications.map(toViewApplication);
   const [tab, setTab] = useState("open");
-  const [withdrawing, setWithdrawing] = useState<Application | null>(null);
+  const [withdrawing, setWithdrawing] = useState<ViewApplication | null>(null);
 
-  const open = APPLICATIONS.filter((a) => a.stage !== "Not selected");
-  const closed = APPLICATIONS.filter((a) => a.stage === "Not selected");
-  const shown = tab === "open" ? open : tab === "closed" ? closed : APPLICATIONS;
+  const open = applications.filter((a) => a.stage !== "Not selected");
+  const closed = applications.filter((a) => a.stage === "Not selected");
+  const shown = tab === "open" ? open : tab === "closed" ? closed : applications;
 
-  const offers = APPLICATIONS.filter((a) => a.stage === "Offer").length;
-  const interviews = APPLICATIONS.filter((a) => a.stage === "Interview").length;
+  const offers = applications.filter((a) => a.stage === "Offer").length;
+  const interviews = applications.filter((a) => a.stage === "Interview").length;
 
   return (
     <div className="mx-auto flex max-w-[1400px] flex-col gap-6">
@@ -101,7 +104,7 @@ export default function ApplicationsPage() {
             icon="file-pen"
             label="Total sent"
             tint="navy"
-            value={String(APPLICATIONS.length)}
+            value={String(applications.length)}
           />
           <TintTile icon="eye" label="In review" tint="amber" value={String(open.length - offers - interviews)} />
           <TintTile icon="message" label="Interviews" tint="blue" value={String(interviews)} />
@@ -138,7 +141,7 @@ export default function ApplicationsPage() {
           tabs={[
             { id: "open", label: "Open", count: open.length },
             { id: "closed", label: "Closed", count: closed.length },
-            { id: "all", label: "All", count: APPLICATIONS.length },
+            { id: "all", label: "All", count: applications.length },
           ]}
           value={tab}
         />

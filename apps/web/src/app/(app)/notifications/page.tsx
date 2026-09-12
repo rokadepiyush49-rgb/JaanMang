@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Icon } from "@/components/icon";
+import { Icon, type IconName } from "@/components/icon";
 import {
   Badge,
   Button,
@@ -12,9 +12,36 @@ import {
   cx,
 } from "@/components/ui";
 import { Tabs, Toggle } from "@/components/ui-interactive";
-import { NOTIFICATIONS, type Notification } from "@/lib/data";
+import { relative } from "@/lib/gov/format";
+import { useStudent } from "@/lib/student/store";
 
-const TONE_WELL: Record<Notification["tone"], string> = {
+/**
+ * Notification kind → tone.
+ *
+ * The fixture carried a `tone` on every row, which meant the data was choosing
+ * a colour. The server sends a `kind` — what happened — and the mapping from
+ * that to a colour belongs here, in the only file that knows what the colours
+ * mean.
+ */
+const KIND_ICON: Record<string, IconName> = {
+  deadline: "clock",
+  decision: "check-circle",
+  rejection: "alert-circle",
+  mention: "message",
+  milestone: "target",
+  verification: "shield",
+};
+
+const KIND_TONE: Record<string, string> = {
+  deadline: "warning",
+  decision: "success",
+  rejection: "critical",
+  mention: "info",
+  milestone: "info",
+  verification: "warning",
+};
+
+const TONE_WELL: Record<string, string> = {
   neutral: "bg-neutral-tint text-on-neutral-tint",
   info: "bg-info-tint text-on-info-tint",
   success: "bg-success-tint text-on-success-tint",
@@ -23,6 +50,7 @@ const TONE_WELL: Record<Notification["tone"], string> = {
 };
 
 export default function NotificationsPage() {
+  const { state, actions } = useStudent();
   const [tab, setTab] = useState("all");
   const [read, setRead] = useState<Record<string, boolean>>({});
   const [digest, setDigest] = useState(true);
@@ -30,8 +58,13 @@ export default function NotificationsPage() {
 
   const items = useMemo(
     () =>
-      NOTIFICATIONS.map((n) => ({ ...n, unread: n.unread && !read[n.id] })),
-    [read],
+      state.notifications.map((n) => ({
+        ...n,
+        unread: !n.read && !read[n.id],
+        tone: KIND_TONE[n.kind] ?? "neutral",
+        icon: KIND_ICON[n.kind] ?? "bell",
+      })),
+    [state.notifications, read],
   );
   const unreadCount = items.filter((n) => n.unread).length;
   const shown = tab === "unread" ? items.filter((n) => n.unread) : items;
@@ -45,7 +78,12 @@ export default function NotificationsPage() {
               <Button
                 icon="check"
                 onClick={() =>
-                  setRead(Object.fromEntries(NOTIFICATIONS.map((n) => [n.id, true])))
+                  {
+                    setRead(Object.fromEntries(state.notifications.map((n) => [n.id, true])));
+                    for (const n of state.notifications) {
+                      if (!n.read) void actions.readNotification(n.id);
+                    }
+                  }
                 }
                 tone="outline"
               >
@@ -109,10 +147,10 @@ export default function NotificationsPage() {
                       </Badge>
                     ) : null}
                     <span className="ml-auto shrink-0 text-xs text-ink-faint">
-                      {note.when}
+                      {relative(note.at)}
                     </span>
                   </div>
-                  <p className="mt-1 text-sm text-ink-muted">{note.body}</p>
+                  <p className="mt-1 text-sm text-ink-muted">{note.detail}</p>
                 </div>
                 {note.unread ? (
                   <Button

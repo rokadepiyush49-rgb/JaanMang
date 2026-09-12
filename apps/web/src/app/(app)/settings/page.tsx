@@ -14,7 +14,8 @@ import {
   cx,
 } from "@/components/ui";
 import { Select, Toggle } from "@/components/ui-interactive";
-import { STUDENT } from "@/lib/data";
+import { profileCompleteness, studentRole } from "@/lib/student/service";
+import { useProfile } from "@/lib/student/store";
 
 const SECTIONS = [
   { id: "account", label: "Account", icon: "user" as const },
@@ -53,6 +54,8 @@ function Field({
 }
 
 export default function SettingsPage() {
+  const profile = useProfile();
+  const completeness = profileCompleteness(profile);
   const [section, setSection] = useState("account");
   const [emailUpdates, setEmailUpdates] = useState(true);
   const [pushUpdates, setPushUpdates] = useState(true);
@@ -106,20 +109,20 @@ export default function SettingsPage() {
                   <SectionHeader icon="user" title="Profile" />
                   <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-center">
                     <div className="flex min-w-0 flex-1 items-center gap-4">
-                      <Avatar name={STUDENT.name} size={72} />
+                      <Avatar name={profile.name} size={72} />
                       <div className="min-w-0">
-                        <p className="font-bold text-ink">{STUDENT.name}</p>
-                        <p className="text-sm text-ink-muted">{STUDENT.role}</p>
+                        <p className="font-bold text-ink">{profile.name}</p>
+                        <p className="text-sm text-ink-muted">{studentRole(profile)}</p>
                         {/* The bar keeps its own line: squeezed beside a
                             label it collapses to nothing on a phone. */}
                         <div className="mt-2 flex max-w-64 items-center gap-3">
                           <Progress
                             label="Profile completeness"
                             size="sm"
-                            value={STUDENT.profileComplete}
+                            value={completeness}
                           />
                           <span className="mono-data shrink-0 text-ink-muted">
-                            {STUDENT.profileComplete}%
+                            {completeness}%
                           </span>
                         </div>
                       </div>
@@ -130,16 +133,16 @@ export default function SettingsPage() {
                   </div>
 
                   <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <Field defaultValue={STUDENT.name} label="Full name" />
+                    <Field defaultValue={profile.name} label="Full name" />
                     <Field
                       defaultValue="aisha.patel@bitmesra.ac.in"
                       label="Institution email"
                       type="email"
                     />
-                    <Field defaultValue={STUDENT.institution} label="Institution" />
-                    <Field defaultValue={STUDENT.year} label="Year and branch" />
+                    <Field defaultValue={profile.institution.name} label="Institution" />
+                    <Field defaultValue={studentRole(profile)} label="Year and branch" />
                     <Field
-                      defaultValue={STUDENT.location}
+                      defaultValue={profile.district}
                       hint="Used to rank nearby challenges first."
                       label="District"
                     />
@@ -160,7 +163,7 @@ export default function SettingsPage() {
                     These drive the match percentage on every opportunity.
                   </p>
                   <div className="mt-4 flex flex-wrap gap-2">
-                    {STUDENT.skills.map((skill) => (
+                    {profile.skills.map((skill) => (
                       <span
                         className="flex items-center gap-1.5 rounded-full bg-tint-mint px-3 py-1.5 text-xs font-semibold text-on-tint-mint"
                         key={skill}
@@ -184,7 +187,7 @@ export default function SettingsPage() {
                     </button>
                   </div>
                   <div className="mt-4 flex flex-wrap gap-2">
-                    {STUDENT.interests.map((interest) => (
+                    {profile.interests.map((interest) => (
                       <Badge key={interest} tone="info">
                         {interest}
                       </Badge>

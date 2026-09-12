@@ -5,12 +5,16 @@ import { useState, type FormEvent } from "react";
 import { Icon } from "@/components/icon";
 import { Stepper } from "@/components/stepper";
 import { Button, ButtonLink, Card, PageHeading } from "@/components/ui";
-import { CHALLENGES, GOALS } from "@/lib/data";
+import { GOALS } from "@/lib/student/vocabulary";
+import { toViewChallenge } from "@/lib/student/adapters";
+import { useStudent } from "@/lib/student/store";
 
 const inputClass =
   "w-full rounded-md border border-line bg-card-muted px-4 py-3.5 text-base text-ink placeholder:text-ink-faint focus:border-primary focus:bg-card focus:ring-2 focus:ring-primary focus:outline-none";
 
 export default function CollaborationDetailsPage() {
+  const { state } = useStudent();
+  const challenges = state.opportunities.map((o) => toViewChallenge(o));
   const router = useRouter();
   const [goal, setGoal] = useState<string | null>(null);
 
@@ -58,7 +62,7 @@ export default function CollaborationDetailsPage() {
                 <option disabled value="">
                   Select a societal challenge to address…
                 </option>
-                {CHALLENGES.map((challenge) => (
+                {challenges.map((challenge) => (
                   <option key={challenge.id} value={challenge.id}>
                     {challenge.id} — {challenge.title}
                   </option>
