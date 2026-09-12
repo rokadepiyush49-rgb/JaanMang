@@ -557,6 +557,7 @@ model Problem {
   votes               ProblemVote[]
   solutionProposals   SolutionProposal[]
   hackathons          HackathonProblem[]
+  challengeProfile    ChallengeProfile?
 
   @@index([status])
   @@index([jurisdictionId])
@@ -2117,6 +2118,53 @@ model HackathonTeam {
   @@id([hackathonId, teamId])
   @@index([teamId])
   @@map("hackathon_teams")
+}
+
+/// The industry-facing brief on a validated problem.
+///
+/// Deliberately a separate table from `Problem` rather than more columns on it.
+/// A partner looking at P-1042 is looking at the very record an officer
+/// validated — same reports, same people, same priority — and this adds only
+/// the layer the government has no reason to hold: which technologies a
+/// solution needs, which capability gap is the real obstacle, what success
+/// would be defined as before anyone commits. Nothing here overrides a
+/// government figure; it annotates one.
+///
+/// Its absence is meaningful too: a validated problem with no profile is one
+/// nobody has written a partner-facing brief for yet, and the portal says so
+/// rather than inventing a summary.
+model ChallengeProfile {
+  problemId String  @id
+  problem   Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  /// One paragraph written for a partner, not for an officer.
+  summary String
+  /// The industry domain this sits in — water, energy, mobility, …
+  domain  String
+
+  technologies       String[]
+  capabilitiesNeeded String[]
+  /// fund | build | mentor | equipment | training
+  supportNeeded      String[]
+  timelineDays       Int      @default(120)
+
+  /// The government sanction order this was published under, when there is one.
+  sanctionReference String?
+
+  /// [{ label, target, measure }] — what success is, agreed before commitment.
+  expectedOutcomes Json @default("[]")
+  /// [{ label, value, source }] — evidence lines beyond the ones derived from
+  /// the government record. No number appears on a partner screen without one.
+  evidence         Json @default("[]")
+
+  /// When the brief was opened to partners. Null = drafted, not published.
+  publishedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([domain])
+  @@map("challenge_profiles")
 }
 
 // ===========================================================================

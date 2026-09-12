@@ -1,6 +1,6 @@
 /**
- * Extracts the government fixture data from apps/web into a JSON file the seed
- * consumes (`prisma/seed/fixtures/gov.json`).
+ * Extracts the fixture data from apps/web into JSON files the seed consumes
+ * (`prisma/seed/fixtures/{gov,industry}.json`).
  *
  * Why a build step rather than importing the fixtures directly in seed.ts:
  * the seed must not couple the backend's typecheck/build to the web source
@@ -18,6 +18,7 @@ import { writeFileSync, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const WEB = resolve(process.cwd(), '../apps/web/src/lib/gov');
+const WEB_INDUSTRY = resolve(process.cwd(), '../apps/web/src/lib/industry');
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -27,6 +28,7 @@ async function main(): Promise<void> {
   // JSON, not here.
   const mock: any = await import(`${WEB}/mock-data.ts`);
   const priority: any = await import(`${WEB}/priority.ts`);
+  const challenges: any = await import(`${WEB_INDUSTRY}/challenges.ts`);
 
   const bundle = {
     _generatedAt: new Date().toISOString(),
@@ -45,15 +47,33 @@ async function main(): Promise<void> {
     weeklyTrend: mock.WEEKLY_TREND,
   };
 
+  /**
+   * The industry-facing overlay, kept in its own file because it is a different
+   * authorship: the government fixture is what an officer validated, this is
+   * the partner-facing brief written on top of it. `seedIndustry` turns these
+   * into `ChallengeProfile` rows.
+   */
+  const industry = {
+    _generatedAt: new Date().toISOString(),
+    _source: 'apps/web/src/lib/industry/challenges.ts',
+    categoryDomain: challenges.CATEGORY_DOMAIN,
+    domainLabel: challenges.DOMAIN_LABEL,
+    enrichment: challenges.ENRICHMENT,
+  };
+
   const outDir = resolve(process.cwd(), 'prisma/seed/fixtures');
   mkdirSync(outDir, { recursive: true });
   const out = resolve(outDir, 'gov.json');
   writeFileSync(out, JSON.stringify(bundle, null, 2) + '\n');
+  const industryOut = resolve(outDir, 'industry.json');
+  writeFileSync(industryOut, JSON.stringify(industry, null, 2) + '\n');
 
   process.stderr.write(
     `Wrote ${out}\n` +
       `  ${bundle.problems.length} problems, ${bundle.reports.length} reports, ` +
-      `${bundle.villages.length} villages, ${bundle.officers.length} officers\n`,
+      `${bundle.villages.length} villages, ${bundle.officers.length} officers\n` +
+      `Wrote ${industryOut}\n` +
+      `  ${Object.keys(industry.enrichment).length} challenge profiles\n`,
   );
 }
 

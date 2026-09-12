@@ -14,6 +14,7 @@ import { seedGov } from './seed/gov';
 import { seedOnboarding } from './seed/onboarding';
 import { seedInstitute } from './seed/institute';
 import { seedParticipation } from './seed/participation';
+import { seedIndustry } from './seed/industry';
 
 const prisma = new PrismaClient();
 
@@ -40,6 +41,7 @@ async function main(): Promise<void> {
   const { devLogins: identityLogins } = await seedOnboarding(prisma);
   const { devLogins: instituteLogins } = await seedInstitute(prisma);
   const { devLogins: citizenLogins } = await seedParticipation(prisma);
+  const { devLogins: industryLogins } = await seedIndustry(prisma);
 
   const counts = {
     users: await prisma.user.count(),
@@ -52,6 +54,7 @@ async function main(): Promise<void> {
     ratings: await prisma.deliveryRating.count(),
     badgesEarned: await prisma.badgeEarned.count(),
     leaderboardRows: await prisma.leaderboardEntry.count(),
+    challengeBriefs: await prisma.challengeProfile.count(),
     auditEntries: await prisma.auditEntry.count(),
   };
 
@@ -61,7 +64,7 @@ async function main(): Promise<void> {
         .map(([k, v]) => `  ${v.toString().padStart(4)}  ${k}`)
         .join('\n') +
       `\n\nDemo logins — every account uses the password  jansetu-dev\n\n` +
-      identityLogins.concat(instituteLogins, citizenLogins).map((l) => `  ${l}`).join('\n') +
+      identityLogins.concat(instituteLogins, citizenLogins, industryLogins).map((l) => `  ${l}`).join('\n') +
       '\n' +
       devLogins.map((l) => `  ${l}`).join('\n') +
       '\n',

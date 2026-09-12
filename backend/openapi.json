@@ -2374,6 +2374,452 @@
         ]
       }
     },
+    "/api/v1/industry/profile": {
+      "get": {
+        "operationId": "IndustryController_profile_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The company profile the match engine reads",
+        "tags": [
+          "industry"
+        ]
+      },
+      "patch": {
+        "operationId": "IndustryController_updateProfile_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCompanyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Update the company profile",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/challenges": {
+      "get": {
+        "description": "Only problems the government has validated, and only ever through the redaction projection. Citizen names, phone numbers, verbatim reports and household coordinates are not in the response shape at all.",
+        "operationId": "IndustryController_challenges_v1",
+        "parameters": [
+          {
+            "name": "domain",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minLength": 2,
+              "maxLength": 40,
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minLength": 2,
+              "maxLength": 60,
+              "type": "string"
+            }
+          },
+          {
+            "name": "sdg",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 17,
+              "exclusiveMaximum": false,
+              "exclusiveMinimum": false,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Validated citizen problems, in the redacted partner shape",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/challenges/{id}": {
+      "get": {
+        "operationId": "IndustryController_challenge_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "One challenge",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/challenges/{id}/timeline": {
+      "get": {
+        "description": "Citizen entries collapse into a count and officer entries into an office. \"43 people reported this\" carries the weight without naming any of them.",
+        "operationId": "IndustryController_timeline_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The public audit trail",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/visibility-policy": {
+      "get": {
+        "description": "Published because the portal shows it. A partner who can see exactly where the line is drawn trusts the data on their side of it more, not less.",
+        "operationId": "IndustryController_visibilityPolicy_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "What partners can and cannot see",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/matches": {
+      "get": {
+        "operationId": "IndustryController_matches_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Every challenge scored against this company, best first",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/challenges/{id}/match": {
+      "get": {
+        "operationId": "IndustryController_matchOne_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The five-factor decomposition for one challenge",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/csr": {
+      "get": {
+        "operationId": "IndustryController_csr_v1",
+        "parameters": [
+          {
+            "name": "financialYear",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "pattern": "^\\d{4}-\\d{2}$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The CSR position for a financial year, and the benefits behind it",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/commitments": {
+      "get": {
+        "operationId": "IndustryController_commitments_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Every challenge this company has approached",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/challenges/{id}/commit": {
+      "post": {
+        "description": "Writes the same SponsorshipMatch row the government's sponsorship tab reads, so interest lands in the officer's queue. It approves nothing — acceptance is the government's decision, and the platform moves no money.",
+        "operationId": "IndustryController_commit_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommitDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Express interest in a challenge, or put a number on it",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/mentorship/requests": {
+      "get": {
+        "operationId": "IndustryController_mentorshipRequests_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Teams asking for a mentor",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/mentorship/assignments": {
+      "get": {
+        "operationId": "IndustryController_mentorAssignments_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Assignments this company's people hold",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/mentorship/requests/{id}/assign": {
+      "post": {
+        "operationId": "IndustryController_assignMentor_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignMentorDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Offer yourself as a mentor to this team",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/messages": {
+      "get": {
+        "operationId": "IndustryController_threads_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Threads this company participates in",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/messages/{id}": {
+      "post": {
+        "operationId": "IndustryController_postMessage_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostMessageDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Post to a thread you participate in",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/talent": {
+      "get": {
+        "description": "Enough to hold a design review, not enough to approach somebody off-platform. Surnames, enrolment numbers, email addresses and marks are in the same table and are never selected.",
+        "operationId": "IndustryController_talent_v1",
+        "parameters": [
+          {
+            "name": "skill",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minLength": 1,
+              "maxLength": 60,
+              "type": "string"
+            }
+          },
+          {
+            "name": "institution",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minLength": 1,
+              "maxLength": 64,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Student teams, narrowed to first name, year and discipline",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/universities": {
+      "get": {
+        "operationId": "IndustryController_universities_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Institutions on the register",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/notifications": {
+      "get": {
+        "operationId": "IndustryController_notifications_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Your alerts",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
     "/healthz": {
       "get": {
         "operationId": "HealthController_liveness",
@@ -4298,6 +4744,159 @@
             "type": "boolean"
           }
         }
+      },
+      "UpdateCompanyDto": {
+        "type": "object",
+        "properties": {
+          "sector": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "about": {
+            "type": "string",
+            "maxLength": 1200
+          },
+          "website": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 300
+          },
+          "csrThemes": {
+            "type": "array",
+            "maxItems": 12,
+            "items": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 40
+            }
+          },
+          "geographies": {
+            "type": "array",
+            "maxItems": 30,
+            "items": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 60
+            }
+          },
+          "technologyDomains": {
+            "type": "array",
+            "maxItems": 40,
+            "items": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 60
+            }
+          },
+          "capabilities": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 40
+            }
+          },
+          "sdgPreferences": {
+            "type": "array",
+            "maxItems": 17,
+            "items": {
+              "type": "integer",
+              "minimum": 1,
+              "exclusiveMinimum": false,
+              "maximum": 17,
+              "exclusiveMaximum": false
+            }
+          },
+          "fundingMin": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": false,
+            "maximum": 1000000000000,
+            "exclusiveMaximum": false
+          },
+          "fundingMax": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": false,
+            "maximum": 1000000000000,
+            "exclusiveMaximum": false
+          },
+          "csrAllocated": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": false,
+            "maximum": 1000000000000,
+            "exclusiveMaximum": false
+          },
+          "csrPreferredCeiling": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": false,
+            "maximum": 1000000000000,
+            "exclusiveMaximum": false
+          },
+          "csrFinancialYear": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}$"
+          }
+        }
+      },
+      "CommitDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "interest",
+              "proposal"
+            ],
+            "default": "interest"
+          },
+          "amount": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": false,
+            "maximum": 1000000000000,
+            "exclusiveMaximum": false
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        }
+      },
+      "AssignMentorDto": {
+        "type": "object",
+        "properties": {
+          "roles": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 6,
+            "items": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 60
+            }
+          }
+        },
+        "required": [
+          "roles"
+        ]
+      },
+      "PostMessageDto": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000
+          }
+        },
+        "required": [
+          "body"
+        ]
       }
     }
   }
