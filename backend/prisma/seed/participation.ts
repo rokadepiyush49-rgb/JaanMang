@@ -141,6 +141,44 @@ export async function seedParticipation(prisma: PrismaClient): Promise<{ devLogi
   }
 
   // -------------------------------------------------------------------------
+  // Attribution
+  //
+  // The government fixture files all 96 reports anonymously, which is faithful
+  // to how a lot of them arrive — and leaves the seeded district with no
+  // citizen who reported anything. That has consequences the fixtures were
+  // written before there was any machinery to notice: nobody can be asked to
+  // verify a completed work, because standing to verify comes from having
+  // reported it, and no badge rule about reports can ever fire.
+  //
+  // So a share of the reports get a reporter. Not all of them: an anonymous
+  // report is a real thing and the intake form deliberately allows it, so the
+  // register should keep some.
+  // -------------------------------------------------------------------------
+  const unattributed = await prisma.citizenReport.findMany({
+    where: { reporterId: null },
+    select: { id: true, villageId: true },
+    orderBy: { createdAt: 'asc' },
+  });
+
+  const residentsByVillage = new Map<string, string[]>();
+  for (const r of RESIDENTS) {
+    residentsByVillage.set(r.village, [...(residentsByVillage.get(r.village) ?? []), r.id]);
+  }
+
+  let attributed = 0;
+  for (const [index, report] of unattributed.entries()) {
+    // Every third stays anonymous.
+    if (index % 3 === 2) continue;
+    const candidates = residentsByVillage.get(report.villageId);
+    if (!candidates?.length) continue;
+    await prisma.citizenReport.update({
+      where: { id: report.id },
+      data: { reporterId: candidates[index % candidates.length] },
+    });
+    attributed += 1;
+  }
+
+  // -------------------------------------------------------------------------
   // SDG tags
   //
   // Applied from the category map, then projects inherit from the problem they
@@ -647,6 +685,7 @@ export async function seedParticipation(prisma: PrismaClient): Promise<{ devLogi
     devLogins: [
       `cit-bimla@jansetu.local        Bimla Devi — resident, Nagri (${voteTotal} votes seeded across ${Object.keys(allVotes).length} problems)`,
       `cit-sabina@jansetu.local       Sabina Khatun — resident, Kanke Chowk (rated PRJ-211 two stars)`,
+      `                               ${attributed} of ${unattributed.length} reports attributed to residents; the rest stay anonymous`,
     ],
   };
 }

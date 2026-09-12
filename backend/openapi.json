@@ -1830,6 +1830,166 @@
         ]
       }
     },
+    "/api/v1/public/problems": {
+      "get": {
+        "description": "Filterable by district, category and SDG. Aggregates only: the individual reports, and everybody who filed them, stay on the government surface.",
+        "operationId": "PublicController_problems_v1",
+        "parameters": [
+          {
+            "name": "district",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minLength": 2,
+              "maxLength": 80,
+              "type": "string"
+            }
+          },
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "water",
+                "roads",
+                "drainage",
+                "streetlight",
+                "waste",
+                "bridge",
+                "sanitation",
+                "school",
+                "health"
+              ]
+            }
+          },
+          {
+            "name": "sdg",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 17,
+              "exclusiveMaximum": false,
+              "exclusiveMinimum": false,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Published problems, in the narrowest shape on the platform",
+        "tags": [
+          "public"
+        ]
+      }
+    },
+    "/api/v1/public/problems/{id}": {
+      "get": {
+        "operationId": "PublicController_problem_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "One problem, with its before-and-after and its ledger entries",
+        "tags": [
+          "public"
+        ]
+      }
+    },
+    "/api/v1/public/impact": {
+      "get": {
+        "description": "\"Verified\" means the citizens who reported the problem confirmed the work was done — not that an officer closed it. A rollup of officer-closed problems is the number every government already publishes, and the reason to build this was that nobody believes those.",
+        "operationId": "PublicController_impactSummary_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Verified impact per district",
+        "tags": [
+          "public"
+        ]
+      }
+    },
+    "/api/v1/public/ledger": {
+      "get": {
+        "operationId": "PublicController_ledger_v1",
+        "parameters": [
+          {
+            "name": "fiscalYear",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The public funding ledger",
+        "tags": [
+          "public"
+        ]
+      }
+    },
+    "/api/v1/public/leaderboard/{scope}": {
+      "get": {
+        "description": "citizens | students | institutes | partners | officers. Ranked on verified outcomes only — never on activity counts, which would rank the loudest account first.",
+        "operationId": "PublicController_leaderboard_v1",
+        "parameters": [
+          {
+            "name": "scope",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "exclusiveMaximum": false,
+              "exclusiveMinimum": false,
+              "default": 25,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "A published ranking, with the formula that produced it",
+        "tags": [
+          "public"
+        ]
+      }
+    },
     "/api/v1/public/stats": {
       "get": {
         "operationId": "PublicController_stats_v1",
@@ -3605,6 +3765,37 @@
         "summary": "Where verification on a problem has got to",
         "tags": [
           "verification"
+        ]
+      }
+    },
+    "/api/v1/admin/recognition/recompute": {
+      "post": {
+        "description": "Runs hourly on its own. This exists so a corrected badge threshold or a late verification takes effect without waiting for the hour.",
+        "operationId": "RecognitionController_recompute_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Rebuild every leaderboard and re-evaluate every badge rule",
+        "tags": [
+          "recognition"
+        ]
+      }
+    },
+    "/api/v1/admin/recognition/status": {
+      "get": {
+        "operationId": "RecognitionController_status_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "When the rankings were last computed",
+        "tags": [
+          "recognition"
         ]
       }
     },

@@ -27,6 +27,7 @@ import { DeliveryModule } from './delivery/delivery.module';
 import { IndustryModule } from './industry/industry.module';
 import { StudentModule } from './student/student.module';
 import { VerificationModule } from './verification/verification.module';
+import { RecognitionModule } from './recognition/recognition.module';
 
 /**
  * Root module.
@@ -81,6 +82,7 @@ import { VerificationModule } from './verification/verification.module';
     IndustryModule,
     StudentModule,
     VerificationModule,
+    RecognitionModule,
     HealthModule,
   ],
   providers: [
