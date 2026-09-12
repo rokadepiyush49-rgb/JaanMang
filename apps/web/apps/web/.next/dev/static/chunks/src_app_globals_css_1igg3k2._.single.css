@@ -1476,6 +1476,18 @@
     min-width: calc(var(--spacing) * 160);
   }
 
+  .min-w-\[30rem\] {
+    min-width: 30rem;
+  }
+
+  .min-w-\[36rem\] {
+    min-width: 36rem;
+  }
+
+  .min-w-\[42rem\] {
+    min-width: 42rem;
+  }
+
   .min-w-\[860px\] {
     min-width: 860px;
   }
@@ -1759,6 +1771,12 @@
     --tw-space-y-reverse: 0;
     margin-block-start: calc(calc(var(--spacing) * 2.5) * var(--tw-space-y-reverse));
     margin-block-end: calc(calc(var(--spacing) * 2.5) * calc(1 - var(--tw-space-y-reverse)));
+  }
+
+  :where(.space-y-3 > :not(:last-child)) {
+    --tw-space-y-reverse: 0;
+    margin-block-start: calc(calc(var(--spacing) * 3) * var(--tw-space-y-reverse));
+    margin-block-end: calc(calc(var(--spacing) * 3) * calc(1 - var(--tw-space-y-reverse)));
   }
 
   :where(.space-y-4 > :not(:last-child)) {
@@ -2049,6 +2067,10 @@
     .border-info\/25 {
       border-color: color-mix(in oklab, var(--color-info) 25%, transparent);
     }
+  }
+
+  .border-ink {
+    border-color: var(--color-ink);
   }
 
   .border-line {
@@ -3054,6 +3076,11 @@
   .text-2xl {
     font-size: var(--text-2xl);
     line-height: var(--tw-leading, var(--text-2xl--line-height));
+  }
+
+  .text-3xl {
+    font-size: var(--text-3xl);
+    line-height: var(--tw-leading, var(--text-3xl--line-height));
   }
 
   .text-4xl {
@@ -4384,6 +4411,10 @@
 
     .lg\:grid-cols-6 {
       grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+
+    .lg\:grid-cols-\[1fr_18rem\] {
+      grid-template-columns: 1fr 18rem;
     }
 
     .lg\:grid-cols-\[1fr_20rem\] {

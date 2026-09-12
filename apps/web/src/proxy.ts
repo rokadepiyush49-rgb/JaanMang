@@ -87,5 +87,14 @@ export const config = {
     "/collaborate/:path*",
     "/onboarding/:path*",
     "/pending",
+    /*
+     * `/report/mine` and `/report/verify` are a citizen's own records, so they
+     * are guarded; `/report` itself is not, and neither is anything under
+     * `(public)` — /impact, /problems, /ledger, /leaderboard. Those four are
+     * the portal a stranger opens, and the allow-list shape of this matcher is
+     * what keeps them reachable: a route is public here unless somebody adds it.
+     */
+    "/report/mine",
+    "/report/verify",
   ],
 };

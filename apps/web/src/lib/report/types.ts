@@ -128,7 +128,14 @@ export const STATUS_LABEL: Record<string, string> = {
 
 export type EvidenceSide = {
   photos: number;
-  activeReports: number | null;
+  /**
+   * Reports still open on the problem at the time of the photograph.
+   *
+   * Optional because the public shape omits it: a count of currently-active
+   * reports is an operational figure for the officer's own screen, and it is
+   * not what a stranger is here to check.
+   */
+  activeReports?: number | null;
   note: string | null;
   images: { key: string; url: string }[];
 };
