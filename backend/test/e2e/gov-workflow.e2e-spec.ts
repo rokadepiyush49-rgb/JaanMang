@@ -210,6 +210,64 @@ describe('gov workflow (e2e)', () => {
       expect(await ctx.prisma.ledgerEntry.count({ where: { problemId: 'P-1038' } })).toBe(1);
     });
 
+    it('commits once when two approvals arrive at the same instant', async () => {
+      // The case the key has to be reserved *before* the handler for. Recording
+      // it afterwards leaves a window in which both requests see no record and
+      // both run — and both spend the budget. Over loopback that window is wide
+      // enough to hit every time.
+      const key = randomUUID();
+      const before = await ctx.prisma.department.findUniqueOrThrow({ where: { id: 'dept-pwd' } });
+
+      const send = () =>
+        api()
+          .post('/api/v1/problems/P-1038/funding/approve')
+          .set('authorization', district)
+          .set('Idempotency-Key', key)
+          .send({});
+
+      const [a, b] = await Promise.all([send(), send()]);
+
+      // One succeeds. The other either replays it or is told it is in flight —
+      // both are correct, and which one happens is a race. What is not
+      // negotiable is that the money moved once.
+      const statuses = [a.status, b.status].sort();
+      expect(statuses[0]).toBe(200);
+      expect([200, 409]).toContain(statuses[1]);
+
+      const after = await ctx.prisma.department.findUniqueOrThrow({ where: { id: 'dept-pwd' } });
+      expect(Number(after.budgetCommitted) - Number(before.budgetCommitted)).toBe(1450000);
+      expect(await ctx.prisma.ledgerEntry.count({ where: { problemId: 'P-1038' } })).toBe(1);
+      expect(await ctx.prisma.allocation.count({ where: { problemId: 'P-1038' } })).toBe(1);
+    });
+
+    it('releases the key when the request failed, so a retry can still work', async () => {
+      const key = randomUUID();
+
+      // Fails on the amount, which must not burn the key.
+      const failed = await api()
+        .post('/api/v1/problems/P-1038/funding/approve')
+        .set('authorization', district)
+        .set('Idempotency-Key', key)
+        .send({ amount: 99_000_000 });
+      expect(failed.status).toBe(422);
+
+      // Same key, a figure the department can cover. A key burned by a failure
+      // would leave the officer unable to retry their own correction.
+      const retried = await api()
+        .post('/api/v1/problems/P-1038/funding/approve')
+        .set('authorization', district)
+        .set('Idempotency-Key', key)
+        .send({ amount: 99_000_000 });
+      expect(retried.status).toBe(422);
+
+      const fresh = await api()
+        .post('/api/v1/problems/P-1038/funding/approve')
+        .set('authorization', district)
+        .set('Idempotency-Key', randomUUID())
+        .send({});
+      expect(fresh.status).toBe(200);
+    });
+
     it('refuses an amount the department cannot cover, and changes nothing', async () => {
       const before = await ctx.prisma.department.findUniqueOrThrow({ where: { id: 'dept-pwd' } });
 

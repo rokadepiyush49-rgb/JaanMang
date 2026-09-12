@@ -178,7 +178,7 @@ export default function ProblemDossier() {
               can("sponsorship.invite") ? (
                 <Button
                   icon="send"
-                  onClick={() => dispatch({ type: "sponsorship/invite", id: problem.id })}
+                  onClick={() => void actions.inviteSponsors(problem.id)}
                 >
                   Request sponsorship
                 </Button>
@@ -186,7 +186,7 @@ export default function ProblemDossier() {
               {problem.funding.status === "recommended" && can("funding.approve") ? (
                 <Button
                   icon="banknote"
-                  onClick={() => dispatch({ type: "funding/approve", id: problem.id })}
+                  onClick={() => void actions.approveFunding(problem.id)}
                 >
                   Approve funding
                 </Button>
@@ -603,9 +603,7 @@ export default function ProblemDossier() {
                       </Badge>
                     ) : can("officer.assign") ? (
                       <Button
-                        onClick={() =>
-                          dispatch({ type: "officer/assign", id: problem.id, officerId: o.id })
-                        }
+                        onClick={() => void actions.assignOfficer(problem.id, o.id)}
                         size="sm"
                         tone="outline"
                       >
@@ -678,7 +676,7 @@ export default function ProblemDossier() {
                 </p>
                 {can("funding.approve") ? (
                   <Button
-                    onClick={() => dispatch({ type: "sponsorship/fallback", id: problem.id })}
+                    onClick={() => void actions.sponsorshipFallback(problem.id)}
                     size="sm"
                     tone="outline"
                   >
@@ -705,16 +703,13 @@ export default function ProblemDossier() {
                     canApprove={can("sponsorship.approve")}
                     key={m.sponsorId}
                     match={m}
-                    onApprove={() =>
-                      dispatch({ type: "sponsorship/approve", id: problem.id, sponsorId: m.sponsorId })
-                    }
+                    onApprove={() => void actions.approveSponsorship(problem.id, m.sponsorId)}
                     onDecline={() =>
-                      dispatch({
-                        type: "sponsorship/decline",
-                        id: problem.id,
-                        sponsorId: m.sponsorId,
-                        reason: "Declined by industry",
-                      })
+                      void actions.declineSponsorship(
+                        problem.id,
+                        m.sponsorId,
+                        "Declined by industry",
+                      )
                     }
                   />
                 ))}
@@ -729,7 +724,7 @@ export default function ProblemDossier() {
               <Button
                 className="mt-5"
                 icon="send"
-                onClick={() => dispatch({ type: "sponsorship/invite", id: problem.id })}
+                onClick={() => void actions.inviteSponsors(problem.id)}
               >
                 Send sponsorship request to {problem.sponsorship.matches.length} industries
               </Button>
@@ -808,18 +803,14 @@ export default function ProblemDossier() {
                 <Button
                   disabled={!problem.funding.fundable}
                   icon="check"
-                  onClick={() => dispatch({ type: "funding/approve", id: problem.id })}
+                  onClick={() => void actions.approveFunding(problem.id)}
                 >
                   Approve {rupees(problem.funding.required || problem.estimatedCost)}
                 </Button>
                 <Button
                   icon="x"
                   onClick={() =>
-                    dispatch({
-                      type: "funding/reject",
-                      id: problem.id,
-                      reason: "Deferred to the next financial year",
-                    })
+                    void actions.rejectFunding(problem.id, "Deferred to the next financial year")
                   }
                   tone="outline"
                 >
@@ -958,12 +949,26 @@ export default function ProblemDossier() {
                       id="progress"
                       max={100}
                       min={0}
+                      /* Dragging updates the store only. A range input fires
+                         onChange for every pixel of travel, so calling the API
+                         here would be a request per pixel — the commit happens
+                         on release, below. */
                       onChange={(e) =>
                         dispatch({
                           type: "project/progress",
                           id: problem.id,
                           progress: Number(e.target.value),
                         })
+                      }
+                      /* Release, or tab away after arrow-keying it. Both, because
+                         a slider that only saves on mouse-up is unusable with a
+                         keyboard. */
+                      onBlur={(e) => void actions.projectProgress(problem.id, Number(e.target.value))}
+                      onPointerUp={(e) =>
+                        void actions.projectProgress(
+                          problem.id,
+                          Number((e.target as HTMLInputElement).value),
+                        )
                       }
                       step={1}
                       type="range"
@@ -972,7 +977,7 @@ export default function ProblemDossier() {
                     <Button
                       disabled={problem.project.phase === "completed"}
                       icon="check-circle"
-                      onClick={() => dispatch({ type: "project/complete", id: problem.id })}
+                      onClick={() => void actions.completeProject(problem.id)}
                     >
                       Mark complete & request verification
                     </Button>

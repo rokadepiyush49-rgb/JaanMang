@@ -51,7 +51,7 @@ const PIPELINE = [
 ] as const;
 
 export default function GovOverview() {
-  const { state, ranked, dispatch } = useGov();
+  const { state, ranked, actions } = useGov();
   const k = kpiCounts(ranked);
   const money = moneyBook(ranked);
   const path = jurisdictionPath(state.user.jurisdictionId, govSeed.jurisdictions);
@@ -376,7 +376,7 @@ export default function GovOverview() {
                           {a.problemId ? (
                             <ButtonLink
                               href={`/gov/problems/${a.problemId}`}
-                              onClick={() => dispatch({ type: "alert/read", id: a.id })}
+                              onClick={() => void actions.markAlertRead(a.id)}
                               size="sm"
                               tone="outline"
                             >
@@ -384,7 +384,7 @@ export default function GovOverview() {
                             </ButtonLink>
                           ) : null}
                           <Button
-                            onClick={() => dispatch({ type: "alert/read", id: a.id })}
+                            onClick={() => void actions.markAlertRead(a.id)}
                             size="sm"
                             tone="ghost"
                           >

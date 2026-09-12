@@ -8,7 +8,7 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import type { FastifyReply, FastifyRequest } from 'fastify';
-import { Observable, from, of, switchMap, tap } from 'rxjs';
+import { Observable, catchError, from, of, switchMap, tap, throwError } from 'rxjs';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ProblemCode, ProblemException } from '../errors/problem';
 import type { AuthPrincipal } from '../../auth/auth.types';
@@ -16,13 +16,16 @@ import type { AuthPrincipal } from '../../auth/auth.types';
 /** How long a key is honoured. Long enough for a retry, short enough to prune. */
 const TTL_MS = 24 * 60 * 60 * 1000;
 
+/** `statusCode` while the handler is still running. No response is a 0. */
+const IN_FLIGHT = 0;
+
 /**
  * Makes a mutating request happen at most once per `Idempotency-Key`.
  *
  * `apps/web/src/app/api/gov/[...path]/route.ts` has forwarded this header since
  * the proxy was written and nothing read it, so a double-tapped submit on a bad
- * connection files the report twice — and from stage 03 would commit a
- * department budget twice, which is a corrupt book rather than a duplicate row.
+ * connection filed the report twice — and committed a department's budget twice,
+ * which is a corrupt book rather than a duplicate row.
  *
  * The contract:
  *
@@ -33,11 +36,16 @@ const TTL_MS = 24 * 60 * 60 * 1000;
  *     original status and an `Idempotency-Replayed: true` header.
  *   - Repeat with a *different* body: 409. Reusing a key for another request is
  *     a client bug, and replaying the first response would hide it.
- *   - Failures are not stored. A 500 that a retry would fix must stay retryable.
+ *   - Repeat while the first is still running: 409, and the client retries.
+ *   - Failures release the key, so a 500 that a retry would fix stays retryable.
  *
- * There is a race — two genuinely simultaneous requests can both pass the
- * lookup — which the unique index on (subject, key) settles: the loser's insert
- * is rejected, and it has already returned its own identical result.
+ * **The key is reserved before the handler runs, not after.** The obvious
+ * implementation — run the handler, then record the key — has a window between
+ * those two steps in which a second request sees no record and runs the handler
+ * again. That is not theoretical: the e2e spec sends two approvals back to back
+ * over loopback and the second one beat the write every time. A unique index on
+ * (subject, key) prevents two *records*; only reserving first prevents two
+ * *executions*, and it is executions that spend a budget.
  */
 @Injectable()
 export class IdempotencyInterceptor implements NestInterceptor {
@@ -66,65 +74,111 @@ export class IdempotencyInterceptor implements NestInterceptor {
     const path = req.url.split('?')[0];
     const fingerprint = fingerprintOf(method, path, req.body);
 
-    return from(
-      this.prisma.idempotencyRecord.findUnique({ where: { subject_key: { subject, key } } }),
-    ).pipe(
-      switchMap((existing) => {
-        if (existing) {
-          if (existing.fingerprint !== fingerprint) {
-            throw new ProblemException(
-              HttpStatus.CONFLICT,
-              ProblemCode.CONFLICT,
-              'This Idempotency-Key was already used for a different request. Generate a new key per distinct operation.',
-            );
-          }
+    return from(this.reserve({ subject, key, fingerprint, method, path })).pipe(
+      switchMap((reservation) => {
+        if (reservation.kind === 'replay') {
           void reply.header('Idempotency-Replayed', 'true');
-          void reply.status(existing.statusCode);
-          return of(existing.response);
+          void reply.status(reservation.statusCode);
+          return of(reservation.response);
         }
 
         return next.handle().pipe(
           tap((body) => {
-            // Fire and forget: the caller already has its answer, and failing
-            // to record the key must not fail a request that succeeded.
-            void this.record({ subject, key, fingerprint, method, path, reply, body });
+            void this.complete(reservation.id, reply.statusCode ?? 200, body);
+          }),
+          catchError((error: unknown) => {
+            // The handler failed, so nothing happened and the key should not
+            // be burned. Releasing it is what keeps a transient 500 retryable.
+            void this.release(reservation.id);
+            return throwError(() => error);
           }),
         );
       }),
     );
   }
 
-  private async record(args: {
+  /**
+   * Claim the key, or discover who already has it.
+   *
+   * The INSERT is the lock: exactly one concurrent request can create the row,
+   * and everybody else lands in the unique-violation branch.
+   */
+  private async reserve(args: {
     subject: string;
     key: string;
     fingerprint: string;
     method: string;
     path: string;
-    reply: FastifyReply;
-    body: unknown;
-  }): Promise<void> {
-    const statusCode = args.reply.statusCode ?? 200;
-    if (statusCode >= 400) return;
-
+  }): Promise<
+    { kind: 'owned'; id: string } | { kind: 'replay'; statusCode: number; response: unknown }
+  > {
     try {
-      await this.prisma.idempotencyRecord.create({
+      const created = await this.prisma.idempotencyRecord.create({
         data: {
-          subject: args.subject,
-          key: args.key,
-          fingerprint: args.fingerprint,
-          method: args.method,
-          path: args.path,
-          statusCode,
-          response: (args.body ?? null) as never,
+          ...args,
+          statusCode: IN_FLIGHT,
+          response: {},
           expiresAt: new Date(Date.now() + TTL_MS),
         },
+        select: { id: true },
+      });
+      return { kind: 'owned', id: created.id };
+    } catch (error) {
+      if (!isUniqueViolation(error)) throw error;
+    }
+
+    const existing = await this.prisma.idempotencyRecord.findUnique({
+      where: { subject_key: { subject: args.subject, key: args.key } },
+    });
+
+    // Vanished between the failed insert and this read: it expired or was
+    // released. Treat the key as free and let the caller retry.
+    if (!existing) {
+      throw new ProblemException(
+        HttpStatus.CONFLICT,
+        ProblemCode.CONFLICT,
+        'That Idempotency-Key was in use a moment ago. Retry the request.',
+      );
+    }
+
+    if (existing.fingerprint !== args.fingerprint) {
+      throw new ProblemException(
+        HttpStatus.CONFLICT,
+        ProblemCode.CONFLICT,
+        'This Idempotency-Key was already used for a different request. Generate a new key per distinct operation.',
+      );
+    }
+
+    if (existing.statusCode === IN_FLIGHT) {
+      throw new ProblemException(
+        HttpStatus.CONFLICT,
+        ProblemCode.CONFLICT,
+        'A request with this Idempotency-Key is still being processed. Retry in a moment.',
+      );
+    }
+
+    return { kind: 'replay', statusCode: existing.statusCode, response: existing.response };
+  }
+
+  private async complete(id: string, statusCode: number, body: unknown): Promise<void> {
+    try {
+      await this.prisma.idempotencyRecord.update({
+        where: { id },
+        data: { statusCode, response: (body ?? null) as never },
       });
     } catch (error) {
-      // The unique index rejecting a concurrent insert is the design working,
-      // not a fault. Anything else is worth a line in the log.
-      if (!isUniqueViolation(error)) {
-        this.logger.warn(`could not record idempotency key: ${String(error)}`);
-      }
+      // The work is done and the caller has its answer. A key that cannot be
+      // completed means a retry re-runs the handler, which is worth a log line
+      // and not worth failing a request that succeeded.
+      this.logger.warn(`could not record the idempotency response: ${String(error)}`);
+    }
+  }
+
+  private async release(id: string): Promise<void> {
+    try {
+      await this.prisma.idempotencyRecord.delete({ where: { id } });
+    } catch (error) {
+      this.logger.warn(`could not release the idempotency key: ${String(error)}`);
     }
   }
 }

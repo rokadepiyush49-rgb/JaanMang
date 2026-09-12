@@ -66,7 +66,7 @@ function rowHeightFor(width: number, comparing: boolean) {
 }
 
 export default function PriorityPage() {
-  const { state, ranked, dispatch } = useGov();
+  const { state, ranked, dispatch, actions } = useGov();
   const [width, setWidth] = useState(1440);
   const [compare, setCompare] = useState(false);
   const rowH = rowHeightFor(width, compare);
@@ -122,7 +122,7 @@ export default function PriorityPage() {
             </Button>
             <Button
               icon="check"
-              onClick={() => dispatch({ type: "weights/publish" })}
+              onClick={() => void actions.publishWeights()}
               disabled={!dirty}
             >
               Publish weighting

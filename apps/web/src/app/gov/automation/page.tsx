@@ -25,7 +25,7 @@ const STATUS: Record<AutomationStatus, { tone: "success" | "warning" | "neutral"
 };
 
 export default function AutomationPage() {
-  const { state, ranked, dispatch } = useGov();
+  const { state, ranked, actions } = useGov();
 
   const runsToday = state.automations.reduce((s, a) => s + a.runsToday, 0);
   const enabled = state.automations.filter((a) => a.enabled).length;
@@ -138,7 +138,7 @@ export default function AutomationPage() {
                         : "Paused. The work still has to happen — by hand."
                     }
                     label="Automation enabled"
-                    onChange={() => dispatch({ type: "automation/toggle", id: a.id })}
+                    onChange={() => void actions.toggleAutomation(a.id)}
                   />
                 </div>
               </Card>

@@ -9,9 +9,15 @@
  * a detail page or an alert produces exactly the same state change and the same
  * audit entry.
  *
- * It is a client store because the backend does not exist yet. The reducer is
- * deliberately the shape of a set of API mutations: when `/backend/api` lands,
- * each case becomes a request and the reducer keeps only the optimistic update.
+ * The reducer is now the *optimistic* half only. Every case below has a server
+ * endpoint behind it, and the flow is always the same: dispatch the optimistic
+ * change so the screen answers instantly, call the API, then replace the
+ * affected problem with the server's copy. On failure that one problem is
+ * rolled back to the server's truth and the message surfaces on `actionError`.
+ *
+ * The reducer is kept rather than deleted because an officer on a rural
+ * connection pressing Validate should not watch a spinner for two seconds to
+ * find out what they already know is going to happen.
  */
 
 import {
@@ -21,6 +27,7 @@ import {
   useEffect,
   useMemo,
   useReducer,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -108,6 +115,8 @@ type Action =
   | { type: "weights/set"; weights: PriorityWeights }
   | { type: "weights/reset" }
   | { type: "weights/publish" }
+  /** The published weighting as the server holds it. Reconcile and rollback. */
+  | { type: "weights/published"; weights: PriorityWeights }
   | { type: "problem/validate"; id: string }
   | { type: "problem/reject"; id: string; reason: string }
   | { type: "problem/route"; id: string; departmentId: string; reason: string }
@@ -123,7 +132,9 @@ type Action =
   | { type: "verification/request"; id: string }
   | { type: "verification/record"; id: string; confirmed: number; denied: number }
   | { type: "automation/toggle"; id: string }
-  | { type: "alert/read"; id: string };
+  | { type: "alert/read"; id: string }
+  /** Rollback only: an alert we marked read that the server did not record. */
+  | { type: "alert/unread"; id: string };
 
 /* ============================================================ reducer === */
 
@@ -179,6 +190,9 @@ function reducer(state: State, action: Action): State {
 
     case "weights/reset":
       return { ...state, weights: state.publishedWeights };
+
+    case "weights/published":
+      return { ...state, publishedWeights: action.weights, weights: action.weights };
 
     case "weights/publish":
       return { ...state, publishedWeights: state.weights };
@@ -556,6 +570,12 @@ function reducer(state: State, action: Action): State {
         alerts: state.alerts.map((a) => (a.id === action.id ? { ...a, read: true } : a)),
       };
 
+    case "alert/unread":
+      return {
+        ...state,
+        alerts: state.alerts.map((a) => (a.id === action.id ? { ...a, read: false } : a)),
+      };
+
     /* -- server hydration --------------------------------------------- */
     case "hydrate":
       return {
@@ -591,9 +611,26 @@ function reducer(state: State, action: Action): State {
  * `state.actionError`; they never reject, so a fire-and-forget `onClick` is safe.
  */
 type GovActions = {
+  /* problem lifecycle */
   validate: (id: string) => Promise<void>;
   reject: (id: string, reason: string) => Promise<void>;
   route: (id: string, departmentId: string, reason: string) => Promise<void>;
+  /* sponsorship */
+  inviteSponsors: (id: string) => Promise<void>;
+  approveSponsorship: (id: string, sponsorId: string, amount?: number) => Promise<void>;
+  declineSponsorship: (id: string, sponsorId: string, reason: string) => Promise<void>;
+  sponsorshipFallback: (id: string) => Promise<void>;
+  /* government funding */
+  approveFunding: (id: string) => Promise<void>;
+  rejectFunding: (id: string, reason: string) => Promise<void>;
+  /* delivery */
+  assignOfficer: (id: string, officerId: string) => Promise<void>;
+  projectProgress: (id: string, progress: number) => Promise<void>;
+  completeProject: (id: string) => Promise<void>;
+  /* workspace */
+  toggleAutomation: (id: string) => Promise<void>;
+  markAlertRead: (id: string) => Promise<void>;
+  publishWeights: () => Promise<void>;
   clearError: () => void;
 };
 
@@ -637,6 +674,24 @@ export function GovProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+
+  /**
+   * The published weighting as it stood before the current action.
+   *
+   * Held in a ref rather than read from `state` inside the action, so the
+   * action map does not have to list `state` as a dependency and change
+   * identity on every keystroke in the simulator.
+   */
+  const publishedRef = useRef(initialState.publishedWeights);
+  useEffect(() => {
+    publishedRef.current = state.publishedWeights;
+  }, [state.publishedWeights]);
+
+  /** The live simulator weighting, for the same reason. */
+  const draftRef = useRef(initialState.weights);
+  useEffect(() => {
+    draftRef.current = state.weights;
+  }, [state.weights]);
 
   useEffect(() => {
     let cancelled = false;
@@ -697,6 +752,27 @@ export function GovProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  /**
+   * The same optimistic-then-reconcile shape for the two changes that are not a
+   * problem. There is nothing to re-fetch, so the rollback is an explicit
+   * inverse action — which is why `alert/unread` exists.
+   */
+  const runLocalMutation = useCallback(
+    async (optimistic: Action, call: () => Promise<unknown>, rollback: Action) => {
+      dispatch(optimistic);
+      setActionError(null);
+      try {
+        await call();
+      } catch (error) {
+        dispatch(rollback);
+        setActionError(
+          error instanceof ApiError ? error.message : "That action could not be completed.",
+        );
+      }
+    },
+    [],
+  );
+
   const actions = useMemo<GovActions>(
     () => ({
       validate: (id) =>
@@ -709,9 +785,87 @@ export function GovProvider({ children }: { children: ReactNode }) {
           () => GovApi.route(id, departmentId, reason),
           id,
         ),
+
+      inviteSponsors: (id) =>
+        runMutation({ type: "sponsorship/invite", id }, () => GovApi.inviteSponsors(id), id),
+      approveSponsorship: (id, sponsorId, amount) =>
+        runMutation(
+          { type: "sponsorship/approve", id, sponsorId },
+          () => GovApi.approveSponsorship(id, sponsorId, amount),
+          id,
+        ),
+      declineSponsorship: (id, sponsorId, reason) =>
+        runMutation(
+          { type: "sponsorship/decline", id, sponsorId, reason },
+          () => GovApi.declineSponsorship(id, sponsorId, reason),
+          id,
+        ),
+      sponsorshipFallback: (id) =>
+        runMutation(
+          { type: "sponsorship/fallback", id },
+          () => GovApi.sponsorshipFallback(id),
+          id,
+        ),
+
+      approveFunding: (id) =>
+        runMutation({ type: "funding/approve", id }, () => GovApi.approveFunding(id), id),
+      rejectFunding: (id, reason) =>
+        runMutation(
+          { type: "funding/reject", id, reason },
+          () => GovApi.rejectFunding(id, reason),
+          id,
+        ),
+
+      assignOfficer: (id, officerId) =>
+        runMutation(
+          { type: "officer/assign", id, officerId },
+          () => GovApi.assignOfficer(id, officerId),
+          id,
+        ),
+      projectProgress: (id, progress) =>
+        runMutation(
+          { type: "project/progress", id, progress },
+          () => GovApi.projectProgress(id, progress),
+          id,
+        ),
+      completeProject: (id) =>
+        runMutation({ type: "project/complete", id }, () => GovApi.completeProject(id), id),
+
+      toggleAutomation: (id) =>
+        runLocalMutation(
+          { type: "automation/toggle", id },
+          () => GovApi.toggleAutomation(id),
+          // The reducer case is a flip, so dispatching it again is the inverse.
+          { type: "automation/toggle", id },
+        ),
+      markAlertRead: (id) =>
+        runLocalMutation({ type: "alert/read", id }, () => GovApi.markAlertRead(id), {
+          type: "alert/unread",
+          id,
+        }),
+
+      /**
+       * Publishing is the one simulator action that leaves the simulator.
+       * `weights/set` and `weights/reset` are deliberately local — the whole
+       * point of a simulator is to try a weighting without imposing it — but
+       * publishing replaces the weighting the district's official ranking is
+       * measured against, and that has to outlive the tab it was pressed in.
+       */
+      publishWeights: () => {
+        const previous = publishedRef.current;
+        return runLocalMutation(
+          { type: "weights/publish" },
+          async () => {
+            const { weights } = await GovApi.publishWeights(draftRef.current);
+            dispatch({ type: "weights/published", weights });
+          },
+          { type: "weights/published", weights: previous },
+        );
+      },
+
       clearError: () => setActionError(null),
     }),
-    [runMutation],
+    [runMutation, runLocalMutation],
   );
 
   const visible = useMemo(
