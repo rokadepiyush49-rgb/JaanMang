@@ -87,3 +87,4 @@ android/key.properties
 # Local AI/editor agent config (not part of the project)
 .claude/
 CLAUDE.md
+.uploads/

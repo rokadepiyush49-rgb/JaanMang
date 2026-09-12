@@ -42,6 +42,23 @@ export const envSchema = z.object({
     .default('false')
     .transform((v) => v === 'true'),
 
+  /**
+   * Where uploads go.
+   *
+   * `auto` — the default — uses R2 when the four R2_* variables are present and
+   * local disk when they are not, so a fresh clone can photograph, verify and
+   * rate with no account anywhere. Production refuses to start on the local
+   * driver: blank config there is a misconfiguration, not a choice.
+   */
+  STORAGE_DRIVER: z.enum(['auto', 'r2', 'local']).default('auto'),
+  STORAGE_LOCAL_DIR: z.string().default('.uploads'),
+  /** Hard ceiling on an upload, enforced server-side. */
+  UPLOAD_MAX_BYTES: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(12 * 1024 * 1024),
+
   R2_ACCOUNT_ID: z.string().optional(),
   R2_ACCESS_KEY_ID: z.string().optional(),
   R2_SECRET_ACCESS_KEY: z.string().optional(),

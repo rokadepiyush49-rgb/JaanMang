@@ -3257,6 +3257,374 @@
         ]
       }
     },
+    "/api/v1/uploads/presign": {
+      "post": {
+        "description": "Content type and size are enforced here, before any bytes move, because a presigned URL is a capability. Returns a 503 when the deployment has no storage configured, rather than a confusing 500 later.",
+        "operationId": "UploadsController_presign_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PresignDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Get an upload target",
+        "tags": [
+          "uploads"
+        ]
+      }
+    },
+    "/api/v1/uploads/local/{key}": {
+      "put": {
+        "operationId": "UploadsController_putLocal_v1",
+        "parameters": [
+          {
+            "name": "key",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "content-type",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "uploads"
+        ]
+      }
+    },
+    "/api/v1/uploads/{key}": {
+      "get": {
+        "operationId": "UploadsController_serve_v1",
+        "parameters": [
+          {
+            "name": "key",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Serve an uploaded file",
+        "tags": [
+          "uploads"
+        ]
+      }
+    },
+    "/api/v1/verification/mine": {
+      "get": {
+        "description": "Only problems you reported. Somebody who did not report the broken handpump has no standing to say it was fixed.",
+        "operationId": "VerificationController_mine_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Verification requests addressed to you",
+        "tags": [
+          "verification"
+        ]
+      }
+    },
+    "/api/v1/verification/problems/{id}": {
+      "post": {
+        "description": "Answering again replaces your previous answer. The problem closes only when everybody asked has answered and confirmations outweigh denials three to one.",
+        "operationId": "VerificationController_verify_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Say whether the work was actually done",
+        "tags": [
+          "verification"
+        ]
+      }
+    },
+    "/api/v1/verification/projects/{id}/rate": {
+      "post": {
+        "description": "A different question from verification: that asks whether it was fixed, this asks how well. Merging them loses the answer the delivery leaderboards rank on.",
+        "operationId": "VerificationController_rate_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Rate how well it was delivered",
+        "tags": [
+          "verification"
+        ]
+      }
+    },
+    "/api/v1/verification/projects/{id}/ratings": {
+      "get": {
+        "description": "Public, and without the raters. A citizen rating their own government’s work should not have their name on it in a public summary.",
+        "operationId": "VerificationController_ratings_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The rating summary for a project",
+        "tags": [
+          "verification"
+        ]
+      }
+    },
+    "/api/v1/verification/problems/{id}/evidence": {
+      "get": {
+        "operationId": "VerificationController_evidence_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The before-and-after pair",
+        "tags": [
+          "verification"
+        ]
+      }
+    },
+    "/api/v1/verification/problems/{id}/object": {
+      "post": {
+        "description": "The appeal path DESIGN.md specifies. Recorded against the problem so an officer answers it in the open rather than in a phone call.",
+        "operationId": "VerificationController_object_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ObjectionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Object to a published ranking",
+        "tags": [
+          "verification"
+        ]
+      }
+    },
+    "/api/v1/gov/problems/{id}/evidence": {
+      "post": {
+        "operationId": "GovVerificationController_addEvidence_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EvidenceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Attach before or after photographs to a problem",
+        "tags": [
+          "verification"
+        ]
+      }
+    },
+    "/api/v1/gov/problems/{id}/objections": {
+      "get": {
+        "operationId": "GovVerificationController_objections_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Objections raised against this problem’s ranking",
+        "tags": [
+          "verification"
+        ]
+      }
+    },
+    "/api/v1/gov/problems/{id}/adjust-priority": {
+      "post": {
+        "description": "Bounded to ±15 points. Anything larger is a re-weighting, which belongs in the published weight set where everybody can see it.",
+        "operationId": "GovVerificationController_adjust_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdjustPriorityDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Answer an objection with a named, bounded correction",
+        "tags": [
+          "verification"
+        ]
+      }
+    },
+    "/api/v1/gov/verification/{id}": {
+      "get": {
+        "operationId": "GovVerificationController_status_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Where verification on a problem has got to",
+        "tags": [
+          "verification"
+        ]
+      }
+    },
     "/healthz": {
       "get": {
         "operationId": "HealthController_liveness",
@@ -5553,6 +5921,183 @@
         },
         "required": [
           "teamId"
+        ]
+      },
+      "PresignDto": {
+        "type": "object",
+        "properties": {
+          "contentType": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 120
+          },
+          "sizeBytes": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": true
+          },
+          "purpose": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 40,
+            "default": "evidence"
+          }
+        },
+        "required": [
+          "contentType",
+          "sizeBytes"
+        ]
+      },
+      "VerifyDto": {
+        "type": "object",
+        "properties": {
+          "fixed": {
+            "type": "boolean"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "photoKeys": {
+            "type": "array",
+            "maxItems": 8,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 300
+            }
+          },
+          "lat": {
+            "type": "number",
+            "minimum": -90,
+            "exclusiveMinimum": false,
+            "maximum": 90,
+            "exclusiveMaximum": false
+          },
+          "lng": {
+            "type": "number",
+            "minimum": -180,
+            "exclusiveMinimum": false,
+            "maximum": 180,
+            "exclusiveMaximum": false
+          }
+        },
+        "required": [
+          "fixed"
+        ]
+      },
+      "RateDto": {
+        "type": "object",
+        "properties": {
+          "stars": {
+            "type": "integer",
+            "minimum": 1,
+            "exclusiveMinimum": false,
+            "maximum": 5,
+            "exclusiveMaximum": false
+          },
+          "comment": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "timeliness": {
+            "type": "integer",
+            "minimum": 1,
+            "exclusiveMinimum": false,
+            "maximum": 5,
+            "exclusiveMaximum": false
+          },
+          "quality": {
+            "type": "integer",
+            "minimum": 1,
+            "exclusiveMinimum": false,
+            "maximum": 5,
+            "exclusiveMaximum": false
+          },
+          "conduct": {
+            "type": "integer",
+            "minimum": 1,
+            "exclusiveMinimum": false,
+            "maximum": 5,
+            "exclusiveMaximum": false
+          }
+        },
+        "required": [
+          "stars"
+        ]
+      },
+      "ObjectionDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 1500
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
+      "EvidenceDto": {
+        "type": "object",
+        "properties": {
+          "side": {
+            "type": "string",
+            "enum": [
+              "before",
+              "after"
+            ]
+          },
+          "keys": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 12,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 300
+            }
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "side",
+          "keys"
+        ]
+      },
+      "AdjustPriorityDto": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 80
+          },
+          "points": {
+            "type": "number",
+            "minimum": -15,
+            "exclusiveMinimum": false,
+            "maximum": 15,
+            "exclusiveMaximum": false
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 1000
+          },
+          "objectionId": {
+            "type": "string",
+            "maxLength": 64
+          }
+        },
+        "required": [
+          "label",
+          "points",
+          "reason"
         ]
       }
     }

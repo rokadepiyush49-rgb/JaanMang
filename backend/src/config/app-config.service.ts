@@ -97,6 +97,19 @@ export class AppConfigService {
     };
   }
 
+  /** Upload limits and which driver serves them. See the env schema. */
+  get storage() {
+    const driver = this.get('STORAGE_DRIVER');
+    const r2 = this.r2;
+    return {
+      /** The driver actually in force, once `auto` is resolved. */
+      driver: driver === 'auto' ? (r2.configured ? 'r2' : 'local') : driver,
+      requested: driver,
+      localDir: this.get('STORAGE_LOCAL_DIR'),
+      maxBytes: this.get('UPLOAD_MAX_BYTES'),
+    } as const;
+  }
+
   get groqApiKey(): string | undefined {
     return this.get('GROQ_API_KEY');
   }

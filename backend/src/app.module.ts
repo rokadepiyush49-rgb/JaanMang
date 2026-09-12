@@ -26,6 +26,7 @@ import { FundingModule } from './funding/funding.module';
 import { DeliveryModule } from './delivery/delivery.module';
 import { IndustryModule } from './industry/industry.module';
 import { StudentModule } from './student/student.module';
+import { VerificationModule } from './verification/verification.module';
 
 /**
  * Root module.
@@ -79,6 +80,7 @@ import { StudentModule } from './student/student.module';
     DeliveryModule,
     IndustryModule,
     StudentModule,
+    VerificationModule,
     HealthModule,
   ],
   providers: [
