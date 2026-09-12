@@ -74,13 +74,13 @@ describe('verification (e2e)', () => {
       expect(presign.body.driver).toBe('local');
 
       const put = await api()
-        .put(presign.body.url.replace('/api/v1', '/api/v1'))
+        .put(`/api/v1/uploads/local/${presign.body.key}`)
         .set('authorization', reporter)
         .set('content-type', 'image/png')
         .send(PNG);
       expect(put.status).toBe(201);
 
-      const served = await api().get(`/api/v1/uploads/${encodeURIComponent(presign.body.key)}`);
+      const served = await api().get(`/api/v1/uploads/${presign.body.key}`);
       expect(served.status).toBe(200);
       expect(served.headers['content-type']).toContain('image/png');
       expect(served.headers['x-content-type-options']).toBe('nosniff');
@@ -104,7 +104,7 @@ describe('verification (e2e)', () => {
         .send({ contentType: 'image/png', sizeBytes: 40 });
 
       const put = await api()
-        .put(presign.body.url)
+        .put(`/api/v1/uploads/local/${presign.body.key}`)
         .set('authorization', reporter)
         .set('content-type', 'image/png')
         .send(Buffer.from('<html><script>alert(1)</script></html>'));
@@ -112,13 +112,42 @@ describe('verification (e2e)', () => {
       expect(put.body.detail).toContain('does not match the declared type');
     });
 
-    it('refuses a key that tries to escape the upload directory', async () => {
-      const res = await api()
-        .put(`/api/v1/uploads/local/${encodeURIComponent('../../etc/passwd.png')}`)
+    it('accepts a key with slashes in it, as every key has', async () => {
+      /* The bug this pins: keys are date-partitioned, so every real key
+         contains slashes. A single `:key` route parameter does not match
+         across one — it worked when supertest sent `%2F` un-decoded and 404'd
+         through the web app's proxy, which decodes the path before forwarding
+         it. The test now sends the decoded form, which is what a browser
+         actually sends. */
+      const presign = await api()
+        .post('/api/v1/uploads/presign')
+        .set('authorization', reporter)
+        .send({ contentType: 'image/png', sizeBytes: PNG.byteLength });
+      expect(presign.body.key).toContain('/');
+
+      const put = await api()
+        .put(`/api/v1/uploads/local/${presign.body.key}`)
         .set('authorization', reporter)
         .set('content-type', 'image/png')
         .send(PNG);
-      expect(res.status).toBe(400);
+      expect(put.status).toBe(201);
+
+      const served = await api().get(`/api/v1/uploads/${presign.body.key}`);
+      expect(served.status).toBe(200);
+    });
+
+    it('never lets a key escape the upload directory', async () => {
+      /* Two layers. The HTTP stack normalises `../` out of a path before
+         routing, so this 404s before reaching the handler — and
+         `StorageService.safePath` refuses it again on the resolved path, which
+         is the layer that matters for a key that arrives some other way.
+         Either outcome is fine; 201 is not. */
+      const res = await api()
+        .put('/api/v1/uploads/local/../../etc/passwd.png')
+        .set('authorization', reporter)
+        .set('content-type', 'image/png')
+        .send(PNG);
+      expect([400, 404]).toContain(res.status);
     });
   });
 
@@ -408,7 +437,7 @@ describe('verification (e2e)', () => {
       .set('authorization', auth)
       .send({ contentType: 'image/png', sizeBytes: PNG.byteLength });
     await api()
-      .put(presign.body.url)
+      .put(`/api/v1/uploads/local/${presign.body.key}`)
       .set('authorization', auth)
       .set('content-type', 'image/png')
       .send(PNG);

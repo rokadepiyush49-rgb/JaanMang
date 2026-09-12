@@ -26,8 +26,17 @@ export async function handleProxy(req: NextRequest, ctx: Ctx): Promise<NextRespo
   const target = `${BACKEND}/api/v1/${path.join("/")}${req.nextUrl.search}`;
   const jar = await cookies();
 
+  /**
+   * Read the body as bytes, not as text.
+   *
+   * `req.text()` decodes as UTF-8, which silently mangles every byte sequence
+   * that is not valid UTF-8 — so an evidence photograph reached the API as
+   * replacement characters and was rejected by the magic-number check with
+   * "the content does not match the declared type". An ArrayBuffer forwards
+   * JSON and PNGs alike.
+   */
   const body =
-    req.method === "GET" || req.method === "HEAD" ? undefined : await req.text();
+    req.method === "GET" || req.method === "HEAD" ? undefined : await req.arrayBuffer();
 
   let access = jar.get(ACCESS_COOKIE)?.value;
   let upstream = await forward(target, req, body, access);
@@ -42,11 +51,26 @@ export async function handleProxy(req: NextRequest, ctx: Ctx): Promise<NextRespo
     }
   }
 
-  const payload = await upstream.text();
+  /**
+   * Pass the response through as bytes, for the same reason the request body
+   * is read as bytes: `.text()` decodes as UTF-8, and an evidence photograph
+   * came back 90 bytes instead of 70 because every byte that is not valid
+   * UTF-8 had been replaced and re-encoded. Images survive this path now, and
+   * JSON is unaffected.
+   */
+  const payload = await upstream.arrayBuffer();
   const res = new NextResponse(payload, {
     status: upstream.status,
     headers: {
       "content-type": upstream.headers.get("content-type") ?? "application/json",
+      // Uploaded files are served from this origin, so the nosniff header the
+      // API sets has to survive the hop.
+      ...(upstream.headers.get("x-content-type-options")
+        ? { "x-content-type-options": upstream.headers.get("x-content-type-options")! }
+        : {}),
+      ...(upstream.headers.get("cache-control")
+        ? { "cache-control": upstream.headers.get("cache-control")! }
+        : {}),
     },
   });
 
@@ -59,14 +83,14 @@ export async function handleProxy(req: NextRequest, ctx: Ctx): Promise<NextRespo
 function forward(
   target: string,
   req: NextRequest,
-  body: string | undefined,
+  body: ArrayBuffer | undefined,
   access: string | undefined,
 ): Promise<Response> {
   const headers: Record<string, string> = {};
   const contentType = req.headers.get("content-type");
   // Only forward a content-type when there is a body — Fastify 400s on an
   // empty body sent with `application/json`.
-  if (body && contentType) headers["content-type"] = contentType;
+  if (body && body.byteLength > 0 && contentType) headers["content-type"] = contentType;
   if (access) headers.authorization = `Bearer ${access}`;
   const idem = req.headers.get("idempotency-key");
   if (idem) headers["idempotency-key"] = idem;
@@ -74,7 +98,7 @@ function forward(
   return fetch(target, {
     method: req.method,
     headers,
-    body,
+    body: body && body.byteLength > 0 ? body : undefined,
     cache: "no-store",
     redirect: "manual",
   });

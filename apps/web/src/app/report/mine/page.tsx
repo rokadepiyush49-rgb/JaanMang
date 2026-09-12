@@ -35,9 +35,12 @@ export default async function MyReportsPage() {
           Every problem you have reported, and what the panchayat has done about it since.
         </p>
 
-        <div className="mt-6">
+        <div className="mt-6 flex flex-wrap gap-3">
           <ButtonLink href="/report" icon="plus" size="sm" tone="outline">
             Report something else
+          </ButtonLink>
+          <ButtonLink href="/report/verify" icon="check-circle" size="sm" tone="outline">
+            Verify finished work
           </ButtonLink>
         </div>
       </header>

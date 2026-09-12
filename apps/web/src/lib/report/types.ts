@@ -123,3 +123,58 @@ export const STATUS_LABEL: Record<string, string> = {
   resolved: "Fixed and verified",
   rejected: "Refused",
 };
+
+/* ======================================================== verification === */
+
+export type EvidenceSide = {
+  photos: number;
+  activeReports: number | null;
+  note: string | null;
+  images: { key: string; url: string }[];
+};
+
+export type EvidencePair = {
+  problemId: string;
+  before: EvidenceSide | null;
+  after: EvidenceSide | null;
+};
+
+export type VerificationRequest = {
+  problemId: string;
+  title: string;
+  category: Category;
+  status: string;
+  villages: string[];
+  requestedAt: string | null;
+  asked: number;
+  confirmed: number;
+  denied: number;
+  pending: number;
+  evidence: { before: unknown; after: unknown } | null;
+  project: { id: string; title: string; phase: string; progress: number } | null;
+  /** What this citizen has already said, if anything. */
+  myVerification: { fixed: boolean; at: string } | null;
+  myRating: boolean;
+};
+
+export type VerificationStatus = {
+  problemId: string;
+  asked: number;
+  confirmed: number;
+  denied: number;
+  pending: number;
+  settled: boolean;
+  problemStatus: string;
+  problemStage: string;
+};
+
+export type RatingSummary = {
+  projectId: string;
+  count: number;
+  average: number | null;
+  timeliness: number | null;
+  quality: number | null;
+  conduct: number | null;
+  /** Comments without the commenters — see the endpoint for why. */
+  comments: { stars: number; comment: string | null; at: string }[];
+};

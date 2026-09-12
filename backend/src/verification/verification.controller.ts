@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { FastifyReply, FastifyRequest } from 'fastify';
+import { ProblemException } from '../common/errors/problem';
 import { Public } from '../common/decorators/public.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Permissions } from '../rbac/permissions.decorator';
@@ -61,19 +62,27 @@ export class UploadsController {
    * here, on the actual bytes, because the content type a client declared is a
    * claim and this endpoint is the last place to test it.
    */
-  @Put('local/:key')
+  /*
+   * Wildcard, not `:key`.
+   *
+   * Keys are date-partitioned — `evidence-after/2026-09/<uuid>.png` — and a
+   * single Nest parameter does not match across a slash. Encoded as `%2F` it
+   * worked in a supertest request and 404'd through the web app's proxy, which
+   * decodes the path before forwarding it. The key is hierarchical by design,
+   * so the route has to be too.
+   */
+  @Put('local/*')
   @HttpCode(201)
-  async putLocal(
-    @Param('key') key: string,
-    @Headers('content-type') contentType: string,
-    @Req() req: FastifyRequest,
-  ) {
+  async putLocal(@Headers('content-type') contentType: string, @Req() req: FastifyRequest) {
     const body = req.body as Buffer | undefined;
     if (!body || !Buffer.isBuffer(body)) {
-      return { error: 'Send the file as a raw body with its content-type header.' };
+      throw ProblemException.badRequest(
+        'Send the file as a raw body with its content-type header.',
+      );
     }
-    await this.storage.putLocal(decodeURIComponent(key), body, contentType);
-    return { key: decodeURIComponent(key), stored: true };
+    const key = keyFrom(req, 'local/');
+    await this.storage.putLocal(key, body, contentType);
+    return { key, stored: true };
   }
 
   /**
@@ -84,11 +93,11 @@ export class UploadsController {
    * check it. The keys are unguessable UUIDs, and nothing private is ever
    * stored through this path.
    */
-  @Get(':key')
+  @Get('*')
   @Public()
   @ApiOperation({ summary: 'Serve an uploaded file' })
-  async serve(@Param('key') key: string, @Res() reply: FastifyReply) {
-    const { body, contentType } = await this.storage.readLocal(decodeURIComponent(key));
+  async serve(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
+    const { body, contentType } = await this.storage.readLocal(keyFrom(req, ''));
     void reply
       .header('content-type', contentType)
       // Belt and braces against the content type being wrong anyway.
@@ -226,4 +235,19 @@ export class GovVerificationController {
   status(@Param('id') id: string) {
     return this.verification.statusOf(id);
   }
+}
+
+/**
+ * The object key from a wildcard route.
+ *
+ * Read from the path rather than from a route parameter because the key
+ * contains slashes; `prefix` strips the part of the route that is not key.
+ * Decoded once — a doubly-encoded key is a client bug, not a path to support.
+ */
+function keyFrom(req: FastifyRequest, prefix: string): string {
+  const path = req.url.split('?')[0];
+  const marker = '/uploads/';
+  const at = path.indexOf(marker);
+  const raw = at >= 0 ? path.slice(at + marker.length) : path;
+  return decodeURIComponent(raw.startsWith(prefix) ? raw.slice(prefix.length) : raw);
 }

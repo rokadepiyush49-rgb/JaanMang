@@ -72,7 +72,7 @@ export default function TeamFormationPage() {
         c.skills.some((s) => s.toLowerCase().includes(q))
       );
     });
-  }, [active, query]);
+  }, [active, query, candidates]);
 
   const team = candidates.filter((c) => invited.includes(c.id));
   const full = invited.length >= TEAM_SIZE - 1;

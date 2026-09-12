@@ -14,7 +14,7 @@
 
 import Link from "next/link";
 import { notFound, useParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Icon } from "@/components/icon";
 import { GovMap } from "@/components/gov/map";
 import {
@@ -51,6 +51,10 @@ import {
 } from "@/lib/gov/selectors";
 import { govSeed, useGov } from "@/lib/gov/store";
 import type { SponsorMatch } from "@/lib/gov/types";
+import { EvidenceGallery } from "@/components/evidence-gallery";
+import { EvidenceUpload } from "@/components/evidence-upload";
+import type { EvidencePair } from "@/lib/report/types";
+import { GovApi } from "@/lib/gov/api";
 
 const TABS = [
   { id: "overview", label: "Overview" },
@@ -73,6 +77,34 @@ export default function ProblemDossier() {
   const [overrideOpen, setOverrideOpen] = useState(false);
   const [overrideDept, setOverrideDept] = useState("");
   const [overrideReason, setOverrideReason] = useState("");
+
+  /**
+   * The photographs, fetched rather than derived.
+   *
+   * `problem.evidence` carries the counts the register has always held; the
+   * images live on their own endpoint so the public portal can read them in
+   * stage 07 without any of the rest of a government problem coming along.
+   */
+  const [evidence, setEvidence] = useState<EvidencePair | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    void GovApi.evidence(params.id)
+      .then((pair) => {
+        if (!cancelled) setEvidence(pair);
+      })
+      .catch(() => {
+        if (!cancelled) setEvidence(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [params.id]);
+
+  async function saveEvidence(side: "before" | "after", keys: string[]) {
+    if (keys.length === 0) return;
+    await GovApi.addEvidence(params.id, side, keys);
+    setEvidence(await GovApi.evidence(params.id));
+  }
 
   const problem = ranked.find((p) => p.id === params.id);
 
@@ -1005,6 +1037,46 @@ export default function ProblemDossier() {
 
       {/* -------------------------------------------------------- evidence */}
       {tab === "evidence" ? (
+        <>
+        {/* The photographs themselves. The panels below carry the counts the
+            government screens have always shown; this is what a citizen — and
+            in stage 07 a stranger on the public portal — actually looks at. */}
+        <Card className="mb-6 p-5">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h2 className="headline-md text-ink">Before and after</h2>
+              <p className="mt-1 text-sm text-ink-muted">
+                What the citizens who reported this see when they are asked whether it was fixed.
+              </p>
+            </div>
+          </div>
+
+          <EvidenceGallery
+            after={evidence?.after ?? null}
+            before={evidence?.before ?? null}
+            className="mt-5"
+          />
+
+          {can("project.update") ? (
+            <div className="mt-6 grid gap-5 border-t border-line pt-5 sm:grid-cols-2">
+              <EvidenceUpload
+                hint="The state of the problem as reported."
+                label="Add before photographs"
+                max={6}
+                onChange={(keys) => void saveEvidence("before", keys)}
+                purpose="evidence-before"
+              />
+              <EvidenceUpload
+                hint="Required before citizen verification means anything."
+                label="Add after photographs"
+                max={6}
+                onChange={(keys) => void saveEvidence("after", keys)}
+                purpose="evidence-after"
+              />
+            </div>
+          ) : null}
+        </Card>
+
         <div className="grid gap-6 lg:grid-cols-2">
           <Card className="p-5">
             <h2 className="headline-md text-ink">Before</h2>
@@ -1066,12 +1138,14 @@ export default function ProblemDossier() {
               </>
             ) : (
               <p className="mt-4 text-sm text-ink-muted">
-                Completion evidence is uploaded by the responsible officer from the Project tab, and
-                is required before citizen verification is requested.
+                Completion evidence is uploaded above, and is required before citizen
+                verification means anything — a request to confirm work nobody can see is a
+                request to take somebody&rsquo;s word for it.
               </p>
             )}
           </Card>
         </div>
+        </>
       ) : null}
 
       {/* ---------------------------------------------------- verification */}

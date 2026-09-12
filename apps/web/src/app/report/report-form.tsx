@@ -344,7 +344,11 @@ function Receipt({
           </Step>
           <Step n={3}>
             When the work is done, the people who reported it are the ones asked whether it was
-            actually fixed, with photographs before and after.
+            actually fixed, with photographs before and after. That is{" "}
+            <Link className="font-semibold text-primary hover:underline" href="/report/verify">
+              this page
+            </Link>
+            , and you will be told when there is something on it.
           </Step>
         </ol>
       </Card>

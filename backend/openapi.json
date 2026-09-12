@@ -3283,18 +3283,10 @@
         ]
       }
     },
-    "/api/v1/uploads/local/{key}": {
+    "/api/v1/uploads/local/{path}": {
       "put": {
         "operationId": "UploadsController_putLocal_v1",
         "parameters": [
-          {
-            "name": "key",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "content-type",
             "required": true,
@@ -3314,19 +3306,10 @@
         ]
       }
     },
-    "/api/v1/uploads/{key}": {
+    "/api/v1/uploads/{path}": {
       "get": {
         "operationId": "UploadsController_serve_v1",
-        "parameters": [
-          {
-            "name": "key",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": ""

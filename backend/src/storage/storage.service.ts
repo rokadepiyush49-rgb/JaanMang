@@ -141,13 +141,16 @@ export class StorageService implements OnModuleInit {
 
   /** Where a stored object is readable from. */
   publicUrl(key: string): string {
+    /* Each segment encoded, never the whole key. `encodeURIComponent` turns
+       the slashes into %2F, the route is a wildcard expecting real ones, and
+       the web app's proxy decodes the path before forwarding — so an encoded
+       key arrives back as a literal %2F and matches nothing. */
+    const path = key.split('/').map(encodeURIComponent).join('/');
     if (this.driver === 'r2') {
       const base = this.config.r2.publicBaseUrl;
-      return base
-        ? `${base.replace(/\/$/, '')}/${key}`
-        : `/api/v1/uploads/${encodeURIComponent(key)}`;
+      if (base) return `${base.replace(/\/$/, '')}/${path}`;
     }
-    return `/api/v1/uploads/${encodeURIComponent(key)}`;
+    return `/api/v1/uploads/${path}`;
   }
 
   /* ------------------------------------------------------- local driver */
