@@ -9,20 +9,28 @@ citizens who reported the problem decide whether it was actually fixed.
 **Report → Cluster → Prioritise → Sponsor → Fund → Deliver → Citizen verify**
 
 Four surfaces, one account model. Where you land after signing in is decided by
-your account, never by the door you came through.
+your account, never by the door you came through — plus a public half that needs
+no account at all.
 
 | Surface | Route | Who | State |
 | --- | --- | --- | --- |
-| Government workspace | `/gov` | Panchayat, block and district administration | **Live against the API** |
-| Institute portal | `/institute` | Registrars, faculty, student teams | **Live against the API** |
-| Student workspace | `/dashboard` | Students | Fixtures — labelled in the UI |
-| Industry portal | `/industry` | CSR and partnership teams | Fixtures — labelled in the UI |
+| Public portal | `/problems`, `/impact`, `/ledger`, `/leaderboard` | Anyone, signed out | **Live** — server-side redaction, sitemap, JSON-LD |
+| Citizen intake | `/report` | Anyone, signed out | **Live** — clustering, voting, verification |
+| Government workspace | `/gov` | Panchayat, block and district administration | **Live** |
+| Institute portal | `/institute` | Registrars, faculty, student teams | **Live** |
+| Student workspace | `/dashboard` | Students | **Live** |
+| Industry portal | `/industry` | CSR and partnership teams | **Live** |
 | Citizen app | `apps/citizen-app` | Citizens, in the field | Flutter, in-memory, not wired to this backend |
+
+No fixture is left in any web surface: every screen above reads the API, and
+every mutation on it is persisted server-side. What *is* still missing is listed
+plainly in [docs/DEPLOY.md](docs/DEPLOY.md#what-is-not-wired-yet) — chiefly that
+no message of any kind (OTP, password reset, push) is ever delivered.
 
 ## Layout
 
 ```
-backend/          NestJS + Prisma + Postgres — 77 endpoints, the source of truth
+backend/          NestJS + Prisma + Postgres — 152 operations, the source of truth
 apps/web/         Next.js App Router — all four web surfaces
 apps/citizen-app/ Flutter citizen app (see its own README; see also the note below)
 docs/             DEPLOY.md, structure.md, CHATBOT_SETUP.md
@@ -84,9 +92,14 @@ cd backend && npm run lint && npx tsc --noEmit && npm test && npm run test:e2e
 cd apps/web && npx tsc --noEmit && npm run lint && npm run build
 ```
 
-Both run in CI on every push (`.github/workflows/`). The backend job also fails
-if `openapi.json` is stale, so regenerate it (`npm run openapi:gen`) whenever a
-route changes.
+```bash
+cd apps/citizen-app && flutter analyze && flutter test
+```
+
+All three run in CI on every push (`.github/workflows/`). The backend job also
+fails if `openapi.json` is stale, so regenerate it (`npm run openapi:gen`)
+whenever a route changes. Current state: 91 backend unit + 162 e2e, a clean web
+build, 74 Flutter widget tests.
 
 ## Deploying
 

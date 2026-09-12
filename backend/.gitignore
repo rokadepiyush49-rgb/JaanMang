@@ -8,10 +8,14 @@
 # prisma
 /prisma/*.db
 
-# env — the template (.env.example) is committed, nothing else is
+# env — the *.example templates are committed, nothing else is.
+# `.env.production.example` needed the second negation: `.env.*` swallowed it,
+# so the file existed on every laptop, was linked from docs/DEPLOY.md, and had
+# never been in a single commit.
 .env
 .env.*
 !.env.example
+!.env.*.example
 
 # test / coverage
 /coverage

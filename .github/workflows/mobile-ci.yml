@@ -1,0 +1,43 @@
+name: mobile-ci
+
+on:
+  push:
+    branches: [main, 'feat/**']
+    paths: ['apps/citizen-app/**', '.github/workflows/mobile-ci.yml']
+  pull_request:
+    paths: ['apps/citizen-app/**', '.github/workflows/mobile-ci.yml']
+
+defaults:
+  run:
+    working-directory: apps/citizen-app
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          # Pinned rather than floating on `stable`: the widget tests pump
+          # against a timed splash, and a framework bump that changes frame
+          # scheduling should fail here deliberately, not on someone's laptop.
+          flutter-version: 3.47.2
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      # No `continue-on-error`. The five widget tests that used to be red were
+      # asserting copy the screens no longer carry, and `boot()` pumped one
+      # second against a ~5s splash so two of them were testing the splash.
+      # Both are fixed; all 74 pass. Keep this job required.
+      - run: flutter analyze
+      - run: flutter test
+
+      # The app has never talked to this repo's API — it runs on in-memory
+      # repositories (see the note in the root README). Building the web target
+      # is the cheapest proof that the whole tree still compiles for a real
+      # platform, without needing an Android SDK on the runner.
+      - run: flutter build web --release

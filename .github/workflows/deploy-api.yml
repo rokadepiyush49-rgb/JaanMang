@@ -1,0 +1,84 @@
+name: deploy-api
+
+# Ships `backend/` to Railway. Railway builds the Dockerfile and runs
+# `npx prisma migrate deploy` against DIRECT_URL as a pre-deploy hook — both
+# are declared in backend/railway.json, not here, so a deploy triggered from
+# the Railway dashboard behaves identically to one triggered from this file.
+#
+# Secrets this needs (Settings → Secrets and variables → Actions):
+#   RAILWAY_TOKEN     a *project* token from Railway → project → Settings → Tokens
+#   RAILWAY_SERVICE   the service name, usually "backend"
+#   API_BASE_URL      https://your-backend.up.railway.app  (for the smoke test)
+#
+# Until RAILWAY_TOKEN exists the workflow is a no-op that says so. It does not
+# fail: a repo with no deploy target should not show a red X on every push.
+
+on:
+  push:
+    branches: [main]
+    paths: ['backend/**', '.github/workflows/deploy-api.yml']
+  workflow_dispatch:
+
+concurrency:
+  # One deploy at a time. A second push mid-deploy queues rather than racing
+  # the migration hook.
+  group: deploy-api
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    outputs:
+      configured: ${{ steps.check.outputs.configured }}
+    steps:
+      - id: check
+        env:
+          TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          if [ -n "$TOKEN" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::RAILWAY_TOKEN is not set — skipping the API deploy. See docs/DEPLOY.md §2."
+          fi
+
+  deploy:
+    needs: preflight
+    if: needs.preflight.outputs.configured == 'true'
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: npm i -g @railway/cli@4
+
+      - name: Deploy
+        working-directory: backend
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway up --service "${{ secrets.RAILWAY_SERVICE || 'backend' }}" --ci
+
+      # `railway up --ci` returns when the build finishes, which is before the
+      # new container is actually serving. Poll /readyz rather than assume.
+      - name: Wait for /readyz
+        if: ${{ secrets.API_BASE_URL != '' }}
+        env:
+          BASE: ${{ secrets.API_BASE_URL }}
+        run: |
+          for i in $(seq 1 30); do
+            body=$(curl -fsS --max-time 10 "$BASE/readyz" 2>/dev/null) && {
+              echo "$body"
+              # /healthz answers without touching Postgres, so a green /healthz
+              # and a red /readyz is always the database, never the app.
+              echo "$body" | grep -q '"database":"ok"' && exit 0
+            }
+            echo "attempt $i: not ready yet"
+            sleep 10
+          done
+          echo "::error::/readyz never reported a healthy database after 5 minutes"
+          exit 1

@@ -34,7 +34,17 @@ void main() {
       ),
     );
     await tester.pump();
-    await tester.pump(const Duration(seconds: 1));
+    /* The app opens on a branded splash that holds for about five seconds
+       before the router lands on Home. The old harness pumped one second and
+       then asserted against Home's content, so these two tests were asserting
+       against the splash — which is why they failed for a reason that had
+       nothing to do with the router.
+
+       Not `pumpAndSettle`: the home photo gallery drifts continuously by
+       design, so the tree never reaches a settled state. */
+    for (var i = 0; i < 6; i++) {
+      await tester.pump(const Duration(seconds: 2));
+    }
   }
 
   testWidgets('lands on Home inside the shell, with all five destinations',
@@ -47,13 +57,13 @@ void main() {
     }
 
     // Home's own content, not just the chrome around it.
-    expect(find.text('Make your community heard.'), findsOneWidget);
+    expect(find.text('What does your community need?'), findsOneWidget);
   });
 
   testWidgets('renders on a narrow phone too', (tester) async {
     await boot(tester, size: const Size(390, 2200));
 
     expect(tester.takeException(), isNull);
-    expect(find.text('Make your community heard.'), findsOneWidget);
+    expect(find.text('What does your community need?'), findsOneWidget);
   });
 }

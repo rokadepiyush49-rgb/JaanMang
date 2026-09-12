@@ -75,6 +75,7 @@ server/.env.*
 .env
 .env.*
 !.env.example
+!.env.*.example
 
 # Signing
 android/key.properties
