@@ -1881,6 +1881,22 @@
         ]
       }
     },
+    "/api/v1/reports/villages": {
+      "get": {
+        "description": "Public: a citizen whose browser refuses geolocation has to be able to name the place, and asking them to sign in first would defeat an open intake endpoint. Names and coordinates only — no population, no deprivation index, no reports.",
+        "operationId": "ReportsController_villages_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The village register, for the intake form",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
     "/api/v1/reports/mine": {
       "get": {
         "operationId": "ReportsController_mine_v1",

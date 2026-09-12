@@ -213,6 +213,12 @@ export async function seedGov(prisma: PrismaClient): Promise<{ devLogins: string
         stage: p.stage,
         jurisdictionId: p.jurisdictionId,
         reportCount: p.reportCount,
+        // `voteCount` is deliberately NOT seeded here, even though the fixture
+        // carries one for the web mock store. A vote is a row, and a counter
+        // that disagrees with the rows it counts is worse than no counter:
+        // seeding 19 here with no ProblemVote rows to match would mean the
+        // first real vote *lowered* the count from 19 to 1. seedParticipation
+        // creates the votes and sets the counter from them, in that order.
         duplicateCount: p.duplicateCount,
         affected: p.affected,
         slaDueAt: date(p.slaDueAt),

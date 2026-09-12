@@ -1,5 +1,5 @@
 {
-  "_generatedAt": "2026-09-12T03:22:19.529Z",
+  "_generatedAt": "2026-09-12T03:57:39.147Z",
   "_source": "apps/web/src/lib/gov/{mock-data,priority}.ts",
   "defaultWeights": {
     "populationImpact": 30,
@@ -413,11 +413,12 @@
         "v-chandaghasi"
       ],
       "reportCount": 43,
+      "voteCount": 13,
       "duplicateCount": 11,
       "affected": 4281,
-      "createdAt": "2026-09-09T03:22:19.523Z",
-      "updatedAt": "2026-09-12T01:22:19.523Z",
-      "slaDueAt": "2026-09-12T15:22:19.523Z",
+      "createdAt": "2026-09-09T03:57:39.144Z",
+      "updatedAt": "2026-09-12T01:57:39.144Z",
+      "slaDueAt": "2026-09-12T15:57:39.144Z",
       "factors": {
         "populationImpact": 96,
         "severity": 95,
@@ -480,14 +481,14 @@
       "sponsorship": {
         "status": "invited",
         "eligible": true,
-        "invitedAt": "2026-09-11T01:22:19.523Z",
-        "responseDueAt": "2026-09-12T23:22:19.523Z",
+        "invitedAt": "2026-09-11T01:57:39.144Z",
+        "responseDueAt": "2026-09-12T23:57:39.144Z",
         "matches": [
           {
             "sponsorId": "sp-tata",
             "score": 92,
             "status": "interested",
-            "respondedAt": "2026-09-11T21:22:19.523Z",
+            "respondedAt": "2026-09-11T21:57:39.144Z",
             "reasons": [
               "CSR theme: Drinking Water",
               "Geography: Jharkhand",
@@ -510,7 +511,7 @@
             "sponsorId": "sp-hindalco",
             "score": 64,
             "status": "declined",
-            "respondedAt": "2026-09-11T13:22:19.523Z",
+            "respondedAt": "2026-09-11T13:57:39.144Z",
             "reasons": [
               "Geography: Jharkhand",
               "Theme partially aligned (Sanitation)"
@@ -542,7 +543,7 @@
       "audit": [
         {
           "id": "a1",
-          "at": "2026-09-09T03:22:19.523Z",
+          "at": "2026-09-09T03:57:39.144Z",
           "actor": "Citizen",
           "actorName": "Ramesh Munda",
           "action": "Problem reported by voice",
@@ -551,7 +552,7 @@
         },
         {
           "id": "a2",
-          "at": "2026-09-09T03:22:19.523Z",
+          "at": "2026-09-09T03:57:39.144Z",
           "actor": "AI",
           "action": "Classified as Water Supply",
           "detail": "92% confidence · severity critical",
@@ -559,7 +560,7 @@
         },
         {
           "id": "a3",
-          "at": "2026-09-09T03:22:19.523Z",
+          "at": "2026-09-09T03:57:39.144Z",
           "actor": "AI",
           "action": "Clustered 40 similar reports",
           "detail": "11 exact duplicates folded in",
@@ -567,7 +568,7 @@
         },
         {
           "id": "a4",
-          "at": "2026-09-10T03:22:19.523Z",
+          "at": "2026-09-10T03:57:39.144Z",
           "actor": "System",
           "action": "Priority recalculated 82 → 94",
           "detail": "18 new reports from Chandaghasi + deprivation weighting",
@@ -575,7 +576,7 @@
         },
         {
           "id": "a5",
-          "at": "2026-09-10T03:22:19.523Z",
+          "at": "2026-09-10T03:57:39.144Z",
           "actor": "System",
           "action": "Routed to Drinking Water & Sanitation",
           "detail": "Category + jurisdiction rule",
@@ -583,7 +584,7 @@
         },
         {
           "id": "a6",
-          "at": "2026-09-10T03:22:19.523Z",
+          "at": "2026-09-10T03:57:39.144Z",
           "actor": "Officer",
           "actorName": "Devendra Munda",
           "action": "Validated problem",
@@ -591,7 +592,7 @@
         },
         {
           "id": "a7",
-          "at": "2026-09-11T01:22:19.523Z",
+          "at": "2026-09-11T01:57:39.144Z",
           "actor": "System",
           "action": "Sponsorship invitations sent to 3 industries",
           "detail": "Match score ≥ 60%",
@@ -599,7 +600,7 @@
         },
         {
           "id": "a8",
-          "at": "2026-09-11T13:22:19.523Z",
+          "at": "2026-09-11T13:57:39.144Z",
           "actor": "Industry",
           "actorName": "Hindalco Community Trust",
           "action": "Declined sponsorship",
@@ -608,7 +609,7 @@
         },
         {
           "id": "a9",
-          "at": "2026-09-11T21:22:19.523Z",
+          "at": "2026-09-11T21:57:39.144Z",
           "actor": "Industry",
           "actorName": "Tata Steel Foundation",
           "action": "Marked interested",
@@ -630,11 +631,12 @@
         "v-pithoria"
       ],
       "reportCount": 122,
+      "voteCount": 5,
       "duplicateCount": 38,
       "affected": 1800,
-      "createdAt": "2026-09-01T03:22:19.523Z",
-      "updatedAt": "2026-09-12T00:22:19.523Z",
-      "slaDueAt": "2026-09-13T19:22:19.523Z",
+      "createdAt": "2026-09-01T03:57:39.144Z",
+      "updatedAt": "2026-09-12T00:57:39.144Z",
+      "slaDueAt": "2026-09-13T19:57:39.144Z",
       "factors": {
         "populationImpact": 62,
         "severity": 84,
@@ -688,15 +690,15 @@
       "sponsorship": {
         "status": "declined",
         "eligible": true,
-        "invitedAt": "2026-09-06T03:22:19.523Z",
-        "responseDueAt": "2026-09-10T21:22:19.523Z",
+        "invitedAt": "2026-09-06T03:57:39.144Z",
+        "responseDueAt": "2026-09-10T21:57:39.144Z",
         "failureReason": "No eligible sponsor responded within the 96-hour industry SLA.",
         "matches": [
           {
             "sponsorId": "sp-cclmine",
             "score": 74,
             "status": "declined",
-            "respondedAt": "2026-09-10T03:22:19.523Z",
+            "respondedAt": "2026-09-10T03:57:39.144Z",
             "reasons": [
               "CSR theme: Roads",
               "Geography: Jharkhand"
@@ -707,7 +709,7 @@
             "sponsorId": "sp-jindal",
             "score": 68,
             "status": "declined",
-            "respondedAt": "2026-09-09T03:22:19.523Z",
+            "respondedAt": "2026-09-09T03:57:39.144Z",
             "reasons": [
               "CSR theme: Roads"
             ],
@@ -739,7 +741,7 @@
       "audit": [
         {
           "id": "b1",
-          "at": "2026-09-01T03:22:19.523Z",
+          "at": "2026-09-01T03:57:39.144Z",
           "actor": "Citizen",
           "actorName": "Sarita Devi",
           "action": "Problem reported with photos",
@@ -747,7 +749,7 @@
         },
         {
           "id": "b2",
-          "at": "2026-09-01T03:22:19.523Z",
+          "at": "2026-09-01T03:57:39.144Z",
           "actor": "AI",
           "action": "Classified as Road Damage",
           "detail": "96% confidence",
@@ -755,14 +757,14 @@
         },
         {
           "id": "b3",
-          "at": "2026-09-02T03:22:19.523Z",
+          "at": "2026-09-02T03:57:39.144Z",
           "actor": "AI",
           "action": "Clustered 118 reports, 38 duplicates",
           "automated": true
         },
         {
           "id": "b4",
-          "at": "2026-09-03T03:22:19.523Z",
+          "at": "2026-09-03T03:57:39.144Z",
           "actor": "Officer",
           "actorName": "Rekha Toppo",
           "action": "Validated problem",
@@ -770,14 +772,14 @@
         },
         {
           "id": "b5",
-          "at": "2026-09-06T03:22:19.523Z",
+          "at": "2026-09-06T03:57:39.144Z",
           "actor": "System",
           "action": "Sponsorship invitations sent to 2 industries",
           "automated": true
         },
         {
           "id": "b6",
-          "at": "2026-09-09T03:22:19.523Z",
+          "at": "2026-09-09T03:57:39.144Z",
           "actor": "Industry",
           "actorName": "Jindal Rural Infra Trust",
           "action": "No response — auto-declined at SLA",
@@ -785,7 +787,7 @@
         },
         {
           "id": "b7",
-          "at": "2026-09-10T03:22:19.523Z",
+          "at": "2026-09-10T03:57:39.144Z",
           "actor": "Industry",
           "actorName": "Central Coalfields CSR Cell",
           "action": "Declined sponsorship",
@@ -794,7 +796,7 @@
         },
         {
           "id": "b8",
-          "at": "2026-09-10T21:22:19.523Z",
+          "at": "2026-09-10T21:57:39.144Z",
           "actor": "System",
           "action": "Industry sponsorship marked failed",
           "detail": "96-hour SLA expired with no acceptance",
@@ -802,7 +804,7 @@
         },
         {
           "id": "b9",
-          "at": "2026-09-10T21:22:19.523Z",
+          "at": "2026-09-10T21:57:39.144Z",
           "actor": "System",
           "action": "Government funding workflow triggered",
           "detail": "₹14.5 L required · ₹24.6 L available in Rural Works",
@@ -823,11 +825,12 @@
         "v-booty"
       ],
       "reportCount": 87,
+      "voteCount": 7,
       "duplicateCount": 24,
       "affected": 2100,
-      "createdAt": "2026-09-06T03:22:19.523Z",
-      "updatedAt": "2026-09-11T18:22:19.523Z",
-      "slaDueAt": "2026-09-13T09:22:19.523Z",
+      "createdAt": "2026-09-06T03:57:39.144Z",
+      "updatedAt": "2026-09-11T18:57:39.144Z",
+      "slaDueAt": "2026-09-13T09:57:39.144Z",
       "factors": {
         "populationImpact": 58,
         "severity": 62,
@@ -921,7 +924,7 @@
       "audit": [
         {
           "id": "c1",
-          "at": "2026-09-06T03:22:19.523Z",
+          "at": "2026-09-06T03:57:39.144Z",
           "actor": "Citizen",
           "actorName": "Neha Kumari",
           "action": "Problem reported by voice",
@@ -929,7 +932,7 @@
         },
         {
           "id": "c2",
-          "at": "2026-09-06T03:22:19.523Z",
+          "at": "2026-09-06T03:57:39.144Z",
           "actor": "AI",
           "action": "Classified as Street Lighting",
           "detail": "94% confidence",
@@ -937,14 +940,14 @@
         },
         {
           "id": "c3",
-          "at": "2026-09-07T03:22:19.523Z",
+          "at": "2026-09-07T03:57:39.144Z",
           "actor": "AI",
           "action": "Clustered 84 reports, 24 duplicates",
           "automated": true
         },
         {
           "id": "c4",
-          "at": "2026-09-11T03:22:19.523Z",
+          "at": "2026-09-11T03:57:39.144Z",
           "actor": "System",
           "action": "Sponsorship eligibility confirmed",
           "detail": "2 industry matches ≥ 70%",
@@ -965,11 +968,12 @@
         "v-chandaghasi"
       ],
       "reportCount": 18,
+      "voteCount": 19,
       "duplicateCount": 3,
       "affected": 3400,
-      "createdAt": "2026-08-05T03:22:19.523Z",
-      "updatedAt": "2026-09-11T07:22:19.523Z",
-      "slaDueAt": "2026-09-16T03:22:19.523Z",
+      "createdAt": "2026-08-05T03:57:39.144Z",
+      "updatedAt": "2026-09-11T07:57:39.144Z",
+      "slaDueAt": "2026-09-16T03:57:39.144Z",
       "factors": {
         "populationImpact": 86,
         "severity": 92,
@@ -1025,7 +1029,7 @@
             "sponsorId": "sp-cclmine",
             "score": 58,
             "status": "declined",
-            "respondedAt": "2026-08-19T03:22:19.523Z",
+            "respondedAt": "2026-08-19T03:57:39.144Z",
             "reasons": [
               "Geography: Jharkhand"
             ],
@@ -1039,7 +1043,7 @@
         "departmentBudgetAvailable": 2460000,
         "fundable": true,
         "source": "State Bridge Renewal Fund",
-        "approvedAt": "2026-08-21T03:22:19.523Z",
+        "approvedAt": "2026-08-21T03:57:39.144Z",
         "approvedBy": "Shri Rajesh Sharma, IAS"
       },
       "evidence": {
@@ -1058,7 +1062,7 @@
       "audit": [
         {
           "id": "e1",
-          "at": "2026-08-05T03:22:19.523Z",
+          "at": "2026-08-05T03:57:39.144Z",
           "actor": "Citizen",
           "actorName": "Birsa Oraon",
           "action": "Problem reported with photos",
@@ -1066,7 +1070,7 @@
         },
         {
           "id": "e2",
-          "at": "2026-08-05T03:22:19.523Z",
+          "at": "2026-08-05T03:57:39.144Z",
           "actor": "AI",
           "action": "Classified as Bridge Damage",
           "detail": "89% confidence · flagged structural",
@@ -1074,14 +1078,14 @@
         },
         {
           "id": "e3",
-          "at": "2026-08-06T03:22:19.523Z",
+          "at": "2026-08-06T03:57:39.144Z",
           "actor": "System",
           "action": "Escalated to district — structural risk rule",
           "automated": true
         },
         {
           "id": "e4",
-          "at": "2026-08-19T03:22:19.523Z",
+          "at": "2026-08-19T03:57:39.144Z",
           "actor": "Industry",
           "actorName": "Central Coalfields CSR Cell",
           "action": "Declined sponsorship",
@@ -1089,14 +1093,14 @@
         },
         {
           "id": "e5",
-          "at": "2026-08-20T03:22:19.523Z",
+          "at": "2026-08-20T03:57:39.144Z",
           "actor": "System",
           "action": "Government funding workflow triggered",
           "automated": true
         },
         {
           "id": "e6",
-          "at": "2026-08-21T03:22:19.523Z",
+          "at": "2026-08-21T03:57:39.144Z",
           "actor": "Officer",
           "actorName": "Rajesh Sharma",
           "action": "Approved ₹28.4 L from State Bridge Renewal Fund",
@@ -1104,7 +1108,7 @@
         },
         {
           "id": "e7",
-          "at": "2026-08-23T03:22:19.523Z",
+          "at": "2026-08-23T03:57:39.144Z",
           "actor": "Officer",
           "actorName": "Rekha Toppo",
           "action": "Assigned to Rakesh Oraon · work order issued",
@@ -1112,7 +1116,7 @@
         },
         {
           "id": "e8",
-          "at": "2026-09-11T07:22:19.523Z",
+          "at": "2026-09-11T07:57:39.144Z",
           "actor": "Officer",
           "actorName": "Rakesh Oraon",
           "action": "Progress updated to 46%",
@@ -1129,25 +1133,25 @@
         "progress": 46,
         "budget": 2840000,
         "spent": 1290000,
-        "startedAt": "2026-08-23T03:22:19.523Z",
-        "dueAt": "2026-10-28T03:22:19.523Z",
+        "startedAt": "2026-08-23T03:57:39.144Z",
+        "dueAt": "2026-10-28T03:57:39.144Z",
         "dayOfPlan": 20,
         "planDays": 66,
         "milestones": [
           {
             "label": "Structural survey",
             "done": true,
-            "at": "2026-08-24T03:22:19.523Z"
+            "at": "2026-08-24T03:57:39.144Z"
           },
           {
             "label": "Load restriction & diversion",
             "done": true,
-            "at": "2026-08-25T03:22:19.523Z"
+            "at": "2026-08-25T03:57:39.144Z"
           },
           {
             "label": "Deck demolition",
             "done": true,
-            "at": "2026-09-04T03:22:19.523Z"
+            "at": "2026-09-04T03:57:39.144Z"
           },
           {
             "label": "Girder replacement",
@@ -1176,11 +1180,12 @@
         "v-chandaghasi"
       ],
       "reportCount": 29,
+      "voteCount": 3,
       "duplicateCount": 6,
       "affected": 480,
-      "createdAt": "2026-08-14T03:22:19.523Z",
-      "updatedAt": "2026-09-11T03:22:19.523Z",
-      "slaDueAt": "2026-09-30T03:22:19.523Z",
+      "createdAt": "2026-08-14T03:57:39.144Z",
+      "updatedAt": "2026-09-11T03:57:39.144Z",
+      "slaDueAt": "2026-09-30T03:57:39.144Z",
       "factors": {
         "populationImpact": 44,
         "severity": 78,
@@ -1230,7 +1235,7 @@
       "sponsorship": {
         "status": "approved",
         "eligible": true,
-        "invitedAt": "2026-08-19T03:22:19.523Z",
+        "invitedAt": "2026-08-19T03:57:39.144Z",
         "approvedSponsorId": "sp-hindalco",
         "approvedAmount": 480000,
         "matches": [
@@ -1238,7 +1243,7 @@
             "sponsorId": "sp-hindalco",
             "score": 94,
             "status": "approved",
-            "respondedAt": "2026-08-22T03:22:19.523Z",
+            "respondedAt": "2026-08-22T03:57:39.144Z",
             "proposalAmount": 480000,
             "reasons": [
               "CSR theme: Education",
@@ -1250,7 +1255,7 @@
             "sponsorId": "sp-usha",
             "score": 77,
             "status": "declined",
-            "respondedAt": "2026-08-21T03:22:19.523Z",
+            "respondedAt": "2026-08-21T03:57:39.144Z",
             "reasons": [
               "CSR theme: Education"
             ]
@@ -1280,7 +1285,7 @@
       "audit": [
         {
           "id": "f1",
-          "at": "2026-08-14T03:22:19.523Z",
+          "at": "2026-08-14T03:57:39.144Z",
           "actor": "Citizen",
           "actorName": "Sunil Tirkey",
           "action": "Problem reported by teacher",
@@ -1288,7 +1293,7 @@
         },
         {
           "id": "f2",
-          "at": "2026-08-14T03:22:19.523Z",
+          "at": "2026-08-14T03:57:39.144Z",
           "actor": "AI",
           "action": "Classified as School Infrastructure",
           "detail": "93% confidence",
@@ -1296,7 +1301,7 @@
         },
         {
           "id": "f3",
-          "at": "2026-08-18T03:22:19.523Z",
+          "at": "2026-08-18T03:57:39.144Z",
           "actor": "Officer",
           "actorName": "Devendra Munda",
           "action": "Validated problem",
@@ -1304,14 +1309,14 @@
         },
         {
           "id": "f4",
-          "at": "2026-08-19T03:22:19.523Z",
+          "at": "2026-08-19T03:57:39.144Z",
           "actor": "System",
           "action": "Sponsorship invitations sent to 2 industries",
           "automated": true
         },
         {
           "id": "f5",
-          "at": "2026-08-22T03:22:19.523Z",
+          "at": "2026-08-22T03:57:39.144Z",
           "actor": "Industry",
           "actorName": "Hindalco Community Trust",
           "action": "Proposal received — ₹4.8 L full cost",
@@ -1319,7 +1324,7 @@
         },
         {
           "id": "f6",
-          "at": "2026-08-23T03:22:19.523Z",
+          "at": "2026-08-23T03:57:39.144Z",
           "actor": "Officer",
           "actorName": "Rekha Toppo",
           "action": "Accepted sponsorship",
@@ -1327,7 +1332,7 @@
         },
         {
           "id": "f7",
-          "at": "2026-09-11T03:22:19.523Z",
+          "at": "2026-09-11T03:57:39.144Z",
           "actor": "Officer",
           "actorName": "Priya Bhengra",
           "action": "Progress updated to 82%",
@@ -1343,25 +1348,25 @@
         "progress": 82,
         "budget": 480000,
         "spent": 394000,
-        "startedAt": "2026-08-25T03:22:19.523Z",
-        "dueAt": "2026-09-18T03:22:19.523Z",
+        "startedAt": "2026-08-25T03:57:39.144Z",
+        "dueAt": "2026-09-18T03:57:39.144Z",
         "dayOfPlan": 18,
         "planDays": 24,
         "milestones": [
           {
             "label": "Structural assessment",
             "done": true,
-            "at": "2026-08-26T03:22:19.523Z"
+            "at": "2026-08-26T03:57:39.144Z"
           },
           {
             "label": "Truss repair",
             "done": true,
-            "at": "2026-09-01T03:22:19.523Z"
+            "at": "2026-09-01T03:57:39.144Z"
           },
           {
             "label": "Roof sheeting replacement",
             "done": true,
-            "at": "2026-09-08T03:22:19.523Z"
+            "at": "2026-09-08T03:57:39.144Z"
           },
           {
             "label": "Ceiling & painting",
@@ -1386,11 +1391,12 @@
         "v-nagri"
       ],
       "reportCount": 22,
+      "voteCount": 0,
       "duplicateCount": 5,
       "affected": 1400,
-      "createdAt": "2026-08-22T03:22:19.523Z",
-      "updatedAt": "2026-09-10T21:22:19.523Z",
-      "slaDueAt": "2026-09-15T03:22:19.523Z",
+      "createdAt": "2026-08-22T03:57:39.144Z",
+      "updatedAt": "2026-09-10T21:57:39.144Z",
+      "slaDueAt": "2026-09-15T03:57:39.144Z",
       "factors": {
         "populationImpact": 48,
         "severity": 56,
@@ -1443,7 +1449,7 @@
         "departmentBudgetAvailable": 840000,
         "fundable": true,
         "source": "15th FC Untied Grant",
-        "approvedAt": "2026-08-31T03:22:19.523Z",
+        "approvedAt": "2026-08-31T03:57:39.144Z",
         "approvedBy": "Smt. Rekha Toppo"
       },
       "evidence": {
@@ -1459,7 +1465,7 @@
         }
       },
       "verification": {
-        "requestedAt": "2026-09-10T23:22:19.523Z",
+        "requestedAt": "2026-09-10T23:57:39.144Z",
         "asked": 22,
         "confirmed": 14,
         "denied": 1,
@@ -1468,7 +1474,7 @@
       "audit": [
         {
           "id": "g1",
-          "at": "2026-08-22T03:22:19.523Z",
+          "at": "2026-08-22T03:57:39.144Z",
           "actor": "Citizen",
           "actorName": "Kiran Devi",
           "action": "Problem reported",
@@ -1476,7 +1482,7 @@
         },
         {
           "id": "g2",
-          "at": "2026-08-31T03:22:19.523Z",
+          "at": "2026-08-31T03:57:39.144Z",
           "actor": "Officer",
           "actorName": "Rekha Toppo",
           "action": "Approved ₹1.2 L from untied grant",
@@ -1484,7 +1490,7 @@
         },
         {
           "id": "g3",
-          "at": "2026-09-02T03:22:19.523Z",
+          "at": "2026-09-02T03:57:39.144Z",
           "actor": "Officer",
           "actorName": "Anita Kujur",
           "action": "Work started",
@@ -1492,21 +1498,21 @@
         },
         {
           "id": "g4",
-          "at": "2026-09-10T21:22:19.523Z",
+          "at": "2026-09-10T21:57:39.144Z",
           "actor": "System",
           "action": "Project marked complete → verification requested",
           "automated": true
         },
         {
           "id": "g5",
-          "at": "2026-09-10T23:22:19.523Z",
+          "at": "2026-09-10T23:57:39.144Z",
           "actor": "System",
           "action": "Verification request sent to 22 reporters",
           "automated": true
         },
         {
           "id": "g6",
-          "at": "2026-09-11T22:22:19.523Z",
+          "at": "2026-09-11T22:57:39.144Z",
           "actor": "Citizen",
           "action": "14 confirmations, 1 denial received",
           "automated": false
@@ -1521,30 +1527,30 @@
         "progress": 100,
         "budget": 120000,
         "spent": 114500,
-        "startedAt": "2026-09-02T03:22:19.523Z",
-        "dueAt": "2026-09-10T21:22:19.523Z",
+        "startedAt": "2026-09-02T03:57:39.144Z",
+        "dueAt": "2026-09-10T21:57:39.144Z",
         "dayOfPlan": 9,
         "planDays": 10,
         "milestones": [
           {
             "label": "Water connection restored",
             "done": true,
-            "at": "2026-09-05T03:22:19.523Z"
+            "at": "2026-09-05T03:57:39.144Z"
           },
           {
             "label": "Deep cleaning & repairs",
             "done": true,
-            "at": "2026-09-08T03:22:19.523Z"
+            "at": "2026-09-08T03:57:39.144Z"
           },
           {
             "label": "Caretaker engaged",
             "done": true,
-            "at": "2026-09-10T03:22:19.523Z"
+            "at": "2026-09-10T03:57:39.144Z"
           },
           {
             "label": "Reopened to public",
             "done": true,
-            "at": "2026-09-10T21:22:19.523Z"
+            "at": "2026-09-10T21:57:39.144Z"
           }
         ]
       }
@@ -1562,11 +1568,12 @@
         "v-hesag"
       ],
       "reportCount": 12,
+      "voteCount": 0,
       "duplicateCount": 2,
       "affected": 5200,
-      "createdAt": "2026-07-02T03:22:19.523Z",
-      "updatedAt": "2026-09-06T03:22:19.523Z",
-      "slaDueAt": "2026-08-03T03:22:19.523Z",
+      "createdAt": "2026-07-02T03:57:39.144Z",
+      "updatedAt": "2026-09-06T03:57:39.144Z",
+      "slaDueAt": "2026-08-03T03:57:39.144Z",
       "factors": {
         "populationImpact": 90,
         "severity": 96,
@@ -1623,7 +1630,7 @@
             "sponsorId": "sp-tata",
             "score": 96,
             "status": "approved",
-            "respondedAt": "2026-07-16T03:22:19.523Z",
+            "respondedAt": "2026-07-16T03:57:39.144Z",
             "proposalAmount": 890000,
             "reasons": [
               "CSR theme: Health",
@@ -1653,7 +1660,7 @@
         }
       },
       "verification": {
-        "requestedAt": "2026-09-05T03:22:19.523Z",
+        "requestedAt": "2026-09-05T03:57:39.144Z",
         "asked": 12,
         "confirmed": 12,
         "denied": 0,
@@ -1662,7 +1669,7 @@
       "audit": [
         {
           "id": "h1",
-          "at": "2026-07-02T03:22:19.523Z",
+          "at": "2026-07-02T03:57:39.144Z",
           "actor": "Citizen",
           "actorName": "ANM Sushma Kachhap",
           "action": "Problem reported",
@@ -1670,14 +1677,14 @@
         },
         {
           "id": "h2",
-          "at": "2026-07-04T03:22:19.523Z",
+          "at": "2026-07-04T03:57:39.144Z",
           "actor": "System",
           "action": "Sponsorship invitation sent",
           "automated": true
         },
         {
           "id": "h3",
-          "at": "2026-07-16T03:22:19.523Z",
+          "at": "2026-07-16T03:57:39.144Z",
           "actor": "Industry",
           "actorName": "Tata Steel Foundation",
           "action": "Proposal accepted — ₹8.9 L",
@@ -1685,7 +1692,7 @@
         },
         {
           "id": "h4",
-          "at": "2026-07-30T03:22:19.523Z",
+          "at": "2026-07-30T03:57:39.144Z",
           "actor": "Officer",
           "actorName": "Priya Bhengra",
           "action": "Work commenced",
@@ -1693,7 +1700,7 @@
         },
         {
           "id": "h5",
-          "at": "2026-09-04T03:22:19.523Z",
+          "at": "2026-09-04T03:57:39.144Z",
           "actor": "Officer",
           "actorName": "Priya Bhengra",
           "action": "Project completed",
@@ -1701,14 +1708,14 @@
         },
         {
           "id": "h6",
-          "at": "2026-09-05T03:22:19.523Z",
+          "at": "2026-09-05T03:57:39.144Z",
           "actor": "System",
           "action": "Citizen verification requested from 12 reporters",
           "automated": true
         },
         {
           "id": "h7",
-          "at": "2026-09-06T03:22:19.523Z",
+          "at": "2026-09-06T03:57:39.144Z",
           "actor": "System",
           "action": "Impact computed — demand reduction 100%",
           "automated": true
@@ -1723,30 +1730,30 @@
         "progress": 100,
         "budget": 890000,
         "spent": 872000,
-        "startedAt": "2026-07-30T03:22:19.523Z",
-        "dueAt": "2026-09-04T03:22:19.523Z",
+        "startedAt": "2026-07-30T03:57:39.144Z",
+        "dueAt": "2026-09-04T03:57:39.144Z",
         "dayOfPlan": 36,
         "planDays": 36,
         "milestones": [
           {
             "label": "Load audit",
             "done": true,
-            "at": "2026-07-31T03:22:19.523Z"
+            "at": "2026-07-31T03:57:39.144Z"
           },
           {
             "label": "Solar array install",
             "done": true,
-            "at": "2026-08-17T03:22:19.523Z"
+            "at": "2026-08-17T03:57:39.144Z"
           },
           {
             "label": "Battery bank & changeover",
             "done": true,
-            "at": "2026-08-29T03:22:19.523Z"
+            "at": "2026-08-29T03:57:39.144Z"
           },
           {
             "label": "Commissioning & staff training",
             "done": true,
-            "at": "2026-09-04T03:22:19.523Z"
+            "at": "2026-09-04T03:57:39.144Z"
           }
         ]
       }
@@ -1763,11 +1770,12 @@
         "v-hesag"
       ],
       "reportCount": 54,
+      "voteCount": 5,
       "duplicateCount": 13,
       "affected": 1650,
-      "createdAt": "2026-08-29T03:22:19.523Z",
-      "updatedAt": "2026-09-11T11:22:19.523Z",
-      "slaDueAt": "2026-09-12T21:22:19.523Z",
+      "createdAt": "2026-08-29T03:57:39.144Z",
+      "updatedAt": "2026-09-11T11:57:39.144Z",
+      "slaDueAt": "2026-09-12T21:57:39.144Z",
       "factors": {
         "populationImpact": 54,
         "severity": 76,
@@ -1817,7 +1825,7 @@
           "byOfficerId": "off-01",
           "departmentId": "dept-swm",
           "reason": "Initially auto-routed to Water & Sanitation on the 'paani' keyword; corrected to Drainage after site check.",
-          "at": "2026-08-31T03:22:19.523Z"
+          "at": "2026-08-31T03:57:39.144Z"
         }
       },
       "sponsorship": {
@@ -1832,7 +1840,7 @@
         "departmentBudgetAvailable": 840000,
         "fundable": true,
         "source": "15th FC Tied Grant (Sanitation)",
-        "approvedAt": "2026-09-03T03:22:19.523Z",
+        "approvedAt": "2026-09-03T03:57:39.144Z",
         "approvedBy": "Smt. Rekha Toppo"
       },
       "evidence": {
@@ -1851,7 +1859,7 @@
       "audit": [
         {
           "id": "i1",
-          "at": "2026-08-29T03:22:19.523Z",
+          "at": "2026-08-29T03:57:39.144Z",
           "actor": "Citizen",
           "actorName": "Fatima Khatoon",
           "action": "Problem reported with photos",
@@ -1859,7 +1867,7 @@
         },
         {
           "id": "i2",
-          "at": "2026-08-29T03:22:19.523Z",
+          "at": "2026-08-29T03:57:39.144Z",
           "actor": "AI",
           "action": "Classified as Drainage",
           "detail": "90% confidence",
@@ -1867,14 +1875,14 @@
         },
         {
           "id": "i3",
-          "at": "2026-08-30T03:22:19.523Z",
+          "at": "2026-08-30T03:57:39.144Z",
           "actor": "System",
           "action": "Auto-routed to Water & Sanitation",
           "automated": true
         },
         {
           "id": "i4",
-          "at": "2026-08-31T03:22:19.523Z",
+          "at": "2026-08-31T03:57:39.144Z",
           "actor": "Officer",
           "actorName": "Sunita Mahto",
           "action": "Routing overridden → Solid Waste & Drainage",
@@ -1883,7 +1891,7 @@
         },
         {
           "id": "i5",
-          "at": "2026-09-03T03:22:19.523Z",
+          "at": "2026-09-03T03:57:39.144Z",
           "actor": "Officer",
           "actorName": "Rekha Toppo",
           "action": "Approved ₹5.2 L",
@@ -1891,7 +1899,7 @@
         },
         {
           "id": "i6",
-          "at": "2026-09-11T11:22:19.523Z",
+          "at": "2026-09-11T11:57:39.144Z",
           "actor": "Officer",
           "actorName": "Anita Kujur",
           "action": "Progress updated to 61%",
@@ -1907,20 +1915,20 @@
         "progress": 61,
         "budget": 520000,
         "spent": 302000,
-        "startedAt": "2026-09-05T03:22:19.523Z",
-        "dueAt": "2026-09-21T03:22:19.523Z",
+        "startedAt": "2026-09-05T03:57:39.144Z",
+        "dueAt": "2026-09-21T03:57:39.144Z",
         "dayOfPlan": 7,
         "planDays": 16,
         "milestones": [
           {
             "label": "Desilting 400 m",
             "done": true,
-            "at": "2026-09-08T03:22:19.523Z"
+            "at": "2026-09-08T03:57:39.144Z"
           },
           {
             "label": "Broken slab replacement",
             "done": true,
-            "at": "2026-09-11T03:22:19.523Z"
+            "at": "2026-09-11T03:57:39.144Z"
           },
           {
             "label": "Outfall re-grading",
@@ -1945,11 +1953,12 @@
         "v-kanke"
       ],
       "reportCount": 61,
+      "voteCount": 5,
       "duplicateCount": 19,
       "affected": 900,
-      "createdAt": "2026-09-08T03:22:19.523Z",
-      "updatedAt": "2026-09-11T20:22:19.523Z",
-      "slaDueAt": "2026-09-12T12:22:19.523Z",
+      "createdAt": "2026-09-08T03:57:39.144Z",
+      "updatedAt": "2026-09-11T20:57:39.144Z",
+      "slaDueAt": "2026-09-12T12:57:39.144Z",
       "factors": {
         "populationImpact": 32,
         "severity": 54,
@@ -2017,7 +2026,7 @@
       "audit": [
         {
           "id": "j1",
-          "at": "2026-09-08T03:22:19.523Z",
+          "at": "2026-09-08T03:57:39.144Z",
           "actor": "Citizen",
           "actorName": "Ajay Sahu",
           "action": "Problem reported with photos",
@@ -2025,7 +2034,7 @@
         },
         {
           "id": "j2",
-          "at": "2026-09-08T03:22:19.523Z",
+          "at": "2026-09-08T03:57:39.144Z",
           "actor": "AI",
           "action": "Classified as Waste Collection",
           "detail": "88% confidence",
@@ -2033,14 +2042,14 @@
         },
         {
           "id": "j3",
-          "at": "2026-09-09T03:22:19.523Z",
+          "at": "2026-09-09T03:57:39.144Z",
           "actor": "AI",
           "action": "Clustered 58 reports, 19 duplicates",
           "automated": true
         },
         {
           "id": "j4",
-          "at": "2026-09-11T20:22:19.523Z",
+          "at": "2026-09-11T20:57:39.144Z",
           "actor": "System",
           "action": "Awaiting officer validation — SLA 9h",
           "automated": true
@@ -2059,11 +2068,12 @@
         "v-tigra"
       ],
       "reportCount": 15,
+      "voteCount": 2,
       "duplicateCount": 2,
       "affected": 2890,
-      "createdAt": "2026-09-11T03:22:19.523Z",
-      "updatedAt": "2026-09-12T00:22:19.523Z",
-      "slaDueAt": "2026-09-12T09:22:19.523Z",
+      "createdAt": "2026-09-11T03:57:39.144Z",
+      "updatedAt": "2026-09-12T00:57:39.144Z",
+      "slaDueAt": "2026-09-12T09:57:39.144Z",
       "factors": {
         "populationImpact": 74,
         "severity": 94,
@@ -2142,7 +2152,7 @@
       "audit": [
         {
           "id": "k1",
-          "at": "2026-09-11T03:22:19.523Z",
+          "at": "2026-09-11T03:57:39.144Z",
           "actor": "Citizen",
           "actorName": "Mangri Oraon",
           "action": "Problem reported by voice",
@@ -2150,7 +2160,7 @@
         },
         {
           "id": "k2",
-          "at": "2026-09-11T03:22:19.523Z",
+          "at": "2026-09-11T03:57:39.144Z",
           "actor": "AI",
           "action": "Classified as Water Quality",
           "detail": "87% confidence · contamination protocol flagged",
@@ -2158,14 +2168,14 @@
         },
         {
           "id": "k3",
-          "at": "2026-09-11T07:22:19.523Z",
+          "at": "2026-09-11T07:57:39.144Z",
           "actor": "System",
           "action": "SLA set to 6 hours — contamination lane",
           "automated": true
         },
         {
           "id": "k4",
-          "at": "2026-09-12T00:22:19.523Z",
+          "at": "2026-09-12T00:57:39.144Z",
           "actor": "System",
           "action": "Escalation warning — validation pending",
           "automated": true
@@ -2184,11 +2194,12 @@
         "v-ormanjhi"
       ],
       "reportCount": 37,
+      "voteCount": 6,
       "duplicateCount": 8,
       "affected": 2450,
-      "createdAt": "2026-09-03T03:22:19.523Z",
-      "updatedAt": "2026-09-11T16:22:19.523Z",
-      "slaDueAt": "2026-09-14T07:22:19.523Z",
+      "createdAt": "2026-09-03T03:57:39.144Z",
+      "updatedAt": "2026-09-11T16:57:39.144Z",
+      "slaDueAt": "2026-09-14T07:57:39.144Z",
       "factors": {
         "populationImpact": 60,
         "severity": 74,
@@ -2228,14 +2239,14 @@
       "sponsorship": {
         "status": "interested",
         "eligible": true,
-        "invitedAt": "2026-09-08T03:22:19.523Z",
-        "responseDueAt": "2026-09-13T07:22:19.523Z",
+        "invitedAt": "2026-09-08T03:57:39.144Z",
+        "responseDueAt": "2026-09-13T07:57:39.144Z",
         "matches": [
           {
             "sponsorId": "sp-cclmine",
             "score": 86,
             "status": "interested",
-            "respondedAt": "2026-09-11T16:22:19.523Z",
+            "respondedAt": "2026-09-11T16:57:39.144Z",
             "reasons": [
               "CSR theme: Roads",
               "Geography: Jharkhand",
@@ -2277,7 +2288,7 @@
       "audit": [
         {
           "id": "l1",
-          "at": "2026-09-03T03:22:19.523Z",
+          "at": "2026-09-03T03:57:39.144Z",
           "actor": "Citizen",
           "actorName": "Dinesh Mahto",
           "action": "Problem reported with photos",
@@ -2285,7 +2296,7 @@
         },
         {
           "id": "l2",
-          "at": "2026-09-03T03:22:19.523Z",
+          "at": "2026-09-03T03:57:39.144Z",
           "actor": "AI",
           "action": "Classified as Road Damage",
           "detail": "92% confidence",
@@ -2293,7 +2304,7 @@
         },
         {
           "id": "l3",
-          "at": "2026-09-07T03:22:19.523Z",
+          "at": "2026-09-07T03:57:39.144Z",
           "actor": "Officer",
           "actorName": "Rekha Toppo",
           "action": "Validated problem",
@@ -2301,14 +2312,14 @@
         },
         {
           "id": "l4",
-          "at": "2026-09-08T03:22:19.523Z",
+          "at": "2026-09-08T03:57:39.144Z",
           "actor": "System",
           "action": "Sponsorship invitations sent to 2 industries",
           "automated": true
         },
         {
           "id": "l5",
-          "at": "2026-09-11T16:22:19.523Z",
+          "at": "2026-09-11T16:57:39.144Z",
           "actor": "Industry",
           "actorName": "Central Coalfields CSR Cell",
           "action": "Marked interested",
@@ -2328,11 +2339,12 @@
         "v-booty"
       ],
       "reportCount": 26,
+      "voteCount": 4,
       "duplicateCount": 4,
       "affected": 620,
-      "createdAt": "2026-09-05T03:22:19.523Z",
-      "updatedAt": "2026-09-11T05:22:19.523Z",
-      "slaDueAt": "2026-09-13T13:22:19.523Z",
+      "createdAt": "2026-09-05T03:57:39.144Z",
+      "updatedAt": "2026-09-11T05:57:39.144Z",
+      "slaDueAt": "2026-09-13T13:57:39.144Z",
       "factors": {
         "populationImpact": 34,
         "severity": 58,
@@ -2422,7 +2434,7 @@
       "audit": [
         {
           "id": "m1",
-          "at": "2026-09-05T03:22:19.523Z",
+          "at": "2026-09-05T03:57:39.144Z",
           "actor": "Citizen",
           "actorName": "Sevika Rita Devi",
           "action": "Problem reported",
@@ -2430,7 +2442,7 @@
         },
         {
           "id": "m2",
-          "at": "2026-09-05T03:22:19.523Z",
+          "at": "2026-09-05T03:57:39.144Z",
           "actor": "AI",
           "action": "Classified as Sanitation",
           "detail": "90% confidence",
@@ -2438,7 +2450,7 @@
         },
         {
           "id": "m3",
-          "at": "2026-09-10T03:22:19.523Z",
+          "at": "2026-09-10T03:57:39.144Z",
           "actor": "System",
           "action": "Sponsorship eligibility confirmed",
           "automated": true
@@ -2457,7 +2469,7 @@
       "villageId": "v-nagri",
       "lat": 23.3762,
       "lng": 85.24860000000001,
-      "at": "2026-09-12T01:22:19.523Z",
+      "at": "2026-09-12T01:57:39.144Z",
       "photos": 2,
       "aiConfidence": 84
     },
@@ -2471,7 +2483,7 @@
       "villageId": "v-hesag",
       "lat": 23.3689,
       "lng": 85.2396,
-      "at": "2026-09-11T20:22:19.523Z",
+      "at": "2026-09-11T20:57:39.144Z",
       "photos": 0,
       "aiConfidence": 91
     },
@@ -2485,7 +2497,7 @@
       "villageId": "v-chandaghasi",
       "lat": 23.3965,
       "lng": 85.26820000000001,
-      "at": "2026-09-11T15:22:19.523Z",
+      "at": "2026-09-11T15:57:39.144Z",
       "photos": 0,
       "aiConfidence": 84
     },
@@ -2499,7 +2511,7 @@
       "villageId": "v-nagri",
       "lat": 23.3817,
       "lng": 85.2581,
-      "at": "2026-09-11T10:22:19.523Z",
+      "at": "2026-09-11T10:57:39.144Z",
       "photos": 2,
       "aiConfidence": 91
     },
@@ -2513,7 +2525,7 @@
       "villageId": "v-hesag",
       "lat": 23.3644,
       "lng": 85.23910000000001,
-      "at": "2026-09-11T05:22:19.523Z",
+      "at": "2026-09-11T05:57:39.144Z",
       "photos": 0,
       "aiConfidence": 84
     },
@@ -2527,7 +2539,7 @@
       "villageId": "v-chandaghasi",
       "lat": 23.392,
       "lng": 85.2677,
-      "at": "2026-09-11T00:22:19.523Z",
+      "at": "2026-09-11T00:57:39.144Z",
       "photos": 0,
       "aiConfidence": 91
     },
@@ -2541,7 +2553,7 @@
       "villageId": "v-nagri",
       "lat": 23.3772,
       "lng": 85.25760000000001,
-      "at": "2026-09-10T19:22:19.523Z",
+      "at": "2026-09-10T19:57:39.144Z",
       "photos": 2,
       "duplicateOf": "P-1042-R1",
       "aiConfidence": 84
@@ -2556,7 +2568,7 @@
       "villageId": "v-hesag",
       "lat": 23.3699,
       "lng": 85.2386,
-      "at": "2026-09-10T14:22:19.523Z",
+      "at": "2026-09-10T14:57:39.144Z",
       "photos": 0,
       "duplicateOf": "P-1042-R1",
       "aiConfidence": 91
@@ -2571,7 +2583,7 @@
       "villageId": "v-pithoria",
       "lat": 23.4439,
       "lng": 85.18260000000001,
-      "at": "2026-09-12T01:22:19.523Z",
+      "at": "2026-09-12T01:57:39.144Z",
       "photos": 2,
       "aiConfidence": 84
     },
@@ -2585,7 +2597,7 @@
       "villageId": "v-pithoria",
       "lat": 23.452399999999997,
       "lng": 85.1891,
-      "at": "2026-09-11T20:22:19.523Z",
+      "at": "2026-09-11T20:57:39.144Z",
       "photos": 0,
       "aiConfidence": 91
     },
@@ -2599,7 +2611,7 @@
       "villageId": "v-pithoria",
       "lat": 23.450899999999997,
       "lng": 85.18560000000001,
-      "at": "2026-09-11T15:22:19.523Z",
+      "at": "2026-09-11T15:57:39.144Z",
       "photos": 0,
       "aiConfidence": 84
     },
@@ -2613,7 +2625,7 @@
       "villageId": "v-pithoria",
       "lat": 23.449399999999997,
       "lng": 85.1921,
-      "at": "2026-09-11T10:22:19.523Z",
+      "at": "2026-09-11T10:57:39.144Z",
       "photos": 2,
       "aiConfidence": 91
     },
@@ -2627,7 +2639,7 @@
       "villageId": "v-pithoria",
       "lat": 23.447899999999997,
       "lng": 85.18860000000001,
-      "at": "2026-09-11T05:22:19.523Z",
+      "at": "2026-09-11T05:57:39.144Z",
       "photos": 0,
       "aiConfidence": 84
     },
@@ -2641,7 +2653,7 @@
       "villageId": "v-pithoria",
       "lat": 23.446399999999997,
       "lng": 85.1851,
-      "at": "2026-09-11T00:22:19.523Z",
+      "at": "2026-09-11T00:57:39.144Z",
       "photos": 0,
       "aiConfidence": 91
     },
@@ -2655,7 +2667,7 @@
       "villageId": "v-pithoria",
       "lat": 23.444899999999997,
       "lng": 85.19160000000001,
-      "at": "2026-09-10T19:22:19.523Z",
+      "at": "2026-09-10T19:57:39.144Z",
       "photos": 2,
       "duplicateOf": "P-1038-R1",
       "aiConfidence": 84
@@ -2670,7 +2682,7 @@
       "villageId": "v-pithoria",
       "lat": 23.4534,
       "lng": 85.1881,
-      "at": "2026-09-10T14:22:19.523Z",
+      "at": "2026-09-10T14:57:39.144Z",
       "photos": 0,
       "duplicateOf": "P-1038-R1",
       "aiConfidence": 91
@@ -2685,7 +2697,7 @@
       "villageId": "v-booty",
       "lat": 23.4058,
       "lng": 85.3114,
-      "at": "2026-09-12T01:22:19.523Z",
+      "at": "2026-09-12T01:57:39.144Z",
       "photos": 2,
       "aiConfidence": 84
     },
@@ -2699,7 +2711,7 @@
       "villageId": "v-booty",
       "lat": 23.414299999999997,
       "lng": 85.3179,
-      "at": "2026-09-11T20:22:19.523Z",
+      "at": "2026-09-11T20:57:39.144Z",
       "photos": 0,
       "aiConfidence": 91
     },
@@ -2713,7 +2725,7 @@
       "villageId": "v-booty",
       "lat": 23.412799999999997,
       "lng": 85.3144,
-      "at": "2026-09-11T15:22:19.523Z",
+      "at": "2026-09-11T15:57:39.144Z",
       "photos": 0,
       "aiConfidence": 84
     },
@@ -2727,7 +2739,7 @@
       "villageId": "v-booty",
       "lat": 23.411299999999997,
       "lng": 85.3209,
-      "at": "2026-09-11T10:22:19.523Z",
+      "at": "2026-09-11T10:57:39.144Z",
       "photos": 2,
       "aiConfidence": 91
     },
@@ -2741,7 +2753,7 @@
       "villageId": "v-booty",
       "lat": 23.409799999999997,
       "lng": 85.3174,
-      "at": "2026-09-11T05:22:19.523Z",
+      "at": "2026-09-11T05:57:39.144Z",
       "photos": 0,
       "aiConfidence": 84
     },
@@ -2755,7 +2767,7 @@
       "villageId": "v-booty",
       "lat": 23.408299999999997,
       "lng": 85.3139,
-      "at": "2026-09-11T00:22:19.523Z",
+      "at": "2026-09-11T00:57:39.144Z",
       "photos": 0,
       "aiConfidence": 91
     },
@@ -2769,7 +2781,7 @@
       "villageId": "v-booty",
       "lat": 23.406799999999997,
       "lng": 85.3204,
-      "at": "2026-09-10T19:22:19.523Z",
+      "at": "2026-09-10T19:57:39.144Z",
       "photos": 2,
       "duplicateOf": "P-1051-R1",
       "aiConfidence": 84
@@ -2784,7 +2796,7 @@
       "villageId": "v-booty",
       "lat": 23.4153,
       "lng": 85.3169,
-      "at": "2026-09-10T14:22:19.523Z",
+      "at": "2026-09-10T14:57:39.144Z",
       "photos": 0,
       "duplicateOf": "P-1051-R1",
       "aiConfidence": 91
@@ -2799,7 +2811,7 @@
       "villageId": "v-tigra",
       "lat": 23.397100000000002,
       "lng": 85.2248,
-      "at": "2026-09-12T01:22:19.523Z",
+      "at": "2026-09-12T01:57:39.144Z",
       "photos": 2,
       "aiConfidence": 84
     },
@@ -2813,7 +2825,7 @@
       "villageId": "v-chandaghasi",
       "lat": 23.398,
       "lng": 85.2717,
-      "at": "2026-09-11T20:22:19.523Z",
+      "at": "2026-09-11T20:57:39.144Z",
       "photos": 0,
       "aiConfidence": 91
     },
@@ -2827,7 +2839,7 @@
       "villageId": "v-tigra",
       "lat": 23.4041,
       "lng": 85.2278,
-      "at": "2026-09-11T15:22:19.523Z",
+      "at": "2026-09-11T15:57:39.144Z",
       "photos": 0,
       "aiConfidence": 84
     },
@@ -2841,7 +2853,7 @@
       "villageId": "v-chandaghasi",
       "lat": 23.395,
       "lng": 85.2747,
-      "at": "2026-09-11T10:22:19.523Z",
+      "at": "2026-09-11T10:57:39.144Z",
       "photos": 2,
       "aiConfidence": 91
     },
@@ -2855,7 +2867,7 @@
       "villageId": "v-tigra",
       "lat": 23.4011,
       "lng": 85.2308,
-      "at": "2026-09-11T05:22:19.523Z",
+      "at": "2026-09-11T05:57:39.144Z",
       "photos": 0,
       "aiConfidence": 84
     },
@@ -2869,7 +2881,7 @@
       "villageId": "v-chandaghasi",
       "lat": 23.392,
       "lng": 85.2677,
-      "at": "2026-09-11T00:22:19.523Z",
+      "at": "2026-09-11T00:57:39.144Z",
       "photos": 0,
       "aiConfidence": 91
     },
@@ -2883,7 +2895,7 @@
       "villageId": "v-tigra",
       "lat": 23.3981,
       "lng": 85.2338,
-      "at": "2026-09-10T19:22:19.523Z",
+      "at": "2026-09-10T19:57:39.144Z",
       "photos": 2,
       "duplicateOf": "P-1012-R1",
       "aiConfidence": 84
@@ -2898,7 +2910,7 @@
       "villageId": "v-chandaghasi",
       "lat": 23.399,
       "lng": 85.2707,
-      "at": "2026-09-10T14:22:19.523Z",
+      "at": "2026-09-10T14:57:39.144Z",
       "photos": 0,
       "duplicateOf": "P-1012-R1",
       "aiConfidence": 91
@@ -2913,7 +2925,7 @@
       "villageId": "v-chandaghasi",
       "lat": 23.3895,
       "lng": 85.26520000000001,
-      "at": "2026-09-12T01:22:19.523Z",
+      "at": "2026-09-12T01:57:39.144Z",
       "photos": 2,
       "aiConfidence": 84
     },
@@ -2927,7 +2939,7 @@
       "villageId": "v-chandaghasi",
       "lat": 23.398,
       "lng": 85.2717,
-      "at": "2026-09-11T20:22:19.523Z",
+      "at": "2026-09-11T20:57:39.144Z",
       "photos": 0,
       "aiConfidence": 91
     },
@@ -2941,7 +2953,7 @@
       "villageId": "v-chandaghasi",
       "lat": 23.3965,
       "lng": 85.26820000000001,
-      "at": "2026-09-11T15:22:19.523Z",
+      "at": "2026-09-11T15:57:39.144Z",
       "photos": 0,
       "aiConfidence": 84
     },
@@ -2955,7 +2967,7 @@
       "villageId": "v-chandaghasi",
       "lat": 23.395,
       "lng": 85.2747,
-      "at": "2026-09-11T10:22:19.523Z",
+      "at": "2026-09-11T10:57:39.144Z",
       "photos": 2,
       "aiConfidence": 91
     },
@@ -2969,7 +2981,7 @@
       "villageId": "v-chandaghasi",
       "lat": 23.3935,
       "lng": 85.27120000000001,
-      "at": "2026-09-11T05:22:19.523Z",
+      "at": "2026-09-11T05:57:39.144Z",
       "photos": 0,
       "aiConfidence": 84
     },
@@ -2983,7 +2995,7 @@
       "villageId": "v-chandaghasi",
       "lat": 23.392,
       "lng": 85.2677,
-      "at": "2026-09-11T00:22:19.523Z",
+      "at": "2026-09-11T00:57:39.144Z",
       "photos": 0,
       "aiConfidence": 91
     },
@@ -2997,7 +3009,7 @@
       "villageId": "v-chandaghasi",
       "lat": 23.3905,
       "lng": 85.27420000000001,
-      "at": "2026-09-10T19:22:19.523Z",
+      "at": "2026-09-10T19:57:39.144Z",
       "photos": 2,
       "duplicateOf": "P-1008-R1",
       "aiConfidence": 84
@@ -3012,7 +3024,7 @@
       "villageId": "v-chandaghasi",
       "lat": 23.399,
       "lng": 85.2707,
-      "at": "2026-09-10T14:22:19.523Z",
+      "at": "2026-09-10T14:57:39.144Z",
       "photos": 0,
       "duplicateOf": "P-1008-R1",
       "aiConfidence": 91
@@ -3027,7 +3039,7 @@
       "villageId": "v-nagri",
       "lat": 23.3762,
       "lng": 85.24860000000001,
-      "at": "2026-09-12T01:22:19.523Z",
+      "at": "2026-09-12T01:57:39.144Z",
       "photos": 2,
       "aiConfidence": 84
     },
@@ -3041,7 +3053,7 @@
       "villageId": "v-nagri",
       "lat": 23.3847,
       "lng": 85.2551,
-      "at": "2026-09-11T20:22:19.523Z",
+      "at": "2026-09-11T20:57:39.144Z",
       "photos": 0,
       "aiConfidence": 91
     },
@@ -3055,7 +3067,7 @@
       "villageId": "v-nagri",
       "lat": 23.3832,
       "lng": 85.25160000000001,
-      "at": "2026-09-11T15:22:19.523Z",
+      "at": "2026-09-11T15:57:39.144Z",
       "photos": 0,
       "aiConfidence": 84
     },
@@ -3069,7 +3081,7 @@
       "villageId": "v-nagri",
       "lat": 23.3817,
       "lng": 85.2581,
-      "at": "2026-09-11T10:22:19.523Z",
+      "at": "2026-09-11T10:57:39.144Z",
       "photos": 2,
       "aiConfidence": 91
     },
@@ -3083,7 +3095,7 @@
       "villageId": "v-nagri",
       "lat": 23.3802,
       "lng": 85.25460000000001,
-      "at": "2026-09-11T05:22:19.523Z",
+      "at": "2026-09-11T05:57:39.144Z",
       "photos": 0,
       "aiConfidence": 84
     },
@@ -3097,7 +3109,7 @@
       "villageId": "v-nagri",
       "lat": 23.3787,
       "lng": 85.25110000000001,
-      "at": "2026-09-11T00:22:19.523Z",
+      "at": "2026-09-11T00:57:39.144Z",
       "photos": 0,
       "aiConfidence": 91
     },
@@ -3111,7 +3123,7 @@
       "villageId": "v-nagri",
       "lat": 23.3772,
       "lng": 85.25760000000001,
-      "at": "2026-09-10T19:22:19.523Z",
+      "at": "2026-09-10T19:57:39.144Z",
       "photos": 2,
       "duplicateOf": "P-1024-R1",
       "aiConfidence": 84
@@ -3126,7 +3138,7 @@
       "villageId": "v-nagri",
       "lat": 23.3857,
       "lng": 85.25410000000001,
-      "at": "2026-09-10T14:22:19.523Z",
+      "at": "2026-09-10T14:57:39.144Z",
       "photos": 0,
       "duplicateOf": "P-1024-R1",
       "aiConfidence": 91
@@ -3141,7 +3153,7 @@
       "villageId": "v-nagri",
       "lat": 23.3762,
       "lng": 85.24860000000001,
-      "at": "2026-09-12T01:22:19.523Z",
+      "at": "2026-09-12T01:57:39.144Z",
       "photos": 2,
       "aiConfidence": 84
     },
@@ -3155,7 +3167,7 @@
       "villageId": "v-hesag",
       "lat": 23.3689,
       "lng": 85.2396,
-      "at": "2026-09-11T20:22:19.523Z",
+      "at": "2026-09-11T20:57:39.144Z",
       "photos": 0,
       "aiConfidence": 91
     },
@@ -3169,7 +3181,7 @@
       "villageId": "v-nagri",
       "lat": 23.3832,
       "lng": 85.25160000000001,
-      "at": "2026-09-11T15:22:19.523Z",
+      "at": "2026-09-11T15:57:39.144Z",
       "photos": 0,
       "aiConfidence": 84
     },
@@ -3183,7 +3195,7 @@
       "villageId": "v-hesag",
       "lat": 23.3659,
       "lng": 85.2426,
-      "at": "2026-09-11T10:22:19.523Z",
+      "at": "2026-09-11T10:57:39.144Z",
       "photos": 2,
       "aiConfidence": 91
     },
@@ -3197,7 +3209,7 @@
       "villageId": "v-nagri",
       "lat": 23.3802,
       "lng": 85.25460000000001,
-      "at": "2026-09-11T05:22:19.523Z",
+      "at": "2026-09-11T05:57:39.144Z",
       "photos": 0,
       "aiConfidence": 84
     },
@@ -3211,7 +3223,7 @@
       "villageId": "v-hesag",
       "lat": 23.3629,
       "lng": 85.2356,
-      "at": "2026-09-11T00:22:19.523Z",
+      "at": "2026-09-11T00:57:39.144Z",
       "photos": 0,
       "aiConfidence": 91
     },
@@ -3225,7 +3237,7 @@
       "villageId": "v-nagri",
       "lat": 23.3772,
       "lng": 85.25760000000001,
-      "at": "2026-09-10T19:22:19.523Z",
+      "at": "2026-09-10T19:57:39.144Z",
       "photos": 2,
       "duplicateOf": "P-1003-R1",
       "aiConfidence": 84
@@ -3240,7 +3252,7 @@
       "villageId": "v-hesag",
       "lat": 23.3699,
       "lng": 85.2386,
-      "at": "2026-09-10T14:22:19.523Z",
+      "at": "2026-09-10T14:57:39.144Z",
       "photos": 0,
       "duplicateOf": "P-1003-R1",
       "aiConfidence": 91
@@ -3255,7 +3267,7 @@
       "villageId": "v-hesag",
       "lat": 23.360400000000002,
       "lng": 85.23310000000001,
-      "at": "2026-09-12T01:22:19.523Z",
+      "at": "2026-09-12T01:57:39.144Z",
       "photos": 2,
       "aiConfidence": 84
     },
@@ -3269,7 +3281,7 @@
       "villageId": "v-hesag",
       "lat": 23.3689,
       "lng": 85.2396,
-      "at": "2026-09-11T20:22:19.523Z",
+      "at": "2026-09-11T20:57:39.144Z",
       "photos": 0,
       "aiConfidence": 91
     },
@@ -3283,7 +3295,7 @@
       "villageId": "v-hesag",
       "lat": 23.3674,
       "lng": 85.23610000000001,
-      "at": "2026-09-11T15:22:19.523Z",
+      "at": "2026-09-11T15:57:39.144Z",
       "photos": 0,
       "aiConfidence": 84
     },
@@ -3297,7 +3309,7 @@
       "villageId": "v-hesag",
       "lat": 23.3659,
       "lng": 85.2426,
-      "at": "2026-09-11T10:22:19.523Z",
+      "at": "2026-09-11T10:57:39.144Z",
       "photos": 2,
       "aiConfidence": 91
     },
@@ -3311,7 +3323,7 @@
       "villageId": "v-hesag",
       "lat": 23.3644,
       "lng": 85.23910000000001,
-      "at": "2026-09-11T05:22:19.523Z",
+      "at": "2026-09-11T05:57:39.144Z",
       "photos": 0,
       "aiConfidence": 84
     },
@@ -3325,7 +3337,7 @@
       "villageId": "v-hesag",
       "lat": 23.3629,
       "lng": 85.2356,
-      "at": "2026-09-11T00:22:19.523Z",
+      "at": "2026-09-11T00:57:39.144Z",
       "photos": 0,
       "aiConfidence": 91
     },
@@ -3339,7 +3351,7 @@
       "villageId": "v-hesag",
       "lat": 23.3614,
       "lng": 85.24210000000001,
-      "at": "2026-09-10T19:22:19.523Z",
+      "at": "2026-09-10T19:57:39.144Z",
       "photos": 2,
       "duplicateOf": "P-1046-R1",
       "aiConfidence": 84
@@ -3354,7 +3366,7 @@
       "villageId": "v-hesag",
       "lat": 23.3699,
       "lng": 85.2386,
-      "at": "2026-09-10T14:22:19.523Z",
+      "at": "2026-09-10T14:57:39.144Z",
       "photos": 0,
       "duplicateOf": "P-1046-R1",
       "aiConfidence": 91
@@ -3369,7 +3381,7 @@
       "villageId": "v-kanke",
       "lat": 23.4221,
       "lng": 85.3173,
-      "at": "2026-09-12T01:22:19.523Z",
+      "at": "2026-09-12T01:57:39.144Z",
       "photos": 2,
       "aiConfidence": 84
     },
@@ -3383,7 +3395,7 @@
       "villageId": "v-kanke",
       "lat": 23.4306,
       "lng": 85.32379999999999,
-      "at": "2026-09-11T20:22:19.523Z",
+      "at": "2026-09-11T20:57:39.144Z",
       "photos": 0,
       "aiConfidence": 91
     },
@@ -3397,7 +3409,7 @@
       "villageId": "v-kanke",
       "lat": 23.4291,
       "lng": 85.3203,
-      "at": "2026-09-11T15:22:19.523Z",
+      "at": "2026-09-11T15:57:39.144Z",
       "photos": 0,
       "aiConfidence": 84
     },
@@ -3411,7 +3423,7 @@
       "villageId": "v-kanke",
       "lat": 23.427599999999998,
       "lng": 85.32679999999999,
-      "at": "2026-09-11T10:22:19.523Z",
+      "at": "2026-09-11T10:57:39.144Z",
       "photos": 2,
       "aiConfidence": 91
     },
@@ -3425,7 +3437,7 @@
       "villageId": "v-kanke",
       "lat": 23.426099999999998,
       "lng": 85.3233,
-      "at": "2026-09-11T05:22:19.523Z",
+      "at": "2026-09-11T05:57:39.144Z",
       "photos": 0,
       "aiConfidence": 84
     },
@@ -3439,7 +3451,7 @@
       "villageId": "v-kanke",
       "lat": 23.424599999999998,
       "lng": 85.3198,
-      "at": "2026-09-11T00:22:19.523Z",
+      "at": "2026-09-11T00:57:39.144Z",
       "photos": 0,
       "aiConfidence": 91
     },
@@ -3453,7 +3465,7 @@
       "villageId": "v-kanke",
       "lat": 23.423099999999998,
       "lng": 85.3263,
-      "at": "2026-09-10T19:22:19.523Z",
+      "at": "2026-09-10T19:57:39.144Z",
       "photos": 2,
       "duplicateOf": "P-1055-R1",
       "aiConfidence": 84
@@ -3468,7 +3480,7 @@
       "villageId": "v-kanke",
       "lat": 23.4316,
       "lng": 85.3228,
-      "at": "2026-09-10T14:22:19.523Z",
+      "at": "2026-09-10T14:57:39.144Z",
       "photos": 0,
       "duplicateOf": "P-1055-R1",
       "aiConfidence": 91
@@ -3483,7 +3495,7 @@
       "villageId": "v-tigra",
       "lat": 23.397100000000002,
       "lng": 85.2248,
-      "at": "2026-09-12T01:22:19.523Z",
+      "at": "2026-09-12T01:57:39.144Z",
       "photos": 2,
       "aiConfidence": 84
     },
@@ -3497,7 +3509,7 @@
       "villageId": "v-tigra",
       "lat": 23.4056,
       "lng": 85.23129999999999,
-      "at": "2026-09-11T20:22:19.523Z",
+      "at": "2026-09-11T20:57:39.144Z",
       "photos": 0,
       "aiConfidence": 91
     },
@@ -3511,7 +3523,7 @@
       "villageId": "v-tigra",
       "lat": 23.4041,
       "lng": 85.2278,
-      "at": "2026-09-11T15:22:19.523Z",
+      "at": "2026-09-11T15:57:39.144Z",
       "photos": 0,
       "aiConfidence": 84
     },
@@ -3525,7 +3537,7 @@
       "villageId": "v-tigra",
       "lat": 23.4026,
       "lng": 85.23429999999999,
-      "at": "2026-09-11T10:22:19.523Z",
+      "at": "2026-09-11T10:57:39.144Z",
       "photos": 2,
       "aiConfidence": 91
     },
@@ -3539,7 +3551,7 @@
       "villageId": "v-tigra",
       "lat": 23.4011,
       "lng": 85.2308,
-      "at": "2026-09-11T05:22:19.523Z",
+      "at": "2026-09-11T05:57:39.144Z",
       "photos": 0,
       "aiConfidence": 84
     },
@@ -3553,7 +3565,7 @@
       "villageId": "v-tigra",
       "lat": 23.3996,
       "lng": 85.2273,
-      "at": "2026-09-11T00:22:19.523Z",
+      "at": "2026-09-11T00:57:39.144Z",
       "photos": 0,
       "aiConfidence": 91
     },
@@ -3567,7 +3579,7 @@
       "villageId": "v-tigra",
       "lat": 23.3981,
       "lng": 85.2338,
-      "at": "2026-09-10T19:22:19.523Z",
+      "at": "2026-09-10T19:57:39.144Z",
       "photos": 2,
       "duplicateOf": "P-1060-R1",
       "aiConfidence": 84
@@ -3582,7 +3594,7 @@
       "villageId": "v-tigra",
       "lat": 23.4066,
       "lng": 85.2303,
-      "at": "2026-09-10T14:22:19.523Z",
+      "at": "2026-09-10T14:57:39.144Z",
       "photos": 0,
       "duplicateOf": "P-1060-R1",
       "aiConfidence": 91
@@ -3597,7 +3609,7 @@
       "villageId": "v-ormanjhi",
       "lat": 23.4662,
       "lng": 85.4311,
-      "at": "2026-09-12T01:22:19.523Z",
+      "at": "2026-09-12T01:57:39.144Z",
       "photos": 2,
       "aiConfidence": 84
     },
@@ -3611,7 +3623,7 @@
       "villageId": "v-ormanjhi",
       "lat": 23.4747,
       "lng": 85.43759999999999,
-      "at": "2026-09-11T20:22:19.523Z",
+      "at": "2026-09-11T20:57:39.144Z",
       "photos": 0,
       "aiConfidence": 91
     },
@@ -3625,7 +3637,7 @@
       "villageId": "v-ormanjhi",
       "lat": 23.4732,
       "lng": 85.4341,
-      "at": "2026-09-11T15:22:19.523Z",
+      "at": "2026-09-11T15:57:39.144Z",
       "photos": 0,
       "aiConfidence": 84
     },
@@ -3639,7 +3651,7 @@
       "villageId": "v-ormanjhi",
       "lat": 23.4717,
       "lng": 85.44059999999999,
-      "at": "2026-09-11T10:22:19.523Z",
+      "at": "2026-09-11T10:57:39.144Z",
       "photos": 2,
       "aiConfidence": 91
     },
@@ -3653,7 +3665,7 @@
       "villageId": "v-ormanjhi",
       "lat": 23.4702,
       "lng": 85.4371,
-      "at": "2026-09-11T05:22:19.523Z",
+      "at": "2026-09-11T05:57:39.144Z",
       "photos": 0,
       "aiConfidence": 84
     },
@@ -3667,7 +3679,7 @@
       "villageId": "v-ormanjhi",
       "lat": 23.4687,
       "lng": 85.4336,
-      "at": "2026-09-11T00:22:19.523Z",
+      "at": "2026-09-11T00:57:39.144Z",
       "photos": 0,
       "aiConfidence": 91
     },
@@ -3681,7 +3693,7 @@
       "villageId": "v-ormanjhi",
       "lat": 23.4672,
       "lng": 85.4401,
-      "at": "2026-09-10T19:22:19.523Z",
+      "at": "2026-09-10T19:57:39.144Z",
       "photos": 2,
       "duplicateOf": "P-1035-R1",
       "aiConfidence": 84
@@ -3696,7 +3708,7 @@
       "villageId": "v-ormanjhi",
       "lat": 23.4757,
       "lng": 85.4366,
-      "at": "2026-09-10T14:22:19.523Z",
+      "at": "2026-09-10T14:57:39.144Z",
       "photos": 0,
       "duplicateOf": "P-1035-R1",
       "aiConfidence": 91
@@ -3711,7 +3723,7 @@
       "villageId": "v-booty",
       "lat": 23.4058,
       "lng": 85.3114,
-      "at": "2026-09-12T01:22:19.523Z",
+      "at": "2026-09-12T01:57:39.144Z",
       "photos": 2,
       "aiConfidence": 84
     },
@@ -3725,7 +3737,7 @@
       "villageId": "v-booty",
       "lat": 23.414299999999997,
       "lng": 85.3179,
-      "at": "2026-09-11T20:22:19.523Z",
+      "at": "2026-09-11T20:57:39.144Z",
       "photos": 0,
       "aiConfidence": 91
     },
@@ -3739,7 +3751,7 @@
       "villageId": "v-booty",
       "lat": 23.412799999999997,
       "lng": 85.3144,
-      "at": "2026-09-11T15:22:19.523Z",
+      "at": "2026-09-11T15:57:39.144Z",
       "photos": 0,
       "aiConfidence": 84
     },
@@ -3753,7 +3765,7 @@
       "villageId": "v-booty",
       "lat": 23.411299999999997,
       "lng": 85.3209,
-      "at": "2026-09-11T10:22:19.523Z",
+      "at": "2026-09-11T10:57:39.144Z",
       "photos": 2,
       "aiConfidence": 91
     },
@@ -3767,7 +3779,7 @@
       "villageId": "v-booty",
       "lat": 23.409799999999997,
       "lng": 85.3174,
-      "at": "2026-09-11T05:22:19.523Z",
+      "at": "2026-09-11T05:57:39.144Z",
       "photos": 0,
       "aiConfidence": 84
     },
@@ -3781,7 +3793,7 @@
       "villageId": "v-booty",
       "lat": 23.408299999999997,
       "lng": 85.3139,
-      "at": "2026-09-11T00:22:19.523Z",
+      "at": "2026-09-11T00:57:39.144Z",
       "photos": 0,
       "aiConfidence": 91
     },
@@ -3795,7 +3807,7 @@
       "villageId": "v-booty",
       "lat": 23.406799999999997,
       "lng": 85.3204,
-      "at": "2026-09-10T19:22:19.523Z",
+      "at": "2026-09-10T19:57:39.144Z",
       "photos": 2,
       "duplicateOf": "P-1049-R1",
       "aiConfidence": 84
@@ -3810,7 +3822,7 @@
       "villageId": "v-booty",
       "lat": 23.4153,
       "lng": 85.3169,
-      "at": "2026-09-10T14:22:19.523Z",
+      "at": "2026-09-10T14:57:39.144Z",
       "photos": 0,
       "duplicateOf": "P-1049-R1",
       "aiConfidence": 91
@@ -3823,7 +3835,7 @@
       "description": "Every incoming report is read, translated where needed, and assigned a category and severity.",
       "status": "healthy",
       "enabled": true,
-      "lastRunAt": "2026-09-12T03:10:19.523Z",
+      "lastRunAt": "2026-09-12T03:45:39.144Z",
       "nextAction": "Runs on each new report",
       "affectedRecords": 486,
       "runsToday": 486
@@ -3834,7 +3846,7 @@
       "description": "Reports describing the same fault at the same place are folded into one problem cluster.",
       "status": "healthy",
       "enabled": true,
-      "lastRunAt": "2026-09-12T02:58:19.523Z",
+      "lastRunAt": "2026-09-12T03:33:39.144Z",
       "nextAction": "Runs on each new report",
       "affectedRecords": 133,
       "runsToday": 133
@@ -3845,7 +3857,7 @@
       "description": "Scores every open problem against the published weighting whenever its inputs change.",
       "status": "healthy",
       "enabled": true,
-      "lastRunAt": "2026-09-12T02:22:19.523Z",
+      "lastRunAt": "2026-09-12T02:57:39.144Z",
       "nextAction": "Next sweep in 45 min",
       "affectedRecords": 12,
       "runsToday": 24
@@ -3856,7 +3868,7 @@
       "description": "Maps category plus jurisdiction to the owning department. Overrides are logged against the officer.",
       "status": "healthy",
       "enabled": true,
-      "lastRunAt": "2026-09-12T00:22:19.523Z",
+      "lastRunAt": "2026-09-12T00:57:39.144Z",
       "nextAction": "Runs on validation",
       "affectedRecords": 12,
       "runsToday": 9
@@ -3867,7 +3879,7 @@
       "description": "Suggests the assignee with the lowest weighted load and the right ward experience.",
       "status": "healthy",
       "enabled": true,
-      "lastRunAt": "2026-09-11T23:22:19.523Z",
+      "lastRunAt": "2026-09-11T23:57:39.144Z",
       "nextAction": "Runs on assignment screen",
       "affectedRecords": 5,
       "runsToday": 7
@@ -3878,7 +3890,7 @@
       "description": "Tests each validated problem against state CSR guidelines and the ₹2 L floor.",
       "status": "healthy",
       "enabled": true,
-      "lastRunAt": "2026-09-11T21:22:19.523Z",
+      "lastRunAt": "2026-09-11T21:57:39.144Z",
       "nextAction": "Runs on validation",
       "affectedRecords": 7,
       "runsToday": 4
@@ -3889,7 +3901,7 @@
       "description": "Scores sponsors on CSR theme, geography, unspent budget and historic response rate.",
       "status": "healthy",
       "enabled": true,
-      "lastRunAt": "2026-09-11T21:22:19.523Z",
+      "lastRunAt": "2026-09-11T21:57:39.144Z",
       "nextAction": "Runs on eligibility pass",
       "affectedRecords": 7,
       "runsToday": 4
@@ -3900,7 +3912,7 @@
       "description": "Reminds invited sponsors at 50% and 85% of the response window.",
       "status": "attention",
       "enabled": true,
-      "lastRunAt": "2026-09-11T18:22:19.523Z",
+      "lastRunAt": "2026-09-11T18:57:39.144Z",
       "nextAction": "P-1035 reminder due in 4h",
       "affectedRecords": 2,
       "runsToday": 3
@@ -3911,7 +3923,7 @@
       "description": "When the industry window closes without an acceptance, the problem moves itself into the funding queue with a recommended source.",
       "status": "healthy",
       "enabled": true,
-      "lastRunAt": "2026-09-10T21:22:19.523Z",
+      "lastRunAt": "2026-09-10T21:57:39.144Z",
       "nextAction": "P-1042 window closes in 20h",
       "affectedRecords": 2,
       "runsToday": 1
@@ -3922,7 +3934,7 @@
       "description": "Escalates a breached problem one administrative level and notifies the next officer.",
       "status": "attention",
       "enabled": true,
-      "lastRunAt": "2026-09-12T01:22:19.523Z",
+      "lastRunAt": "2026-09-12T01:57:39.144Z",
       "nextAction": "P-1060 breaches in 6h",
       "affectedRecords": 3,
       "runsToday": 5
@@ -3933,7 +3945,7 @@
       "description": "Tells every reporter when their problem changes stage, in the language they reported in.",
       "status": "healthy",
       "enabled": true,
-      "lastRunAt": "2026-09-12T01:52:19.523Z",
+      "lastRunAt": "2026-09-12T02:27:39.144Z",
       "nextAction": "Runs on stage change",
       "affectedRecords": 214,
       "runsToday": 214
@@ -3944,7 +3956,7 @@
       "description": "Asks the original reporters to confirm a completed fix before it can be closed.",
       "status": "healthy",
       "enabled": true,
-      "lastRunAt": "2026-09-10T23:22:19.523Z",
+      "lastRunAt": "2026-09-10T23:57:39.144Z",
       "nextAction": "7 reminders queued for P-1024",
       "affectedRecords": 22,
       "runsToday": 22
@@ -3955,7 +3967,7 @@
       "description": "Compares before and after report volume, cost and beneficiaries once verification closes.",
       "status": "healthy",
       "enabled": true,
-      "lastRunAt": "2026-09-06T03:22:19.523Z",
+      "lastRunAt": "2026-09-06T03:57:39.144Z",
       "nextAction": "Runs on verification close",
       "affectedRecords": 2,
       "runsToday": 0
@@ -3967,7 +3979,7 @@
       "kind": "sla_breach",
       "title": "SLA breach imminent — water quality",
       "detail": "P-1060 Tigra handpump contamination must be validated within 6 hours under the water-quality protocol.",
-      "at": "2026-09-12T02:22:19.523Z",
+      "at": "2026-09-12T02:57:39.144Z",
       "problemId": "P-1060",
       "actionLabel": "Validate now",
       "read": false
@@ -3977,7 +3989,7 @@
       "kind": "sponsorship_expiring",
       "title": "Industry response window closing",
       "detail": "Tata Steel Foundation and Jindal have 20 hours left to respond on P-1042. Funding fallback is armed.",
-      "at": "2026-09-12T01:22:19.523Z",
+      "at": "2026-09-12T01:57:39.144Z",
       "problemId": "P-1042",
       "actionLabel": "Open sponsorship",
       "read": false
@@ -3987,7 +3999,7 @@
       "kind": "priority_changed",
       "title": "Priority changed: #4 → #1",
       "detail": "Water supply interruption rose after 18 new reports from Chandaghasi and the deprivation weighting.",
-      "at": "2026-09-11T22:22:19.523Z",
+      "at": "2026-09-11T22:57:39.144Z",
       "problemId": "P-1042",
       "actionLabel": "See why",
       "read": false
@@ -3997,7 +4009,7 @@
       "kind": "funding_ready",
       "title": "Government funding recommended",
       "detail": "P-1038 Pithoria road: industry sponsorship failed, ₹14.5 L required against ₹24.6 L available.",
-      "at": "2026-09-10T21:22:19.523Z",
+      "at": "2026-09-10T21:57:39.144Z",
       "problemId": "P-1038",
       "actionLabel": "Review funding",
       "read": false
@@ -4007,7 +4019,7 @@
       "kind": "verification_pending",
       "title": "7 citizens have not confirmed a fix",
       "detail": "P-1024 Nagri bazaar toilet: 14 of 22 reporters confirmed, 1 denied, 7 pending.",
-      "at": "2026-09-10T23:22:19.523Z",
+      "at": "2026-09-10T23:57:39.144Z",
       "problemId": "P-1024",
       "actionLabel": "Open verification",
       "read": true
@@ -4017,7 +4029,7 @@
       "kind": "sla_breach",
       "title": "Drainage project SLA at risk",
       "detail": "P-1046 Hesag drainage is 61% complete with 18 hours to the committed date.",
-      "at": "2026-09-11T11:22:19.523Z",
+      "at": "2026-09-11T11:57:39.144Z",
       "problemId": "P-1046",
       "actionLabel": "Open project",
       "read": true

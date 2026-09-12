@@ -139,6 +139,12 @@ export default function ProblemDossier() {
                   {problem.villageIds.map(villageName).join(", ")}
                 </span>
                 <span>{count(problem.reportCount)} citizen reports</span>
+                {/* Shown beside the report count, never added to it. Two
+                    numbers because the ranking weighs them separately, and an
+                    officer deciding what to do next needs to see when the two
+                    disagree — a problem few reported and many voted for is a
+                    different situation from the reverse. */}
+                <span>{count(problem.voteCount)} citizen votes</span>
                 <span>{count(problem.affected)} people affected</span>
                 <span>opened {relative(problem.createdAt)}</span>
               </p>
@@ -316,6 +322,11 @@ export default function ProblemDossier() {
               <p className="mt-1 text-sm text-ink-muted">
                 {problem.duplicateCount} exact duplicates were folded in automatically. Showing the{" "}
                 {reports.length} most recent distinct reports.
+              </p>
+              <p className="mt-1 text-sm text-ink-muted">
+                A further {count(problem.voteCount)}{" "}
+                {problem.voteCount === 1 ? "resident has" : "residents have"} voted that this
+                matters without filing a report of their own.
               </p>
             </div>
             <Badge icon="bot" tone="info">

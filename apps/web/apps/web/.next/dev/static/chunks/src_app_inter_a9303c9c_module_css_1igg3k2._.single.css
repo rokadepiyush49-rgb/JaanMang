@@ -1,0 +1,26 @@
+/* [project]/src/app/inter_a9303c9c.module.css [app-client] (css) */
+@font-face {
+  font-family: inter;
+  src: url("../media/Inter-s.p.2la4dbfrngu72.ttf") format("truetype");
+  font-display: swap;
+  font-weight: 100 900;
+}
+
+@font-face {
+  font-family: inter Fallback;
+  src: local(Arial);
+  ascent-override: 89.79%;
+  descent-override: 22.36%;
+  line-gap-override: 0.0%;
+  size-adjust: 107.89%;
+}
+
+.inter_a9303c9c-module__xqYuAG__className {
+  font-family: inter, inter Fallback;
+}
+
+.inter_a9303c9c-module__xqYuAG__variable {
+  --font-inter: "inter", "inter Fallback";
+}
+
+/*# sourceMappingURL=src_app_inter_a9303c9c_module_css_1igg3k2._.single.css.map*/

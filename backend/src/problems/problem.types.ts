@@ -172,6 +172,8 @@ export interface ProblemDto {
   jurisdictionId: string;
   villageIds: string[];
   reportCount: number;
+  /** Citizens who agreed it matters without filing it themselves. */
+  voteCount: number;
   duplicateCount: number;
   affected: number;
   createdAt: string;

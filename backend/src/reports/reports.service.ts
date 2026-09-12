@@ -136,6 +136,38 @@ export class ReportsService {
     return nearest;
   }
 
+  /**
+   * The village register, for the intake form's location fallback.
+   *
+   * Public, because the form is: a citizen whose browser refuses geolocation —
+   * or who is filing from somewhere other than the problem — has to be able to
+   * name the place, and being asked to sign in first would defeat the point of
+   * an open intake endpoint.
+   *
+   * Nothing here is sensitive. These are village names and the coordinates of
+   * the villages, which are on every map ever printed of the district; no
+   * population, no deprivation index, no reports.
+   */
+  async villages() {
+    const rows = await this.prisma.village.findMany({
+      orderBy: [{ jurisdiction: { name: 'asc' } }, { name: 'asc' }],
+      select: {
+        id: true,
+        name: true,
+        lat: true,
+        lng: true,
+        jurisdiction: { select: { id: true, name: true } },
+      },
+    });
+    return rows.map((v) => ({
+      id: v.id,
+      name: v.name,
+      lat: v.lat,
+      lng: v.lng,
+      jurisdiction: v.jurisdiction.name,
+    }));
+  }
+
   /** A citizen's own reports, newest first, with whatever became of each. */
   async mine(user: AuthPrincipal, query: MyReportsQueryDto) {
     const rows = await this.prisma.citizenReport.findMany({
@@ -161,6 +193,9 @@ export class ReportsService {
             stage: true,
             reportCount: true,
             voteCount: true,
+            // Whether this citizen has voted, resolved in the same query
+            // rather than as one request per row from the client.
+            votes: { where: { userId: user.userId }, select: { id: true }, take: 1 },
           },
         },
       },
@@ -185,7 +220,17 @@ export class ReportsService {
          * rather than inventing a status, because "we have not looked at it
          * yet" is a true and useful thing to tell somebody.
          */
-        problem: r.problem,
+        problem: r.problem
+          ? {
+              id: r.problem.id,
+              title: r.problem.title,
+              status: r.problem.status,
+              stage: r.problem.stage,
+              reportCount: r.problem.reportCount,
+              voteCount: r.problem.voteCount,
+              votedByMe: r.problem.votes.length > 0,
+            }
+          : null,
       })),
       nextCursor: rows.length > query.limit ? items[items.length - 1]?.id : undefined,
     };

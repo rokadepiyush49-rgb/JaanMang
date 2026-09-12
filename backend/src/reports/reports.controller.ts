@@ -68,6 +68,19 @@ export class ReportsController {
     return this.reports.create(dto, user);
   }
 
+  @Get('villages')
+  @Public()
+  @ApiOperation({
+    summary: 'The village register, for the intake form',
+    description:
+      'Public: a citizen whose browser refuses geolocation has to be able to name the place, ' +
+      'and asking them to sign in first would defeat an open intake endpoint. Names and ' +
+      'coordinates only — no population, no deprivation index, no reports.',
+  })
+  async villages() {
+    return this.reports.villages();
+  }
+
   @Get('mine')
   @ApiOperation({
     summary: "A citizen's own reports and what became of each",

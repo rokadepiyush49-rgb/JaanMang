@@ -137,6 +137,7 @@ export function toProblemDto(row: ProblemRow): ProblemDto {
     jurisdictionId: row.jurisdictionId,
     villageIds: (row.villages ?? []).map((v) => v.villageId),
     reportCount: row.reportCount,
+    voteCount: row.voteCount,
     duplicateCount: row.duplicateCount,
     affected: row.affected,
     createdAt: row.createdAt.toISOString(),

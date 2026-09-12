@@ -1,0 +1,26 @@
+/* [project]/src/app/dmsans_59fc9117.module.css [app-client] (css) */
+@font-face {
+  font-family: dmSans;
+  src: url("../media/DMSans-s.p.3-kxqdo2beoh6.ttf") format("truetype");
+  font-display: swap;
+  font-weight: 100 1000;
+}
+
+@font-face {
+  font-family: dmSans Fallback;
+  src: local(Arial);
+  ascent-override: 93.39%;
+  descent-override: 29.18%;
+  line-gap-override: 0.0%;
+  size-adjust: 106.22%;
+}
+
+.dmsans_59fc9117-module__btuIEq__className {
+  font-family: dmSans, dmSans Fallback;
+}
+
+.dmsans_59fc9117-module__btuIEq__variable {
+  --font-dm-sans: "dmSans", "dmSans Fallback";
+}
+
+/*# sourceMappingURL=src_app_dmsans_59fc9117_module_css_1igg3k2._.single.css.map*/
