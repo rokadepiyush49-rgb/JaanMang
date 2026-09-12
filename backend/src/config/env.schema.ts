@@ -48,6 +48,22 @@ export const envSchema = z.object({
   R2_BUCKET: z.string().optional(),
   R2_PUBLIC_BASE_URL: z.string().url().optional().or(z.literal('')),
 
+  /**
+   * Clustering thresholds.
+   *
+   * Configurable because the right values depend on the terrain: two reports
+   * 2 km apart are the same handpump in a dense panchayat and two different
+   * ones across a block. The defaults are tuned for Ranchi district.
+   */
+  CLUSTER_CONFIDENCE_MIN: z.coerce.number().min(0).max(1).default(0.55),
+  CLUSTER_RADIUS_M: z.coerce.number().int().positive().default(2000),
+  CLUSTER_SIMILARITY_MIN: z.coerce.number().min(0).max(1).default(0.18),
+  /** Set false to stop the clustering cron — tests and one-off imports. */
+  CLUSTER_CRON_ENABLED: z
+    .enum(['true', 'false'])
+    .default('true')
+    .transform((v) => v === 'true'),
+
   GROQ_API_KEY: z.string().optional(),
   GEMINI_API_KEY: z.string().optional(),
 

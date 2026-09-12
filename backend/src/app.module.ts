@@ -19,6 +19,7 @@ import { GovModule } from './gov/gov.module';
 import { InstituteModule } from './institute/institute.module';
 import { RegistryModule } from './registry/registry.module';
 import { PublicModule } from './public/public.module';
+import { ReportsModule } from './reports/reports.module';
 
 /**
  * Root module.
@@ -66,6 +67,7 @@ import { PublicModule } from './public/public.module';
     InstituteModule,
     RegistryModule,
     PublicModule,
+    ReportsModule,
     HealthModule,
   ],
   providers: [

@@ -1845,6 +1845,127 @@
         ]
       }
     },
+    "/api/v1/reports": {
+      "post": {
+        "description": "Open to anyone. The village is resolved from the coordinates, the text is classified by the intake pass (a hosted model when one is configured, a deterministic keyword pass otherwise), and clustering attaches the report to a problem on its next run.",
+        "operationId": "ReportsController_create_v1",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "A client-generated UUID. Send the same key when retrying and the report is filed once, however many times a flaky connection delivers the request.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateReportDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "File a citizen report",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/v1/reports/mine": {
+      "get": {
+        "operationId": "ReportsController_mine_v1",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "exclusiveMaximum": false,
+              "exclusiveMinimum": false,
+              "default": 25,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "cursor",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 200,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "A citizen's own reports and what became of each",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/v1/problems/{id}/vote": {
+      "post": {
+        "description": "Distinct from filing a report. A report says \"I have this problem\"; a vote says \"I agree this matters\". They are weighted separately by the priority engine. Voting twice is not an error and changes nothing.",
+        "operationId": "ProblemVotesController_vote_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Vote that a problem matters",
+        "tags": [
+          "reports"
+        ]
+      },
+      "delete": {
+        "operationId": "ProblemVotesController_unvote_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Withdraw a vote",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
     "/healthz": {
       "get": {
         "operationId": "HealthController_liveness",
@@ -3578,6 +3699,83 @@
         },
         "required": [
           "note"
+        ]
+      },
+      "CreateReportDto": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 4000
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "water",
+              "roads",
+              "drainage",
+              "streetlight",
+              "waste",
+              "bridge",
+              "sanitation",
+              "school",
+              "health"
+            ]
+          },
+          "urgency": {
+            "type": "string",
+            "enum": [
+              "critical",
+              "high",
+              "medium",
+              "low"
+            ]
+          },
+          "lat": {
+            "type": "number",
+            "minimum": -90,
+            "exclusiveMinimum": false,
+            "maximum": 90,
+            "exclusiveMaximum": false
+          },
+          "lng": {
+            "type": "number",
+            "minimum": -180,
+            "exclusiveMinimum": false,
+            "maximum": 180,
+            "exclusiveMaximum": false
+          },
+          "villageId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "photoIds": {
+            "type": "array",
+            "maxItems": 8,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          "citizenName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "language": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 12,
+            "default": "hi"
+          }
+        },
+        "required": [
+          "text",
+          "lat",
+          "lng"
         ]
       }
     }

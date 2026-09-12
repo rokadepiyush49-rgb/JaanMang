@@ -77,6 +77,16 @@ export class AppConfigService {
     };
   }
 
+  /** Thresholds for `ClusteringService`. See the env schema for why. */
+  get clustering() {
+    return {
+      confidenceMin: this.get('CLUSTER_CONFIDENCE_MIN'),
+      radiusM: this.get('CLUSTER_RADIUS_M'),
+      similarityMin: this.get('CLUSTER_SIMILARITY_MIN'),
+      cronEnabled: this.get('CLUSTER_CRON_ENABLED'),
+    };
+  }
+
   get groqApiKey(): string | undefined {
     return this.get('GROQ_API_KEY');
   }

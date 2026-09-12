@@ -459,23 +459,39 @@ enum ReportChannel {
 }
 
 model CitizenReport {
-  id            String          @id @default(uuid())
-  problemId     String?
-  problem       Problem?        @relation(fields: [problemId], references: [id])
-  reporterId    String?
-  reporter      User?           @relation(fields: [reporterId], references: [id])
+  id          String        @id @default(uuid())
+  problemId   String?
+  problem     Problem?      @relation(fields: [problemId], references: [id])
+  reporterId  String?
+  reporter    User?         @relation(fields: [reporterId], references: [id])
   /// Display name captured at intake (kept even when reporterId is null — IVR,
   /// field-collected). Never crosses to industry.
-  citizenName   String
-  channel       ReportChannel
+  citizenName String
+  channel     ReportChannel
   /// Verbatim citizen text, in their language. Never logged, never crosses.
-  raw           String
-  language      String
-  villageId     String
-  village       Village         @relation(fields: [villageId], references: [id])
-  lat           Float
-  lng           Float
-  photos        Int             @default(0)
+  raw         String
+  language    String
+  villageId   String
+  village     Village       @relation(fields: [villageId], references: [id])
+  lat         Float
+  lng         Float
+  photos      Int           @default(0)
+
+  /// What the intake pass made of `raw`, kept on the report itself.
+  ///
+  /// Clustering runs minutes later and must not re-derive this: intake may have
+  /// had a model available, and re-reading with the keyword pass would silently
+  /// throw that answer away. It also means a report's classification can be
+  /// audited against the text it came from, which is the whole argument for
+  /// letting a model near the pipeline at all.
+  aiCategory ProblemCategory?
+  aiSeverity Severity?
+  aiTitle    String?
+  aiSummary  String?
+  aiKeywords String[]
+  /// "groq" or "keywords" — which pass produced the reading above.
+  aiSource   String?
+
   duplicateOfId String?
   duplicateOf   CitizenReport?  @relation("ReportDuplicates", fields: [duplicateOfId], references: [id])
   duplicates    CitizenReport[] @relation("ReportDuplicates")
@@ -1903,6 +1919,43 @@ model AccountVerification {
   @@index([status])
   @@index([subjectType, subjectId])
   @@map("account_verifications")
+}
+
+/// A request whose effect must happen at most once, however many times the
+/// client sends it.
+///
+/// The web app's proxy already forwards an `Idempotency-Key` header and nothing
+/// consumed it, so a double-tapped submit on a flaky connection filed two
+/// reports — and, from stage 03, committed a department budget twice. The
+/// interceptor stores the first response here and replays it verbatim.
+///
+/// `fingerprint` is a hash of the method, path and body. A client that reuses a
+/// key for a *different* request has a bug, and quietly replaying the old
+/// response would hide it, so that case is a 409 rather than a replay.
+model IdempotencyRecord {
+  id String @id @default(uuid())
+
+  /// The caller: a user id, or "anonymous" for public intake, where the client
+  /// generates the key and a collision between two strangers' UUIDs is not a
+  /// risk worth a column. Not nullable, because Postgres treats NULLs as
+  /// distinct and a unique index over one would enforce nothing.
+  subject     String
+  key         String
+  fingerprint String
+
+  method String
+  path   String
+
+  statusCode Int
+  /// The response body as first returned, replayed byte-for-byte on a repeat.
+  response   Json
+
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@unique([subject, key])
+  @@index([expiresAt])
+  @@map("idempotency_records")
 }
 
 // ===========================================================================
