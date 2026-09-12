@@ -78,6 +78,36 @@ export async function seedIndustry(prisma: PrismaClient): Promise<{ devLogins: s
     profiles += 1;
   }
 
+  /* ----------------------------------------------------- CSR plan & mentors */
+
+  /**
+   * The board's allocation plan and the CSR already committed outside this
+   * platform. Both are what make the header's "available" figure honest: the
+   * portal accounts only for its own share, and a company that has given ₹32
+   * lakh through its own trust has that much less to commit here.
+   */
+  await prisma.industryProfile.update({
+    where: { orgId: ORG },
+    data: {
+      csrCommittedElsewhere: 3_200_000,
+      csrAllocation: [
+        { domain: 'water', share: 40 },
+        { domain: 'education', share: 25 },
+        { domain: 'health', share: 20 },
+        { domain: 'environment', share: 15 },
+      ],
+    },
+  });
+
+  await prisma.orgMembership.updateMany({
+    where: { orgId: ORG },
+    data: {
+      mentorRoles: ['hardware', 'field-deployment', 'testing'],
+      mentorHoursPerMonth: 8,
+      languages: ['Hindi', 'English'],
+    },
+  });
+
   /* -------------------------------------------------------------- sponsor */
 
   await prisma.sponsor.create({

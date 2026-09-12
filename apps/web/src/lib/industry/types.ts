@@ -330,6 +330,12 @@ export type StudentTeam = {
   stage: ProjectStage;
   /** Roles the team has asked an industry mentor to cover. */
   mentorRolesWanted: MentorRole[];
+  /**
+   * The faculty guide, already narrowed by the server to a name, a designation
+   * and an expertise list. A partner reaches them through the project thread,
+   * not through a contact detail on this object.
+   */
+  guide?: { name: string; designation: string; expertise: string[] };
 };
 
 /* ========================================================= mentorship === */

@@ -13,13 +13,13 @@ import Link from "next/link";
 import { Icon } from "@/components/icon";
 import { Badge, Card, Enter, Progress } from "@/components/ui";
 import { people, rupees } from "@/lib/industry/format";
-import { FACULTY, TEAMS } from "@/lib/industry/mock-data";
+
 import { universityRollup } from "@/lib/industry/selectors";
 import { useIndustry } from "@/lib/industry/store";
 
 export default function UniversitiesPage() {
   const { state, totals } = useIndustry();
-  const rollup = universityRollup(state.projects);
+  const rollup = universityRollup(state.projects, state.universities, state.teams);
   const partners = rollup.filter((r) => r.projects.length);
   const network = rollup.filter((r) => !r.projects.length);
 
@@ -80,8 +80,8 @@ export default function UniversitiesPage() {
 
               <div className="mt-4 flex flex-col gap-2 border-t border-line pt-4">
                 {row.projects.map((p) => {
-                  const team = TEAMS.find((t) => t.id === p.teamId);
-                  const faculty = FACULTY.find((f) => f.id === p.facultyId);
+                  const team = state.teams.find((t) => t.id === p.teamId);
+                  const faculty = team?.guide;
                   return (
                     <Link
                       className="flex flex-wrap items-center gap-3 rounded-md bg-card-muted p-3 transition-colors hover:bg-container"

@@ -1670,9 +1670,20 @@ model IndustryProfile {
   fundingMin Decimal @default(0) @db.Decimal(14, 2)
   fundingMax Decimal @default(0) @db.Decimal(14, 2)
 
-  csrFinancialYear    String?
-  csrAllocated        Decimal? @db.Decimal(14, 2)
-  csrPreferredCeiling Decimal? @db.Decimal(14, 2)
+  csrFinancialYear      String?
+  csrAllocated          Decimal? @db.Decimal(14, 2)
+  csrPreferredCeiling   Decimal? @db.Decimal(14, 2)
+  /// CSR committed outside this platform — direct grants, employee
+  /// volunteering, trust transfers.
+  ///
+  /// Modelled separately because the platform accounts only for its own share.
+  /// A ledger that treated the whole budget as committed here would overstate
+  /// what this portal delivered, and the company's finance team would be the
+  /// first to notice.
+  csrCommittedElsewhere Decimal  @default(0) @db.Decimal(14, 2)
+  /// [{ domain, share }] — the board's per-domain split of the allocation, as
+  /// shares of 100. The plan against which actual spend is reported.
+  csrAllocation         Json     @default("[]")
 
   onboardedAt DateTime?
 
@@ -1863,6 +1874,18 @@ model OrgMembership {
   officialEmail    String?
   officialPhone    String?
   isPrimaryContact Boolean @default(false)
+
+  /// What this person can mentor on, if anything.
+  ///
+  /// Here rather than on the user, because it is a fact about their role in
+  /// this organisation: the same person consulting for two companies offers
+  /// different things under each. Empty means they are not offering mentoring,
+  /// which is the default and not a gap.
+  mentorRoles         String[]
+  mentorHoursPerMonth Int?
+  /// Languages they can hold a design review in. In this district that is the
+  /// difference between a mentor a team can use and one they cannot.
+  languages           String[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -16,9 +16,9 @@ import { Avatar, Badge, Card, Enter, Progress, cx } from "@/components/ui";
 import { Segmented } from "@/components/ui-interactive";
 import { BarList, TrendChart } from "@/components/gov/charts";
 import { ImpactPerRupeeBlock } from "@/components/industry/pieces";
-import { DOMAIN_LABEL } from "@/lib/industry/challenges";
+import { DOMAIN_LABEL } from "@/lib/industry/vocabulary";
 import { people, rupees } from "@/lib/industry/format";
-import { LEADERBOARD, LEADERBOARD_FORMULA, MONTHLY } from "@/lib/industry/mock-data";
+
 import {
   deliveryRecord,
   domainRollup,
@@ -42,10 +42,18 @@ export default function ImpactPage() {
   const byDomain = domainRollup(state.projects, state.challenges);
   const byGeography = geographyRollup(state.projects, state.challenges);
   const bySdg = sdgRollup(state.projects);
-  const byUniversity = universityRollup(state.projects).filter((u) => u.projects.length);
-  const self = LEADERBOARD.find((l) => l.isSelf);
+  const byUniversity = universityRollup(state.projects, state.universities, state.teams).filter(
+    (u) => u.projects.length,
+  );
+  /* Server-computed, from delivered work. Empty until a project completes —
+     the screen shows the empty state rather than a shape of zeroes, because a
+     partner with no delivered projects has no impact record, not a flat one. */
+  const leaderboard = state.impact?.leaderboard ?? [];
+  const leaderboardFormula = state.impact?.leaderboardFormula ?? [];
+  const monthly = state.impact?.monthly ?? [];
+  const self = leaderboard.find((l) => l.isSelf);
 
-  const trend = MONTHLY.map((m) => ({
+  const trend = monthly.map((m) => ({
     label: m.month,
     a: series === 0 ? m.investment : m.peopleImpacted,
     b: series === 0 ? m.investment * 0.72 : m.peopleImpacted * 0.6,
@@ -115,8 +123,8 @@ export default function ImpactPage() {
               bLabel="Trailing average"
               caption={
                 series === 0
-                  ? `${rupees(MONTHLY.reduce((s, m) => s + m.investment, 0))} deployed over twelve months`
-                  : `${people(MONTHLY.reduce((s, m) => s + m.peopleImpacted, 0))} people reached over twelve months`
+                  ? `${rupees(monthly.reduce((s, m) => s + m.investment, 0))} deployed over twelve months`
+                  : `${people(monthly.reduce((s, m) => s + m.peopleImpacted, 0))} people reached over twelve months`
               }
               points={trend}
               unit="months"
@@ -261,14 +269,14 @@ export default function ImpactPage() {
             </div>
             {self ? (
               <Badge icon="trophy" tone="gold">
-                You are #{self.rank} of {LEADERBOARD.length}
+                You are #{self.rank} of {leaderboard.length}
               </Badge>
             ) : null}
           </div>
 
           <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_20rem]">
             <ol className="flex flex-col gap-2">
-              {LEADERBOARD.map((entry) => {
+              {leaderboard.map((entry) => {
                 const moved = entry.previousRank - entry.rank;
                 return (
                   <li
@@ -328,7 +336,7 @@ export default function ImpactPage() {
             <Card className="h-fit bg-card-muted p-5" tone="flat">
               <h3 className="font-bold text-ink">How the score is built</h3>
               <ul className="mt-3 flex flex-col gap-3">
-                {LEADERBOARD_FORMULA.map((f) => (
+                {leaderboardFormula.map((f) => (
                   <li key={f.label}>
                     <div className="flex items-baseline justify-between gap-2">
                       <span className="text-xs text-ink-muted">{f.label}</span>

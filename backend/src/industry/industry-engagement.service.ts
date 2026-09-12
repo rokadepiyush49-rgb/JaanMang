@@ -394,6 +394,8 @@ export class IndustryEngagementService {
         stage: true,
         status: true,
         memberCount: true,
+        facultyId: true,
+        mentorRolesWanted: true,
         org: { select: { id: true, name: true } },
         problem: { select: { id: true, title: true, category: true } },
         faculty: {
@@ -411,7 +413,13 @@ export class IndustryEngagementService {
     return teams.map((t) => ({
       id: t.id,
       name: t.name,
+      // `universityId` and `facultyId` are the ids the portal's own types use;
+      // they name an organisation and a faculty member, neither of which is a
+      // student, so they cross.
+      universityId: t.org.id,
+      facultyId: t.facultyId ?? '',
       institution: { id: t.org.id, name: t.org.name },
+      mentorRolesWanted: t.mentorRolesWanted,
       skills: t.skills,
       stage: t.stage,
       status: t.status,
@@ -440,10 +448,12 @@ export class IndustryEngagementService {
       select: {
         id: true,
         name: true,
+        createdAt: true,
         jurisdiction: { select: { name: true } },
         institution: {
           select: {
             institutionType: true,
+            shortName: true,
             accreditation: true,
             city: true,
             state: true,
@@ -459,16 +469,248 @@ export class IndustryEngagementService {
     return rows.map((o) => ({
       id: o.id,
       name: o.name,
+      shortName: o.institution?.shortName ?? o.name,
       type: o.institution?.institutionType ?? 'university',
-      accreditation: o.institution?.accreditation ?? undefined,
-      city: o.institution?.city ?? o.jurisdiction?.name ?? undefined,
+      accreditation: o.institution?.accreditation ?? '',
+      city: o.institution?.city ?? o.jurisdiction?.name ?? '',
       state: o.institution?.state ?? 'Jharkhand',
       focusAreas: o.institution?.focusAreas ?? [],
       labs: o.institution?.labs ?? [],
-      teamCount: o._count.studentTeams,
-      studentCount: o._count.students,
+      activeProjects: o._count.studentTeams,
+      studentsEngaged: o._count.students,
       facultyCount: o._count.faculty,
+      /**
+       * Delivery record on this platform's own projects, not a brand ranking.
+       * Zero until a project has been verified — an institution that has not
+       * delivered here yet scores nothing rather than inheriting a reputation.
+       */
+      deliveryScore: 0,
+      since: o.createdAt.toISOString(),
     }));
+  }
+
+  /* ------------------------------------------------------------ projects */
+
+  /**
+   * Projects this company is funding or mentoring.
+   *
+   * Scoped by involvement — a sponsorship this company approved, or a mentor
+   * assignment one of its people holds. A partner who funded one project has no
+   * standing in the delivery detail of another, and the government's own
+   * project list is not theirs to read.
+   */
+  async projects(orgId: string) {
+    const sponsor = await this.prisma.sponsor.findFirst({ where: { orgId } });
+    const memberIds = await this.memberUserIds(orgId);
+
+    const rows = await this.prisma.project.findMany({
+      where: {
+        deletedAt: null,
+        OR: [
+          ...(sponsor ? [{ problem: { sponsorship: { approvedSponsorId: sponsor.id } } }] : []),
+          { mentorAssignments: { some: { mentorUserId: { in: memberIds } } } },
+        ],
+      },
+      include: {
+        problem: {
+          select: {
+            id: true,
+            title: true,
+            category: true,
+            affected: true,
+            sdgGoals: true,
+            _count: { select: { clusters: true } },
+            villages: { select: { villageId: true } },
+            department: { select: { name: true } },
+            jurisdiction: { select: { name: true } },
+            challengeProfile: { select: { expectedOutcomes: true } },
+            sponsorship: { select: { approvedSponsorId: true, approvedAmount: true } },
+            funding: { select: { status: true, required: true, source: true } },
+            // The public timeline, same redaction as everywhere else: officers
+            // by office, citizens as a count.
+            audit: { orderBy: { at: 'asc' }, take: 40 },
+          },
+        },
+        team: {
+          select: {
+            id: true,
+            name: true,
+            facultyId: true,
+            org: { select: { id: true, name: true } },
+          },
+        },
+        milestones: { orderBy: { createdAt: 'asc' } },
+        pilot: true,
+        documents: { select: { id: true, kind: true, name: true, at: true, sharedWith: true } },
+        mentorAssignments: { select: { mentorUserId: true } },
+      },
+      orderBy: { updatedAt: 'desc' },
+    });
+
+    return rows.map((p) => ({
+      id: p.id,
+      challengeId: p.problemId ?? undefined,
+      title: p.title,
+      stage: p.stage ?? 'discovery',
+      phase: p.phase,
+      progress: p.progress,
+      startedAt: p.startedAt?.toISOString() ?? null,
+      expectedCompletion: p.dueAt?.toISOString() ?? null,
+      investment: { committed: Number(p.budget), disbursed: Number(p.spent) },
+      peopleImpacted: p.problem?.affected ?? 0,
+      villages: p.problem?.villages.length ?? 0,
+      clustersClosed: p.problem?._count.clusters ?? 0,
+      sdgs: p.problem?.sdgGoals ?? p.sdgGoals,
+      governmentBody:
+        p.governmentBody ??
+        [p.problem?.department?.name, p.problem?.jurisdiction?.name].filter(Boolean).join(', '),
+      governmentRole: 'Validates the problem, countersigns the commitment and accepts the handover',
+      universityId: p.team?.org.id ?? '',
+      teamId: p.team?.id ?? '',
+      facultyId: p.team?.facultyId ?? '',
+      team: p.team ? { id: p.team.id, name: p.team.name, institution: p.team.org.name } : undefined,
+
+      /** Everyone on the ledger for this problem, this company included. */
+      coFunders: contributionsOf(p.problem, sponsor?.id),
+      /**
+       * What this company is actually providing. `fund` when the sponsorship is
+       * theirs, `mentor` when one of their people is assigned. Derived rather
+       * than declared, so it cannot claim a contribution nobody made.
+       */
+      providing: [
+        ...(sponsor && p.problem?.sponsorship?.approvedSponsorId === sponsor.id ? ['fund'] : []),
+        ...(p.mentorAssignments.some((a) => memberIds.includes(a.mentorUserId)) ? ['mentor'] : []),
+      ],
+      /** Targets from the challenge brief, with actuals still to be measured. */
+      impact: Array.isArray(p.problem?.challengeProfile?.expectedOutcomes)
+        ? (p.problem.challengeProfile.expectedOutcomes as Record<string, unknown>[]).map((o) => ({
+            label: String(o.label ?? ''),
+            value: 0,
+            unit: 'target',
+            method: String(o.method ?? ''),
+          }))
+        : [],
+      audit: (p.problem?.audit ?? [])
+        .filter((e) => e.actor !== 'Citizen')
+        .map((e) => ({
+          id: e.id,
+          at: e.at.toISOString(),
+          actor: e.actor,
+          actorName: e.actor === 'Officer' ? 'District administration' : (e.actorName ?? undefined),
+          action: e.action,
+          detail: e.detail ?? undefined,
+          automated: e.automated,
+        })),
+      milestones: p.milestones.map((m) => ({
+        id: m.id,
+        label: m.label,
+        detail: m.detail ?? undefined,
+        status: m.status,
+        percent: m.percent,
+        dueAt: m.dueAt?.toISOString() ?? null,
+        completedAt: m.completedAt?.toISOString() ?? null,
+        deliverables: m.deliverables,
+        awaitingReview: m.awaitingReview,
+        trancheAmount: m.trancheAmount ? Number(m.trancheAmount) : null,
+      })),
+      pilot: p.pilot
+        ? {
+            location: p.pilot.location,
+            villages: p.pilot.villages,
+          }
+        : undefined,
+      // Titles and kinds only. A partner sees that a handover certificate
+      // exists; the file itself is served through the storage module in stage
+      // 06, which checks involvement again on the way out.
+      documents: p.documents.map((d) => ({
+        id: d.id,
+        kind: d.kind,
+        name: d.name,
+        at: d.at.toISOString(),
+      })),
+    }));
+  }
+
+  /* -------------------------------------------------------------- impact */
+
+  /**
+   * The company's own impact, computed from delivered work.
+   *
+   * Every figure here is a sum over rows a government officer also sees. None
+   * of it is self-reported: a partner cannot tell this platform how many people
+   * they helped, which is the only reason the number is worth printing.
+   */
+  async impact(orgId: string) {
+    const sponsor = await this.prisma.sponsor.findFirst({ where: { orgId } });
+    const projects = await this.projects(orgId);
+    const delivered = projects.filter((p) => p.phase === 'completed');
+
+    const sdgTotals = new Map<number, number>();
+    for (const p of projects) {
+      for (const sdg of p.sdgs) {
+        sdgTotals.set(sdg, (sdgTotals.get(sdg) ?? 0) + p.peopleImpacted);
+      }
+    }
+
+    /** Investment and reach by month of project start, oldest first. */
+    const byMonth = new Map<string, { investment: number; peopleImpacted: number }>();
+    for (const p of projects) {
+      if (!p.startedAt) continue;
+      const month = p.startedAt.slice(0, 7);
+      const row = byMonth.get(month) ?? { investment: 0, peopleImpacted: 0 };
+      row.investment += p.investment.committed;
+      row.peopleImpacted += p.peopleImpacted;
+      byMonth.set(month, row);
+    }
+
+    const leaderboard = await this.prisma.leaderboardEntry.findMany({
+      where: { scope: 'partners' },
+      orderBy: { rank: 'asc' },
+      take: 20,
+    });
+
+    return {
+      totals: {
+        projects: projects.length,
+        delivered: delivered.length,
+        committed: projects.reduce((s, p) => s + p.investment.committed, 0),
+        disbursed: projects.reduce((s, p) => s + p.investment.disbursed, 0),
+        peopleImpacted: projects.reduce((s, p) => s + p.peopleImpacted, 0),
+        villages: projects.reduce((s, p) => s + p.villages, 0),
+        clustersClosed: projects.reduce((s, p) => s + p.clustersClosed, 0),
+      },
+      monthly: [...byMonth.entries()]
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([month, row]) => ({ month, ...row })),
+      sdgs: [...sdgTotals.entries()]
+        .sort(([a], [b]) => a - b)
+        .map(([number, peopleImpacted]) => ({ number, peopleImpacted })),
+      leaderboard: leaderboard.map((e) => ({
+        rank: e.rank,
+        // The screen renders movement, so an entry with no previous ranking
+        // reports its current one rather than a null the arrow maths breaks on.
+        previousRank: e.previousRank ?? e.rank,
+        companyId: e.subjectId,
+        company: e.displayName,
+        sector: sectorOf(e.breakdown),
+        score: e.score,
+        factors: factorsOf(e.breakdown),
+        /** Whether this row is the signed-in partner, resolved server-side. */
+        isSelf: e.subjectId === sponsor?.id || e.subjectId === orgId,
+      })),
+      /**
+       * The weighting, published beside the ranking. A leaderboard whose
+       * formula is not printed is a leaderboard nobody can argue with, which
+       * is the same as one nobody trusts.
+       */
+      leaderboardFormula: [
+        { label: 'People reached per rupee and per project', weight: 25 },
+        { label: 'Problem clusters actually closed', weight: 20 },
+        { label: 'Deployments handed over to a public body', weight: 20 },
+        { label: 'Employee mentor hours given', weight: 20 },
+        { label: 'Citizen satisfaction after handover', weight: 15 },
+      ],
+    };
   }
 
   /* ------------------------------------------------- alerts & automation */
@@ -511,6 +753,76 @@ export class IndustryEngagementService {
     });
     return new Map(users.map((u) => [u.id, u.displayName]));
   }
+}
+
+/**
+ * The stored breakdown, turned into the rows the screen prints beside a rank.
+ *
+ * A leaderboard that shows a score and not its components is a leaderboard
+ * nobody can argue with, which is the same as one nobody trusts — so whatever
+ * the recognition cron recorded is rendered, rather than a fixed list of
+ * factors that might not be the ones it actually used.
+ */
+function factorsOf(breakdown: unknown): { label: string; value: string; points: number }[] {
+  if (!breakdown || typeof breakdown !== 'object') return [];
+  return Object.entries(breakdown as Record<string, unknown>)
+    .filter(([key]) => key !== 'sector')
+    .map(([key, value]) => ({
+      label: humanise(key),
+      value: value === null ? '—' : String(value),
+      points: typeof value === 'number' ? value : 0,
+    }));
+}
+
+function sectorOf(breakdown: unknown): string {
+  if (breakdown && typeof breakdown === 'object') {
+    const sector = (breakdown as Record<string, unknown>).sector;
+    if (typeof sector === 'string') return sector;
+  }
+  return '';
+}
+
+/** `avgDeliveryRating` → `Avg delivery rating`. */
+function humanise(key: string): string {
+  const spaced = key.replace(/([a-z0-9])([A-Z])/g, '$1 $2').toLowerCase();
+  return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+}
+
+/** The funding ledger for a problem, in the partner-facing shape. */
+function contributionsOf(
+  problem:
+    | {
+        id: string;
+        sponsorship: { approvedSponsorId: string | null; approvedAmount: unknown } | null;
+        funding: { status: string; required: unknown; source: string | null } | null;
+      }
+    | null
+    | undefined,
+  ownSponsorId: string | undefined,
+) {
+  if (!problem) return [];
+  const rows: Record<string, unknown>[] = [];
+
+  if (problem.sponsorship?.approvedSponsorId && problem.sponsorship.approvedAmount) {
+    rows.push({
+      id: `${problem.id}-sponsor`,
+      party: problem.sponsorship.approvedSponsorId,
+      kind: 'industry',
+      amount: Number(problem.sponsorship.approvedAmount),
+      status: 'committed',
+      isSelf: problem.sponsorship.approvedSponsorId === ownSponsorId,
+    });
+  }
+  if (problem.funding?.status === 'approved') {
+    rows.push({
+      id: `${problem.id}-gov`,
+      party: problem.funding.source ?? 'Government of Jharkhand',
+      kind: 'government',
+      amount: Number(problem.funding.required),
+      status: 'committed',
+    });
+  }
+  return rows;
 }
 
 function currentFinancialYear(date = new Date()): string {

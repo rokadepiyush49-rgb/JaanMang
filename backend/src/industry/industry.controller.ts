@@ -208,6 +208,31 @@ export class IndustryController {
     return this.engagement.universities();
   }
 
+  /* ------------------------------------------------------------ projects */
+
+  @Get('projects')
+  @ApiOperation({
+    summary: 'Projects this company funds or mentors',
+    description:
+      'Scoped by involvement — a sponsorship this company approved, or a mentor assignment one ' +
+      "of its people holds. The government's own project list is not a partner's to read.",
+  })
+  async projects(@CurrentUser() user: AuthPrincipal) {
+    return this.engagement.projects(await this.industry.orgOf(user));
+  }
+
+  @Get('impact')
+  @ApiOperation({
+    summary: 'Impact computed from delivered work, never self-reported',
+    description:
+      'Every figure is a sum over rows a government officer also sees. A partner cannot tell ' +
+      'this platform how many people they helped, which is the only reason the number is worth ' +
+      'printing.',
+  })
+  async impact(@CurrentUser() user: AuthPrincipal) {
+    return this.engagement.impact(await this.industry.orgOf(user));
+  }
+
   /* ------------------------------------------------------- notifications */
 
   @Get('notifications')

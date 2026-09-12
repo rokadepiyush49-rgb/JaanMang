@@ -2805,6 +2805,38 @@
         ]
       }
     },
+    "/api/v1/industry/projects": {
+      "get": {
+        "description": "Scoped by involvement — a sponsorship this company approved, or a mentor assignment one of its people holds. The government's own project list is not a partner's to read.",
+        "operationId": "IndustryController_projects_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Projects this company funds or mentors",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/impact": {
+      "get": {
+        "description": "Every figure is a sum over rows a government officer also sees. A partner cannot tell this platform how many people they helped, which is the only reason the number is worth printing.",
+        "operationId": "IndustryController_impact_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Impact computed from delivered work, never self-reported",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
     "/api/v1/industry/notifications": {
       "get": {
         "operationId": "IndustryController_notifications_v1",

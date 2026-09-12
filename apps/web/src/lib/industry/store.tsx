@@ -9,9 +9,14 @@
  * the same action taken from a card, a dossier or an alert produces exactly the
  * same state change and exactly the same audit entry.
  *
- * It is a client store because the backend does not exist yet. The reducer is
- * deliberately shaped like a set of API mutations: when `/backend/api` lands,
- * each case becomes a request and the reducer keeps only the optimistic update.
+ * The reducer is now the optimistic half only: the state arrives from
+ * `/api/backend/industry/*` on mount, and each action dispatches its change
+ * immediately, calls the API and reconciles.
+ *
+ * Everything it holds about a citizen problem arrived already redacted. The
+ * projection that decides what a partner may see runs on the server now, so
+ * there is no `visibility.ts` on this side to bypass and nothing here that
+ * could widen it.
  *
  * The one piece of real behaviour worth pointing at: committing funding to a
  * challenge that has a university team but no project *opens the project* —
@@ -24,15 +29,18 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useReducer,
+  useState,
   type ReactNode,
 } from "react";
+import { ApiError } from "@/lib/api/client";
 import { matchContext, portfolioTotals, scoreAll } from "./selectors";
-import { seed } from "./service";
+import { loadIndustryWorkspace, type ImpactDto } from "./service";
 import type {
-  AuditEntry,
   Actor,
+  AuditEntry,
   Challenge,
   CompanyProfile,
   Contribution,
@@ -44,7 +52,9 @@ import type {
   MentorshipRequest,
   MessageThread,
   Milestone,
+  StudentTeam,
   SupportKind,
+  University,
 } from "./types";
 
 /* =============================================================== rbac === */
@@ -124,28 +134,84 @@ type State = {
   alerts: IndustryAlert[];
   threads: MessageThread[];
   reports: GeneratedReport[];
+  /** The institution register and the teams on it, as the partner may see them. */
+  universities: University[];
+  teams: StudentTeam[];
+  /** Impact computed server-side from delivered work. Null until hydrated. */
+  impact: ImpactDto | null;
+  /** The redaction policy the server enforces, published so a partner sees it. */
+  redactions: { visible: string; hidden: string }[];
   /** Challenges the company has said it is interested in but not yet funded. */
   interests: string[];
+  /**
+   * False until the workspace has loaded. Every slice below starts empty, so
+   * the shell holds a skeleton rather than rendering a company profile that is
+   * not yet the signed-in company's.
+   */
+  hydrated: boolean;
 };
+
+/**
+ * Everything empty, and `hydrated: false`.
+ *
+ * Deliberately not a partially-filled placeholder. This object is what the
+ * portal renders in the window between mount and the workspace arriving, and a
+ * placeholder company profile in that window is one a partner could read as
+ * their own — including its CSR budget.
+ */
+const EMPTY_COMPANY = {
+  id: "",
+  name: "",
+  legalName: "",
+  sector: "",
+  csrThemes: [],
+  geographies: [],
+  technologyDomains: [],
+  capabilities: [],
+  sdgPreferences: [],
+  provenDomains: [],
+  fundingRange: { min: 0, max: 0 },
+  csrBudget: { financialYear: "", allocated: 0, preferredCeiling: 0 },
+} as unknown as CompanyProfile;
 
 const initialState: State = {
   user: USERS[0],
-  company: seed.company,
-  challenges: seed.challenges,
-  projects: seed.projects,
+  company: EMPTY_COMPANY,
+  challenges: [],
+  projects: [],
   commitments: [],
-  requests: seed.requests,
-  assignments: seed.assignments,
-  automations: seed.automations,
-  alerts: seed.alerts,
-  threads: seed.threads,
+  requests: [],
+  assignments: [],
+  automations: [],
+  alerts: [],
+  threads: [],
   reports: [],
+  universities: [],
+  teams: [],
+  impact: null,
+  redactions: [],
   interests: [],
+  hydrated: false,
 };
 
 /* ============================================================ actions === */
 
 export type Action =
+  /** The workspace as the server holds it, on mount. */
+  | {
+      type: "hydrate";
+      company: CompanyProfile;
+      challenges: Challenge[];
+      projects: IndustryProject[];
+      requests: MentorshipRequest[];
+      assignments: MentorAssignment[];
+      alerts: IndustryAlert[];
+      threads: MessageThread[];
+      universities: University[];
+      teams: StudentTeam[];
+      impact: ImpactDto;
+      redactions: { visible: string; hidden: string }[];
+    }
   | { type: "user/switch"; userId: string }
   | { type: "interest/express"; challengeId: string; note?: string }
   | { type: "interest/withdraw"; challengeId: string }
@@ -271,18 +337,28 @@ function patchChallenge(
   return state.challenges.map((c) => (c.id === id ? { ...c, ...patch(c) } : c));
 }
 
-function nextProjectId(projects: IndustryProject[]) {
-  const highest = projects
-    .map((p) => Number.parseInt(p.id.replace(/\D/g, ""), 10))
-    .filter((n) => Number.isFinite(n))
-    .reduce((a, b) => Math.max(a, b), 100);
-  return `CDP-${highest + 1}`;
-}
 
 /* ============================================================ reducer === */
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
+    case "hydrate":
+      return {
+        ...state,
+        company: action.company,
+        challenges: action.challenges,
+        projects: action.projects,
+        requests: action.requests,
+        assignments: action.assignments,
+        alerts: action.alerts,
+        threads: action.threads,
+        universities: action.universities,
+        teams: action.teams,
+        impact: action.impact,
+        redactions: action.redactions,
+        hydrated: true,
+      };
+
     case "user/switch": {
       const user = USERS.find((u) => u.id === action.userId);
       return user ? { ...state, user } : state;
@@ -370,67 +446,30 @@ function reducer(state: State, action: Action): State {
         status: committedAfter >= c.estimatedCost ? "fully_funded" : "partially_funded",
       }));
 
-      /* Open the project only when there is a team to do the work. A challenge
-         with no university attached stays a funded challenge until the district
-         assigns one. */
-      const canOpen = Boolean(challenge.universityId && challenge.teamId && !challenge.projectId);
-      if (!canOpen) {
-        return { ...state, challenges, commitments: [...state.commitments, commitment] };
-      }
-
-      const projectId = nextProjectId(state.projects);
-      const project: IndustryProject = {
-        id: projectId,
-        challengeId: challenge.id,
-        title: challenge.title,
-        stage: "funded",
-        progress: 5,
-        universityId: challenge.universityId!,
-        teamId: challenge.teamId!,
-        facultyId: seed.teams.find((t) => t.id === challenge.teamId)?.facultyId ?? "",
-        governmentBody: `${challenge.department}, ${challenge.block}`,
-        governmentRole: "Validates the problem, countersigns the commitment and accepts the handover",
-        startedAt: at,
-        expectedCompletion: new Date(Date.now() + challenge.timelineDays * 86400000).toISOString(),
-        investment: { committed: action.amount, disbursed: 0 },
-        coFunders: [...challenge.contributions, contribution],
-        peopleImpacted: challenge.affected,
-        villages: challenge.villages.length,
-        clustersClosed: 0,
-        providing: ["fund", ...action.alsoOffering.filter((k) => k !== "fund")],
-        sdgs: challenge.sdgs,
-        milestones: openingPlan(challenge, action.amount),
-        documents: [],
-        impact: challenge.expectedOutcomes.map((o) => ({
-          label: o.label,
-          value: 0,
-          unit: "target",
-          method: o.method,
-        })),
-        audit: [
-          entry("Industry", "Funding committed", {
-            actorName: state.company.name,
-            detail: `₹${(action.amount / 100000).toFixed(2)} L across ${openingPlan(challenge, action.amount).length} milestone tranches`,
-          }),
-          entry("System", "Project opened", {
-            detail: `${challenge.title} — awaiting government countersignature`,
-          }),
-          entry("System", "University team notified", {
-            detail: `${seed.teams.find((t) => t.id === challenge.teamId)?.name ?? "Team"} and their faculty mentor have been told a partner is in`,
-          }),
-        ],
-      };
-
-      /* The mentorship offer, made at the moment it is most likely to be taken:
-         straight after the money, while the partner is still in the flow. */
+      /*
+       * The project is NOT opened here any more.
+       *
+       * This case used to synthesise an `IndustryProject` — milestones,
+       * tranches, an audit trail, a team pulled out of the fixtures — the
+       * moment a partner committed. That was right when there was no
+       * government: somebody had to open the project and the only actor in the
+       * room was the partner.
+       *
+       * There is a government now, and a partner's money does not open a
+       * government project. `FundingService.commit` writes a proposal into the
+       * officer's sponsorship queue; the project is created when somebody with
+       * `funding.approve` accepts it, in one transaction with the budget
+       * commitment and the public ledger entry. Opening one here would put a
+       * project on the partner's screen that does not exist in the register
+       * the officer is reading — which is precisely the class of divergence
+       * this stage exists to remove.
+       */
       const request = state.requests.find((r) => r.challengeId === challenge.id);
       const alerts: IndustryAlert[] = [
         {
           id: `live-mentor-${challenge.id}`,
           kind: "mentor_request",
-          title: request
-            ? `${seed.teams.find((t) => t.id === request.teamId)?.name} would also like a mentor`
-            : "Would you also like to mentor the team?",
+          title: request ? "The team would also like a mentor" : "Would you also like to mentor the team?",
           detail: request
             ? request.need
             : "Funding gets the build started. A named engineer in the team's design reviews is what tends to get it finished.",
@@ -444,12 +483,9 @@ function reducer(state: State, action: Action): State {
 
       return {
         ...state,
-        challenges: patchChallenge({ ...state, challenges }, challenge.id, () => ({
-          projectId,
-          status: committedAfter >= challenge.estimatedCost ? "in_delivery" : "partially_funded",
-        })),
-        projects: [project, ...state.projects],
+        challenges,
         commitments: [...state.commitments, commitment],
+        interests: state.interests.filter((id) => id !== challenge.id),
         alerts,
       };
     }
@@ -683,6 +719,41 @@ const Ctx = createContext<IndustryContext | null>(null);
 
 export function IndustryProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const workspace = await loadIndustryWorkspace();
+        if (cancelled) return;
+        dispatch({
+          type: "hydrate",
+          company: workspace.company,
+          challenges: workspace.challenges,
+          projects: workspace.projects,
+          requests: workspace.requests,
+          assignments: workspace.assignments,
+          alerts: workspace.alerts,
+          threads: workspace.threads,
+          universities: workspace.universities,
+          teams: workspace.teams,
+          impact: workspace.impact,
+          redactions: workspace.redactions,
+        });
+      } catch (error) {
+        // A 401 has already sent the browser to /signin.
+        if (!cancelled && !(error instanceof ApiError && error.status === 401)) {
+          setLoadError(
+            error instanceof ApiError ? error.message : "Could not load the portal.",
+          );
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const context = useMemo(
     () => matchContext(state.projects, state.assignments),
@@ -694,7 +765,10 @@ export function IndustryProvider({ children }: { children: ReactNode }) {
     [state.challenges, state.company, context],
   );
 
-  const totals = useMemo(() => portfolioTotals(state.projects), [state.projects]);
+  const totals = useMemo(
+    () => portfolioTotals(state.projects, state.teams),
+    [state.projects, state.teams],
+  );
 
   const can = useCallback(
     (permission: IndustryPermission) => state.user.permissions.includes(permission),
@@ -705,6 +779,32 @@ export function IndustryProvider({ children }: { children: ReactNode }) {
     () => ({ state, dispatch, can, scored, totals }),
     [state, can, scored, totals],
   );
+
+  if (loadError) {
+    return (
+      <div className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center gap-3 px-6 text-center">
+        <p className="headline-md text-ink">The portal could not load</p>
+        <p className="text-sm text-ink-muted">{loadError}</p>
+        <button
+          className="rounded-pill bg-ink px-4 py-2 text-sm text-card"
+          onClick={() => window.location.reload()}
+        >
+          Try again
+        </button>
+      </div>
+    );
+  }
+
+  if (!state.hydrated) {
+    return (
+      <div className="mx-auto flex min-h-dvh items-center justify-center px-6">
+        <div className="flex items-center gap-3 text-ink-muted">
+          <span className="size-4 animate-spin rounded-full border-2 border-line border-t-ink" />
+          Loading the portal…
+        </div>
+      </div>
+    );
+  }
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
@@ -726,4 +826,3 @@ export function useProject(id: string) {
   return state.projects.find((p) => p.id === id);
 }
 
-export { seed as industrySeed };

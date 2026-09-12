@@ -56,7 +56,23 @@ export class IndustryService {
   async profile(orgId: string) {
     const org = await this.prisma.organization.findUniqueOrThrow({
       where: { id: orgId },
-      include: { industryInfo: true, locations: true },
+      include: {
+        industryInfo: true,
+        locations: true,
+        memberships: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                displayName: true,
+                // How many teams they are already carrying, so a screen can
+                // avoid offering an engineer who has no room left.
+                _count: { select: { teamMemberships: true } },
+              },
+            },
+          },
+        },
+      },
     });
     const info = org.industryInfo;
     if (!info) {
@@ -70,7 +86,7 @@ export class IndustryService {
       name: org.name,
       legalName: org.legalName ?? org.name,
       sector: info.sector,
-      about: org.about ?? undefined,
+      about: org.about ?? '',
       website: info.website ?? undefined,
       orgSize: info.orgSize,
       yearEstablished: info.yearEstablished ?? undefined,
@@ -82,11 +98,46 @@ export class IndustryService {
       sdgPreferences: info.sdgPreferences,
       provenDomains: info.provenDomains,
       fundingRange: { min: Number(info.fundingMin), max: Number(info.fundingMax) },
+
+      /**
+       * `disbursed` is deliberately 0 here rather than a figure.
+       *
+       * The platform moves no money, so nothing has been disbursed *through*
+       * it. Reporting the committed amount as disbursed would be the single
+       * most misleading number this portal could print.
+       */
       csrBudget: {
         financialYear: info.csrFinancialYear ?? currentFinancialYear(),
         allocated: Number(info.csrAllocated ?? 0),
-        preferredCeiling: Number(info.csrPreferredCeiling ?? 0),
+        committedElsewhere: Number(info.csrCommittedElsewhere),
+        disbursed: 0,
+        allocation: Array.isArray(info.csrAllocation) ? info.csrAllocation : [],
+        preferredProjectCeiling: Number(info.csrPreferredCeiling ?? 0),
       },
+
+      /**
+       * The people in this organisation who have said they will mentor.
+       *
+       * The business unit and the designation cross; personal contact details
+       * do not, even though they sit on the same row — this profile is shown to
+       * universities and to student teams.
+       */
+      mentors: org.memberships
+        .filter((m) => m.mentorRoles.length > 0)
+        .map((m) => ({
+          id: m.user.id,
+          name: m.user.displayName,
+          title: m.designation,
+          unit: org.name,
+          roles: m.mentorRoles,
+          hoursPerMonth: m.mentorHoursPerMonth ?? 0,
+          activeTeams: m.user._count.teamMemberships,
+          languages: m.languages,
+        })),
+
+      headquarters: org.locations.find((l) => l.kind === 'headquarters')?.city ?? '',
+      employees: info.employeeCount ?? 0,
+      targetCommunities: info.geographies,
       locations: org.locations.map((l) => ({
         id: l.id,
         kind: l.kind,

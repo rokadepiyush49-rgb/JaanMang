@@ -14,10 +14,20 @@
  *
  * The engine is pure. It reads a challenge and a profile and returns a reading;
  * it holds no state, hits no service, and can be unit-tested on its own.
+ *
+ * It is now the *second* copy. The canonical one is
+ * `backend/src/industry/match.engine.ts`, because the score decides which
+ * partner is invited to fund a citizen's problem and is written to
+ * `SponsorshipMatch` where an officer reads it — a number the client computed
+ * is a number the client chose. This copy survives for the one thing the
+ * server cannot do: re-score instantly while a partner edits their own profile
+ * and watches the ranking move, which is the whole point of the company
+ * profile screen. Same arithmetic, same weights, same sentences; change one
+ * and change the other in the same commit.
  */
 
 import { clamp } from "@/lib/gov/priority";
-import { DOMAIN_LABEL } from "./challenges";
+import { DOMAIN_LABEL } from "./vocabulary";
 import type { Capability, Challenge, CompanyProfile, Domain } from "./types";
 
 /* ============================================================ factors === */

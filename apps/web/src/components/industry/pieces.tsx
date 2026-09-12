@@ -17,11 +17,12 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Icon, type IconName } from "@/components/icon";
 import { Badge, Card, Progress, cx, TINT, type Tint, type Tone } from "@/components/ui";
-import { DOMAIN_ICON, DOMAIN_LABEL, DOMAIN_SHORT, DOMAIN_TINT } from "@/lib/industry/challenges";
+import { DOMAIN_ICON, DOMAIN_LABEL, DOMAIN_SHORT, DOMAIN_TINT } from "@/lib/industry/vocabulary";
 import { count, exactRupees, people, rupees, until } from "@/lib/industry/format";
 import { BAND_LABEL, type MatchResult } from "@/lib/industry/match";
 import { ledger, sdgTitle, universityName } from "@/lib/industry/selectors";
-import { SUPPORT } from "@/lib/industry/mock-data";
+import { useIndustry } from "@/lib/industry/store";
+import { SUPPORT } from "@/lib/industry/vocabulary";
 import type {
   Challenge,
   ChallengeStatus,
@@ -875,6 +876,7 @@ export function MilestoneTrail({
 /* =========================================================== project === */
 
 export function ProjectCard({ project }: { project: IndustryProject }) {
+  const { state } = useIndustry();
   const reviews = project.milestones.filter((m) => m.awaitingReview).length;
   return (
     <Card className="flex h-full flex-col p-5">
@@ -885,7 +887,7 @@ export function ProjectCard({ project }: { project: IndustryProject }) {
             <h3 className="headline-md text-balance text-ink hover:underline">{project.title}</h3>
           </Link>
           <p className="mt-1 text-sm text-ink-muted">
-            {universityName(project.universityId)} · {project.governmentBody}
+            {universityName(state.universities, project.universityId)} · {project.governmentBody}
           </p>
         </div>
         <StageBadge dense stage={project.stage} />

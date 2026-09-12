@@ -26,9 +26,9 @@ import {
 } from "@/components/ui";
 import { SearchField, Select, Tabs } from "@/components/ui-interactive";
 import { ChallengeCard } from "@/components/industry/pieces";
-import { DOMAIN_LABEL, DOMAINS } from "@/lib/industry/challenges";
+import { DOMAIN_LABEL, DOMAINS } from "@/lib/industry/vocabulary";
 import { rupees } from "@/lib/industry/format";
-import { SUPPORT } from "@/lib/industry/mock-data";
+import { SUPPORT } from "@/lib/industry/vocabulary";
 import { isOpen, ledger, matchContext, scoreAll } from "@/lib/industry/selectors";
 import { useIndustry } from "@/lib/industry/store";
 import type { Domain, SupportKind } from "@/lib/industry/types";

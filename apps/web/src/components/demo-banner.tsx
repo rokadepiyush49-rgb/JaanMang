@@ -3,23 +3,22 @@ import { Icon } from "@/components/icon";
 /**
  * Says out loud that a surface is running on fixtures.
  *
- * Three surfaces reach the real API — government, institute and the session
- * itself. Two do not: the industry portal is `USING_MOCK_DATA = true` end to
- * end, and the student screens render from `lib/data.ts`. Both look completely
- * functional, which is exactly the problem: a CSR officer can "approve" a
- * sponsorship and a student can "apply" to an opportunity, and the page will
- * congratulate them for something that was never written anywhere.
+ * One surface left. Government, institute, the citizen intake and — as of this
+ * stage — the industry portal all reach the real API; the student screens
+ * still render from `lib/data.ts`. They look completely functional, which is
+ * exactly the problem: a student can "apply" to an opportunity and the page
+ * will congratulate them for something that was never written anywhere.
  *
- * Shipping them unlabelled would be the dishonest option, and deleting them
- * would throw away eighteen and thirteen finished screens. So they ship, and
- * they say what they are. The banner comes out the moment the surface is wired
- * to its endpoints — it is a statement about the data, not a permanent fixture.
+ * Shipping them unlabelled would be the dishonest option and deleting them
+ * would throw away thirteen finished screens. So they ship, and they say what
+ * they are. The banner comes out the moment the surface is wired to its
+ * endpoints — it is a statement about the data, not a permanent fixture. The
+ * industry variant came out when the portal was wired; this one goes when the
+ * student workspace is.
  */
-export function DemoBanner({ surface }: { surface: "industry" | "student" }) {
+export function DemoBanner({ surface }: { surface: "student" }) {
   const what =
-    surface === "industry"
-      ? "Challenges, funding, mentorship and CSR figures on this portal are sample data."
-      : "Opportunities, projects, applications and achievements on these screens are sample data.";
+    "Opportunities, projects, applications and achievements on these screens are sample data.";
 
   return (
     <div
