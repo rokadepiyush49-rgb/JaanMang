@@ -1982,6 +1982,398 @@
         ]
       }
     },
+    "/api/v1/problems/{id}/sponsorship/invite": {
+      "post": {
+        "operationId": "SponsorshipController_invite_v1",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Send the same key on a retry and the transition happens once.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Invite every matched industry to sponsor this problem",
+        "tags": [
+          "sponsorship"
+        ]
+      }
+    },
+    "/api/v1/problems/{id}/sponsorship/approve": {
+      "post": {
+        "operationId": "SponsorshipController_approve_v1",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Send the same key on a retry and the transition happens once.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApproveSponsorshipDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Accept an industry's sponsorship proposal",
+        "tags": [
+          "sponsorship"
+        ]
+      }
+    },
+    "/api/v1/problems/{id}/sponsorship/decline": {
+      "post": {
+        "description": "When the last sponsor still in play declines, the government funding fallback fires in the same transaction — an officer should not have to notice that industry ran out.",
+        "operationId": "SponsorshipController_decline_v1",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Send the same key on a retry and the transition happens once.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeclineSponsorshipDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Record that an industry declined",
+        "tags": [
+          "sponsorship"
+        ]
+      }
+    },
+    "/api/v1/problems/{id}/sponsorship/fallback": {
+      "post": {
+        "description": "Recommends a source and says whether the department can afford it. It does not approve anything: moving public money stays a decision somebody with funding.approve makes.",
+        "operationId": "SponsorshipController_fallback_v1",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Send the same key on a retry and the transition happens once.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Abandon sponsorship and fall back to government funding",
+        "tags": [
+          "sponsorship"
+        ]
+      }
+    },
+    "/api/v1/problems/{id}/funding/approve": {
+      "post": {
+        "description": "One transaction: moves the department's committed budget, writes the allocation and the public ledger entry, and creates the project. A committed budget with no ledger entry is a corrupt book, so either all of it lands or none of it does.",
+        "operationId": "FundingController_approve_v1",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Send the same key on a retry and the budget is committed once.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApproveFundingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Approve government funding",
+        "tags": [
+          "funding"
+        ]
+      }
+    },
+    "/api/v1/problems/{id}/funding/reject": {
+      "post": {
+        "operationId": "FundingController_reject_v1",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Send the same key on a retry and the budget is committed once.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectFundingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Refuse government funding, with a reason that stays on the record",
+        "tags": [
+          "funding"
+        ]
+      }
+    },
+    "/api/v1/problems/{id}/assign": {
+      "post": {
+        "operationId": "DeliveryController_assign_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignOfficerDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Assign or reassign the delivery officer",
+        "tags": [
+          "delivery"
+        ]
+      }
+    },
+    "/api/v1/problems/{id}/project/progress": {
+      "post": {
+        "operationId": "DeliveryController_progress_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectProgressDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Update project progress",
+        "tags": [
+          "delivery"
+        ]
+      }
+    },
+    "/api/v1/problems/{id}/project/complete": {
+      "post": {
+        "description": "Does not resolve the problem. It raises the verification request addressed to the reporters; they decide whether it was fixed.",
+        "operationId": "DeliveryController_complete_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Mark the project complete and ask the citizens who reported it",
+        "tags": [
+          "delivery"
+        ]
+      }
+    },
+    "/api/v1/automations/{id}": {
+      "patch": {
+        "operationId": "WorkspaceController_toggle_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AutomationToggleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Enable or pause an automation",
+        "tags": [
+          "delivery"
+        ]
+      }
+    },
+    "/api/v1/alerts/{id}/read": {
+      "post": {
+        "operationId": "WorkspaceController_read_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Mark one of your own alerts read",
+        "tags": [
+          "delivery"
+        ]
+      }
+    },
     "/healthz": {
       "get": {
         "operationId": "HealthController_liveness",
@@ -3793,6 +4185,119 @@
           "lat",
           "lng"
         ]
+      },
+      "ApproveSponsorshipDto": {
+        "type": "object",
+        "properties": {
+          "sponsorId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "amount": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": false,
+            "maximum": 1000000000000,
+            "exclusiveMaximum": false
+          }
+        },
+        "required": [
+          "sponsorId"
+        ]
+      },
+      "DeclineSponsorshipDto": {
+        "type": "object",
+        "properties": {
+          "sponsorId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "sponsorId",
+          "reason"
+        ]
+      },
+      "ApproveFundingDto": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": false,
+            "maximum": 1000000000000,
+            "exclusiveMaximum": false
+          },
+          "source": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 500
+          }
+        }
+      },
+      "RejectFundingDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
+      "AssignOfficerDto": {
+        "type": "object",
+        "properties": {
+          "officerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          }
+        },
+        "required": [
+          "officerId"
+        ]
+      },
+      "ProjectProgressDto": {
+        "type": "object",
+        "properties": {
+          "progress": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": false,
+            "maximum": 100,
+            "exclusiveMaximum": false
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "progress"
+        ]
+      },
+      "AutomationToggleDto": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          }
+        }
       }
     }
   }

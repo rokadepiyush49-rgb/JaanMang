@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { APP_GUARD, APP_PIPE } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { LoggerModule } from 'nestjs-pino';
@@ -8,6 +8,7 @@ import { AppConfigService } from './config/app-config.service';
 import { ConfigModule } from './config/config.module';
 import { CommonModule } from './common/common.module';
 import { PrincipalThrottlerGuard } from './common/throttler/principal-throttler.guard';
+import { AuditInterceptor } from './common/audit/audit.interceptor';
 import { loggerConfig } from './common/logging/logger.config';
 import { PrismaModule } from './prisma/prisma.module';
 import { HealthModule } from './health/health.module';
@@ -20,6 +21,9 @@ import { InstituteModule } from './institute/institute.module';
 import { RegistryModule } from './registry/registry.module';
 import { PublicModule } from './public/public.module';
 import { ReportsModule } from './reports/reports.module';
+import { SponsorshipModule } from './sponsorship/sponsorship.module';
+import { FundingModule } from './funding/funding.module';
+import { DeliveryModule } from './delivery/delivery.module';
 
 /**
  * Root module.
@@ -68,6 +72,9 @@ import { ReportsModule } from './reports/reports.module';
     RegistryModule,
     PublicModule,
     ReportsModule,
+    SponsorshipModule,
+    FundingModule,
+    DeliveryModule,
     HealthModule,
   ],
   providers: [
@@ -75,6 +82,10 @@ import { ReportsModule } from './reports/reports.module';
     // Keyed on the account rather than the address — see the guard for why
     // an IP bucket is the wrong shape behind the web app's route handler.
     { provide: APP_GUARD, useClass: PrincipalThrottlerGuard },
+    // One access-log row per state-changing request from an identified caller.
+    // Global so an endpoint added later is recorded without anyone remembering
+    // to ask for it; the richer domain entries stay in the services.
+    { provide: APP_INTERCEPTOR, useClass: AuditInterceptor },
   ],
 })
 export class AppModule {}
