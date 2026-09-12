@@ -64,6 +64,17 @@ export const envSchema = z.object({
     .default('true')
     .transform((v) => v === 'true'),
 
+  /**
+   * The external skill-map model.
+   *
+   * Unset — the default — runs the deterministic heuristic recommender, which
+   * is a real implementation and not a placeholder. Set, and the heuristic
+   * becomes the fallback for when the model is slow, down or answers with
+   * something unusable.
+   */
+  RECOMMENDER_URL: z.string().url().optional().or(z.literal('')),
+  RECOMMENDER_TIMEOUT_MS: z.coerce.number().int().positive().default(2500),
+
   GROQ_API_KEY: z.string().optional(),
   GEMINI_API_KEY: z.string().optional(),
 

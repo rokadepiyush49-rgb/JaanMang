@@ -25,6 +25,7 @@ import { SponsorshipModule } from './sponsorship/sponsorship.module';
 import { FundingModule } from './funding/funding.module';
 import { DeliveryModule } from './delivery/delivery.module';
 import { IndustryModule } from './industry/industry.module';
+import { StudentModule } from './student/student.module';
 
 /**
  * Root module.
@@ -77,6 +78,7 @@ import { IndustryModule } from './industry/industry.module';
     FundingModule,
     DeliveryModule,
     IndustryModule,
+    StudentModule,
     HealthModule,
   ],
   providers: [

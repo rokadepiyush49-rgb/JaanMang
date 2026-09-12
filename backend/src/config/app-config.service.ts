@@ -87,6 +87,16 @@ export class AppConfigService {
     };
   }
 
+  /** The external recommender, when one is configured. See the env schema. */
+  get recommender() {
+    const url = this.get('RECOMMENDER_URL');
+    return {
+      url: url || undefined,
+      configured: Boolean(url),
+      timeoutMs: this.get('RECOMMENDER_TIMEOUT_MS'),
+    };
+  }
+
   get groqApiKey(): string | undefined {
     return this.get('GROQ_API_KEY');
   }

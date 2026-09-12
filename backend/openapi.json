@@ -2852,6 +2852,371 @@
         ]
       }
     },
+    "/api/v1/student/profile": {
+      "get": {
+        "operationId": "StudentController_profile_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The signed-in student’s own profile",
+        "tags": [
+          "student"
+        ]
+      },
+      "patch": {
+        "description": "Skills, interests, preferences and links. Not branch, year, institution, department or verification — those are facts the institution asserted, and this endpoint has no field for them.",
+        "operationId": "StudentController_updateProfile_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStudentProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Update the parts of the profile a student owns",
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/v1/student/opportunities": {
+      "get": {
+        "description": "Carries a difficulty signal derived from severity and the number of technologies a brief names, so a second-year has somewhere to start rather than a list headed by the hardest problem in the district.",
+        "operationId": "StudentController_opportunities_v1",
+        "parameters": [
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "water",
+                "roads",
+                "drainage",
+                "streetlight",
+                "waste",
+                "bridge",
+                "sanitation",
+                "school",
+                "health"
+              ]
+            }
+          },
+          {
+            "name": "difficulty",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "starter",
+                "intermediate",
+                "advanced"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Published problems a student can work on",
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/v1/student/recommendations": {
+      "get": {
+        "description": "Scored by the heuristic recommender, or by the external skill-map model when RECOMMENDER_URL is set. A recommendation without a reason is never returned by either.",
+        "operationId": "StudentController_recommendations_v1",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 50,
+              "exclusiveMaximum": false,
+              "exclusiveMinimum": false,
+              "default": 12,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Ranked suggestions, each with the reasons that produced it",
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/v1/student/applications": {
+      "get": {
+        "operationId": "StudentController_applications_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Your applications and where each one stands",
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/v1/student/opportunities/{id}/apply": {
+      "post": {
+        "description": "Writes the same Application row the institute's submissions queue reads — one record, two views, rather than two tables that can disagree about who applied to what.",
+        "operationId": "StudentController_apply_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Apply to an opportunity",
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/v1/student/applications/{id}": {
+      "delete": {
+        "operationId": "StudentController_withdraw_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Withdraw an application",
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/v1/student/projects": {
+      "get": {
+        "operationId": "StudentController_projects_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Projects your teams are carrying",
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/v1/student/teams": {
+      "get": {
+        "operationId": "StudentController_teams_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Teams you are in",
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/v1/student/achievements": {
+      "get": {
+        "description": "All derived — points from verified work, badges from the recognition rules, awards from a person. Nothing here moves in response to anything the client sends.",
+        "operationId": "StudentController_achievements_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Points, badges and awards",
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/v1/student/notifications": {
+      "get": {
+        "operationId": "StudentController_notifications_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Your notifications",
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/v1/student/notifications/{id}/read": {
+      "post": {
+        "operationId": "StudentController_readNotification_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Mark one of your own notifications read",
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/v1/student/proposals": {
+      "get": {
+        "operationId": "StudentController_proposals_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Your institution's unprompted solution proposals",
+        "tags": [
+          "student"
+        ]
+      },
+      "post": {
+        "description": "The inverse of an application: an application answers a brief somebody else wrote, a proposal writes the brief.",
+        "operationId": "StudentController_propose_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProposeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Propose a solution to a problem nobody asked you to solve",
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/v1/student/hackathons": {
+      "get": {
+        "operationId": "StudentController_hackathons_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Hackathons, and where your teams stand in them",
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/v1/student/hackathons/{id}/enter": {
+      "post": {
+        "operationId": "StudentController_enterHackathon_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnterHackathonDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Enter one of your teams",
+        "tags": [
+          "student"
+        ]
+      }
+    },
     "/healthz": {
       "get": {
         "operationId": "HealthController_liveness",
@@ -4928,6 +5293,226 @@
         },
         "required": [
           "body"
+        ]
+      },
+      "UpdateStudentProfileDto": {
+        "type": "object",
+        "properties": {
+          "skills": {
+            "type": "array",
+            "maxItems": 30,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            }
+          },
+          "interests": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            }
+          },
+          "preferredCategories": {
+            "type": "array",
+            "maxItems": 9,
+            "items": {
+              "type": "string",
+              "enum": [
+                "water",
+                "roads",
+                "drainage",
+                "streetlight",
+                "waste",
+                "bridge",
+                "sanitation",
+                "school",
+                "health"
+              ]
+            }
+          },
+          "preferredDistricts": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 60
+            }
+          },
+          "sdgInterests": {
+            "type": "array",
+            "maxItems": 17,
+            "items": {
+              "type": "integer",
+              "minimum": 1,
+              "exclusiveMinimum": false,
+              "maximum": 17,
+              "exclusiveMaximum": false
+            }
+          },
+          "weeklyHours": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": false,
+            "maximum": 80,
+            "exclusiveMaximum": false
+          },
+          "githubUrl": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 300
+              },
+              {
+                "type": "string",
+                "enum": [
+                  ""
+                ]
+              }
+            ]
+          },
+          "linkedinUrl": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 300
+              },
+              {
+                "type": "string",
+                "enum": [
+                  ""
+                ]
+              }
+            ]
+          },
+          "portfolioUrl": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 300
+              },
+              {
+                "type": "string",
+                "enum": [
+                  ""
+                ]
+              }
+            ]
+          },
+          "resumeUrl": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 300
+              },
+              {
+                "type": "string",
+                "enum": [
+                  ""
+                ]
+              }
+            ]
+          }
+        },
+        "required": [
+          "githubUrl",
+          "linkedinUrl",
+          "portfolioUrl",
+          "resumeUrl"
+        ]
+      },
+      "ApplyDto": {
+        "type": "object",
+        "properties": {
+          "teamId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 1500
+          }
+        }
+      },
+      "ProposeDto": {
+        "type": "object",
+        "properties": {
+          "problemId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "title": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 160
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 2000
+          },
+          "approach": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 4000
+          },
+          "estimatedCost": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": false,
+            "maximum": 1000000000000,
+            "exclusiveMaximum": false
+          },
+          "durationDays": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": true,
+            "maximum": 1095,
+            "exclusiveMaximum": false
+          },
+          "needs": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 200
+            }
+          },
+          "teamId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          }
+        },
+        "required": [
+          "problemId",
+          "title",
+          "summary",
+          "approach"
+        ]
+      },
+      "EnterHackathonDto": {
+        "type": "object",
+        "properties": {
+          "teamId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          }
+        },
+        "required": [
+          "teamId"
         ]
       }
     }
