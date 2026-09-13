@@ -42,11 +42,55 @@ export const envSchema = z.object({
     .default('false')
     .transform((v) => v === 'true'),
 
+  /**
+   * Where uploads go.
+   *
+   * `auto` — the default — uses R2 when the four R2_* variables are present and
+   * local disk when they are not, so a fresh clone can photograph, verify and
+   * rate with no account anywhere. Production refuses to start on the local
+   * driver: blank config there is a misconfiguration, not a choice.
+   */
+  STORAGE_DRIVER: z.enum(['auto', 'r2', 'local']).default('auto'),
+  STORAGE_LOCAL_DIR: z.string().default('.uploads'),
+  /** Hard ceiling on an upload, enforced server-side. */
+  UPLOAD_MAX_BYTES: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(12 * 1024 * 1024),
+
   R2_ACCOUNT_ID: z.string().optional(),
   R2_ACCESS_KEY_ID: z.string().optional(),
   R2_SECRET_ACCESS_KEY: z.string().optional(),
   R2_BUCKET: z.string().optional(),
   R2_PUBLIC_BASE_URL: z.string().url().optional().or(z.literal('')),
+
+  /**
+   * Clustering thresholds.
+   *
+   * Configurable because the right values depend on the terrain: two reports
+   * 2 km apart are the same handpump in a dense panchayat and two different
+   * ones across a block. The defaults are tuned for Ranchi district.
+   */
+  CLUSTER_CONFIDENCE_MIN: z.coerce.number().min(0).max(1).default(0.55),
+  CLUSTER_RADIUS_M: z.coerce.number().int().positive().default(2000),
+  CLUSTER_SIMILARITY_MIN: z.coerce.number().min(0).max(1).default(0.18),
+  /** Set false to stop the clustering cron — tests and one-off imports. */
+  CLUSTER_CRON_ENABLED: z
+    .enum(['true', 'false'])
+    .default('true')
+    .transform((v) => v === 'true'),
+
+  /**
+   * The external skill-map model.
+   *
+   * Unset — the default — runs the deterministic heuristic recommender, which
+   * is a real implementation and not a placeholder. Set, and the heuristic
+   * becomes the fallback for when the model is slow, down or answers with
+   * something unusable.
+   */
+  RECOMMENDER_URL: z.string().url().optional().or(z.literal('')),
+  RECOMMENDER_TIMEOUT_MS: z.coerce.number().int().positive().default(2500),
 
   GROQ_API_KEY: z.string().optional(),
   GEMINI_API_KEY: z.string().optional(),

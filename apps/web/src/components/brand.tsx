@@ -5,15 +5,23 @@ import { cx } from "./ui";
 /**
  * The JanMaang lockup, drawn from the same artwork the Citizen app ships in
  * `assets/brand/`. Mark beside the wordmark, with the surface it belongs to
- * named underneath — the app says "Citizen", the web says "Student".
+ * named underneath — the app says "Citizen", the student workspace says
+ * "Student", the public report form says "Citizen" again.
+ *
+ * This component *is* a link. Do not wrap it in one: it renders an `<a>`, and
+ * an `<a>` inside an `<a>` is invalid HTML that fails hydration outright
+ * rather than merely looking wrong.
  */
 export function Brand({
   href = "/dashboard",
+  subtitle = "Student",
   compact = false,
   className,
   onClick,
 }: {
   href?: string;
+  /** The surface this lockup is standing on. */
+  subtitle?: string;
   compact?: boolean;
   className?: string;
   onClick?: () => void;
@@ -39,10 +47,10 @@ export function Brand({
           <span className="block font-display text-lg font-bold tracking-[-0.01em] text-ink">
             Jan Setu
           </span>
-          <span className="label-caps block text-ink-faint">Student</span>
+          <span className="label-caps block text-ink-faint">{subtitle}</span>
         </span>
       )}
-      <span className="sr-only">Jan Setu — Student</span>
+      <span className="sr-only">Jan Setu — {subtitle}</span>
     </Link>
   );
 }

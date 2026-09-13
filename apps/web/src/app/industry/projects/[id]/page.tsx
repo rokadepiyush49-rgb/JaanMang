@@ -37,7 +37,7 @@ import {
   SupportChips,
 } from "@/components/industry/pieces";
 import { exactRupees, people, rupees, shortDate, until } from "@/lib/industry/format";
-import { facultyOf, team as findTeam, university } from "@/lib/industry/selectors";
+import { team as findTeam, university } from "@/lib/industry/selectors";
 import { useIndustry, useProject } from "@/lib/industry/store";
 
 const TABS = [
@@ -62,9 +62,9 @@ export default function ProjectDossier() {
   if (!project) notFound();
 
   const challenge = state.challenges.find((c) => c.id === project.challengeId);
-  const uni = university(project.universityId);
-  const team = findTeam(project.teamId);
-  const faculty = facultyOf(project.facultyId);
+  const uni = university(state.universities, project.universityId);
+  const team = findTeam(state.teams, project.teamId);
+  const faculty = team?.guide;
   const assignments = state.assignments.filter((a) => a.projectId === project.id);
   const thread = state.threads.find((t) => t.projectId === project.id);
   const pending = project.milestones.filter((m) => m.awaitingReview);

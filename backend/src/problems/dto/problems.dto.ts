@@ -31,7 +31,7 @@ export class ListProblemsQueryDto extends createZodDto(
     'filter[departmentId]': z.string().optional(),
     /**
      * Optional weighting override (the priority simulator). A JSON object of the
-     * seven factor keys → number. Absent = the jurisdiction's published weights.
+     * eight factor keys → number. Absent = the jurisdiction's published weights.
      */
     weights: z
       .string()
@@ -49,7 +49,7 @@ export class ListProblemsQueryDto extends createZodDto(
         } catch {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: 'weights must be a JSON object of the seven factor keys',
+            message: 'weights must be a JSON object of the eight factor keys',
           });
           return z.NEVER;
         }

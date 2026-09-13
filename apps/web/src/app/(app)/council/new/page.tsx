@@ -15,7 +15,7 @@ import { clearSession, writeSession } from "@/lib/council/session-store";
 import { localizedAgent } from "@/lib/council/roster";
 import { stringsFor } from "@/lib/i18n/strings";
 import { useLocale } from "@/lib/i18n/use-locale";
-import { AGENTS, PHASE_KEYS, phaseLabel } from "@/lib/data";
+import { AGENTS, PHASE_KEYS, phaseLabel } from "@/lib/student/council-fixtures";
 
 const AGENT_TONES: Record<string, string> = {
   navy: "bg-navy text-white",

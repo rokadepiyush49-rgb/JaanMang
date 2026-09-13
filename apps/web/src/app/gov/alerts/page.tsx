@@ -24,7 +24,7 @@ const KIND: Record<AlertKind, { label: string; icon: IconName; tone: "critical" 
 };
 
 export default function AlertsPage() {
-  const { state, dispatch } = useGov();
+  const { state, actions } = useGov();
   const unread = state.alerts.filter((a) => !a.read);
   const read = state.alerts.filter((a) => a.read);
 
@@ -44,7 +44,7 @@ export default function AlertsPage() {
           <Button
             disabled={unread.length === 0}
             icon="check"
-            onClick={() => unread.forEach((a) => dispatch({ type: "alert/read", id: a.id }))}
+            onClick={() => unread.forEach((a) => void actions.markAlertRead(a.id))}
             tone="outline"
           >
             Mark all read
@@ -90,7 +90,7 @@ export default function AlertsPage() {
                             {a.problemId ? (
                               <ButtonLink
                                 href={`/gov/problems/${a.problemId}`}
-                                onClick={() => dispatch({ type: "alert/read", id: a.id })}
+                                onClick={() => void actions.markAlertRead(a.id)}
                                 size="sm"
                               >
                                 {a.actionLabel ?? "Open problem"}
@@ -98,7 +98,7 @@ export default function AlertsPage() {
                             ) : null}
                             {!a.read ? (
                               <Button
-                                onClick={() => dispatch({ type: "alert/read", id: a.id })}
+                                onClick={() => void actions.markAlertRead(a.id)}
                                 size="sm"
                                 tone="outline"
                               >

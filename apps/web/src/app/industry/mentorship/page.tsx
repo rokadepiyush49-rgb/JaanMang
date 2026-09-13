@@ -27,7 +27,6 @@ import {
 import { Modal, Tabs } from "@/components/ui-interactive";
 import { relative, until } from "@/lib/industry/format";
 import {
-  facultyOf,
   mentorLoad,
   openRequests,
   team as findTeam,
@@ -123,8 +122,8 @@ export default function MentorshipPage() {
         open.length ? (
           <div className="grid gap-4 xl:grid-cols-2">
             {open.map((request, i) => {
-              const team = findTeam(request.teamId);
-              const faculty = facultyOf(team?.facultyId);
+              const team = findTeam(state.teams, request.teamId);
+              const faculty = team?.guide;
               const challenge = state.challenges.find((c) => c.id === request.challengeId);
               const available = state.company.mentors.filter((m) =>
                 m.roles.some((r) => request.roles.includes(r)),
@@ -136,7 +135,7 @@ export default function MentorshipPage() {
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <p className="label-caps text-ink-faint">
-                          {universityName(request.universityId)} · {request.stage} stage
+                          {universityName(state.universities, request.universityId)} · {request.stage} stage
                         </p>
                         <h2 className="headline-md mt-0.5 text-balance text-ink">
                           {team?.name ?? "Student team"}
@@ -226,7 +225,7 @@ export default function MentorshipPage() {
         <div className="grid gap-4 xl:grid-cols-2">
           {state.assignments.map((a, i) => {
             const mentor = state.company.mentors.find((m) => m.id === a.mentorId);
-            const team = findTeam(a.teamId);
+            const team = findTeam(state.teams, a.teamId);
             const project = state.projects.find((p) => p.id === a.projectId);
             const next = a.sessions.find((s) => !s.done);
 
@@ -247,7 +246,7 @@ export default function MentorshipPage() {
                   <div className="mt-4 rounded-md bg-card-muted p-4">
                     <p className="text-sm font-bold text-ink">{team?.name}</p>
                     <p className="text-xs text-ink-muted">
-                      {universityName(team?.universityId)} · mentoring since {relative(a.since)}
+                      {universityName(state.universities, team?.universityId)} · mentoring since {relative(a.since)}
                     </p>
                     {project ? (
                       <Link
@@ -384,7 +383,7 @@ function OfferModal({
   const [picked, setPicked] = useState<string[]>([]);
 
   if (!request) return null;
-  const team = findTeam(request.teamId);
+  const team = findTeam(state.teams, request.teamId);
   const candidates = state.company.mentors.filter((m) =>
     m.roles.some((r) => request.roles.includes(r)),
   );
@@ -411,7 +410,7 @@ function OfferModal({
       }
       onClose={onClose}
       open={Boolean(request)}
-      subtitle={`${team?.name} · ${universityName(request.universityId)}`}
+      subtitle={`${team?.name} · ${universityName(state.universities, request.universityId)}`}
       title="Offer a mentor"
     >
       <div className="flex flex-col gap-4">

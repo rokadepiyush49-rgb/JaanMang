@@ -9,7 +9,8 @@ import {
   PageHeading,
   Tag,
 } from "@/components/ui";
-import { CHALLENGES, FILTERS, type Challenge } from "@/lib/data";
+import { filtersFrom, matchMap, toViewChallenge, type ViewChallenge } from "@/lib/student/adapters";
+import { useStudent } from "@/lib/student/store";
 
 const URGENCY_TONE = {
   Critical: "danger",
@@ -51,7 +52,7 @@ function Select({
   );
 }
 
-function ChallengeCard({ challenge }: { challenge: Challenge }) {
+function ChallengeCard({ challenge }: { challenge: ViewChallenge }) {
   return (
     <article className="flex flex-col overflow-hidden rounded-lg bg-card shadow-level1 transition-shadow hover:shadow-level2">
       <span className="h-1.5 w-full bg-primary" />
@@ -70,10 +71,7 @@ function ChallengeCard({ challenge }: { challenge: Challenge }) {
           <Tag tone="neutral">{challenge.category.toUpperCase()}</Tag>
           <Tag tone={URGENCY_TONE[challenge.urgency]}>{challenge.urgency}</Tag>
           <span className="ml-auto flex flex-col items-end gap-1">
-            {challenge.prize ? (
-              <Tag tone="soft">{challenge.prize}</Tag>
-            ) : null}
-            <span className="mono-data text-ink-faint">ID: {challenge.id}</span>
+                        <span className="mono-data text-ink-faint">ID: {challenge.id}</span>
           </span>
         </div>
 
@@ -116,8 +114,7 @@ function ChallengeCard({ challenge }: { challenge: Challenge }) {
   );
 }
 
-function MapView({ items }: { items: Challenge[] }) {
-  const regions = FILTERS.regions.slice(1);
+function MapView({ items, regions }: { items: ViewChallenge[]; regions: string[] }) {
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
       {regions.map((region) => {
@@ -161,18 +158,22 @@ function MapView({ items }: { items: Challenge[] }) {
 }
 
 export default function ProblemExplorerPage() {
+  const { state } = useStudent();
+  const matches = matchMap(state.recommendations);
+  const challenges = state.opportunities.map((o) => toViewChallenge(o, matches.get(o.id)));
+  const filters = filtersFrom(state.opportunities);
   const [view, setView] = useState<"grid" | "map">("grid");
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState(FILTERS.categories[0]);
-  const [urgency, setUrgency] = useState(FILTERS.urgency[0]);
-  const [region, setRegion] = useState(FILTERS.regions[0]);
+  const [category, setCategory] = useState(filters.categories[0]);
+  const [urgency, setUrgency] = useState(filters.urgency[0]);
+  const [region, setRegion] = useState(filters.regions[0]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return CHALLENGES.filter((c) => {
-      if (category !== FILTERS.categories[0] && c.category !== category) return false;
-      if (urgency !== FILTERS.urgency[0] && c.urgency !== urgency) return false;
-      if (region !== FILTERS.regions[0] && c.region !== region) return false;
+    return challenges.filter((c) => {
+      if (category !== filters.categories[0] && c.category !== category) return false;
+      if (urgency !== filters.urgency[0] && c.urgency !== urgency) return false;
+      if (region !== filters.regions[0] && c.region !== region) return false;
       if (!q) return true;
       return (
         c.title.toLowerCase().includes(q) ||
@@ -187,15 +188,15 @@ export default function ProblemExplorerPage() {
   const others = filtered.filter((c) => !c.match);
   const dirty =
     query !== "" ||
-    category !== FILTERS.categories[0] ||
-    urgency !== FILTERS.urgency[0] ||
-    region !== FILTERS.regions[0];
+    category !== filters.categories[0] ||
+    urgency !== filters.urgency[0] ||
+    region !== filters.regions[0];
 
   function clearAll() {
     setQuery("");
-    setCategory(FILTERS.categories[0]);
-    setUrgency(FILTERS.urgency[0]);
-    setRegion(FILTERS.regions[0]);
+    setCategory(filters.categories[0]);
+    setUrgency(filters.urgency[0]);
+    setRegion(filters.regions[0]);
   }
 
   return (
@@ -248,19 +249,19 @@ export default function ProblemExplorerPage() {
         <Select
           label="Category"
           onChange={setCategory}
-          options={FILTERS.categories}
+          options={filters.categories}
           value={category}
         />
         <Select
           label="Urgency"
           onChange={setUrgency}
-          options={FILTERS.urgency}
+          options={filters.urgency}
           value={urgency}
         />
         <Select
           label="Region"
           onChange={setRegion}
-          options={FILTERS.regions}
+          options={filters.regions}
           value={region}
         />
 
@@ -285,7 +286,7 @@ export default function ProblemExplorerPage() {
           clearing the urgency filter.
         </EmptyNote>
       ) : view === "map" ? (
-        <MapView items={filtered} />
+        <MapView items={filtered} regions={filters.regions.slice(1)} />
       ) : (
         <>
           {recommended.length > 0 ? (

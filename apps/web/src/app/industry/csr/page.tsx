@@ -14,14 +14,15 @@
  * review meeting.
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Icon } from "@/components/icon";
 import { Badge, Button, Card, Enter, Progress, cx } from "@/components/ui";
 import { BarList, Donut } from "@/components/gov/charts";
 import { SdgChips } from "@/components/industry/pieces";
-import { DOMAIN_LABEL } from "@/lib/industry/challenges";
+import { DOMAIN_LABEL } from "@/lib/industry/vocabulary";
 import { exactRupees, people, rupees, shortDate } from "@/lib/industry/format";
-import { ReportService } from "@/lib/industry/service";
+import { CsrService, type CsrPositionDto } from "@/lib/industry/service";
+import { openCsrStatement } from "@/lib/industry/csr-report";
 import {
   csrBook,
   domainRollup,
@@ -47,13 +48,39 @@ const DOMAIN_COLOR: Record<string, string> = {
 export default function CsrPage() {
   const { state, dispatch, totals, can } = useIndustry();
   const [generated, setGenerated] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
+
+  /**
+   * The server's own CSR position, which is what the statement is printed from.
+   *
+   * Fetched rather than derived from the projects already in the store: the
+   * statement has to reconcile against the government's ledger line for line,
+   * and a figure this screen computed is a figure this screen could compute
+   * differently from the one an officer sees.
+   */
+  const [position, setPosition] = useState<CsrPositionDto | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    void CsrService.position()
+      .then((p) => {
+        if (!cancelled) setPosition(p);
+      })
+      .catch(() => {
+        if (!cancelled) setPosition(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const book = csrBook(state.company, state.projects, state.challenges);
   const impact = impactPerRupee(state.projects);
   const byDomain = domainRollup(state.projects, state.challenges);
   const byGeography = geographyRollup(state.projects, state.challenges);
   const bySdg = sdgRollup(state.projects);
-  const byUniversity = universityRollup(state.projects).filter((u) => u.projects.length);
+  const byUniversity = universityRollup(state.projects, state.universities, state.teams).filter(
+    (u) => u.projects.length,
+  );
   const verified = state.projects.filter((p) => p.stage === "impact");
 
   return (
@@ -283,21 +310,30 @@ export default function CsrPage() {
 
           <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-line pt-5">
             <Button
-              disabled={!can("report.generate")}
+              disabled={!can("report.generate") || !position}
               icon="download"
               onClick={() => {
-                dispatch({ type: "report/generate", financialYear: book.financialYear });
+                if (!position) return;
+                dispatch({ type: "report/generate", financialYear: position.financialYear });
                 setGenerated(true);
+                const opened = openCsrStatement(state.company, position);
+                setExportError(
+                  opened
+                    ? null
+                    : "Your browser blocked the statement window. Allow pop-ups for this site and try again.",
+                );
               }}
             >
               Prepare the statement
             </Button>
-            {!ReportService.exportEnabled() ? (
-              <p className="text-xs text-ink-muted">
+            <p className="text-xs text-ink-muted">
+              Opens a print view. Every figure on it is the sum of sponsorships this company
+              approved — nothing on the statement is self-reported.
+            </p>
+            {exportError ? (
+              <p className="text-xs font-semibold text-critical">
                 <Icon className="mr-1 inline align-[-2px]" name="warning" size={12} />
-                PDF export is not implemented yet. The statement is assembled and held against the
-                record; the renderer plugs into <code className="text-ink">ReportService</code> without
-                touching this screen.
+                {exportError}
               </p>
             ) : null}
           </div>

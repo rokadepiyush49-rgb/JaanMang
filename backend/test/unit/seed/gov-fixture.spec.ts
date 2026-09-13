@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { FACTOR_KEYS } from '../../../src/problems/priority/priority.engine';
 
 /**
  * Guards the extracted fixture against silent drift. If apps/web's gov fixtures
@@ -30,18 +31,13 @@ describe('gov fixture', () => {
     expect(sum).toBe(100);
   });
 
-  it('every problem has the seven priority factors', () => {
-    const keys = [
-      'populationImpact',
-      'severity',
-      'deprivation',
-      'coverage',
-      'duration',
-      'recurrence',
-      'repeatedDemand',
-    ];
+  it('every problem carries exactly the factors the engine reads', () => {
+    // Read from the engine rather than re-typed here: this test exists to
+    // catch the fixture drifting from the algorithm, and a hardcoded list
+    // drifts from both at once.
+    const keys = [...FACTOR_KEYS];
     for (const p of fixture.problems as { id: string; factors: Record<string, number> }[]) {
-      expect(Object.keys(p.factors).sort()).toEqual([...keys].sort());
+      expect(Object.keys(p.factors).sort()).toEqual(keys.sort());
     }
   });
 

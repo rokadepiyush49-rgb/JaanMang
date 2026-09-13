@@ -7,7 +7,7 @@ import {
   Card,
   PageHeading,
 } from "@/components/ui";
-import { STAGES } from "@/lib/data";
+import { STAGES } from "@/lib/student/vocabulary";
 
 export const metadata: Metadata = { title: "Review & Launch" };
 

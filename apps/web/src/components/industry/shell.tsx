@@ -16,7 +16,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Icon, type IconName } from "@/components/icon";
-import { DemoBanner } from "@/components/demo-banner";
 import { Avatar, Skeleton, cx } from "@/components/ui";
 import { SearchField } from "@/components/ui-interactive";
 import { rupees } from "@/lib/industry/format";
@@ -424,7 +423,6 @@ export function IndustryShell({ children }: { children: React.ReactNode }) {
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar onMenu={() => setOpen(true)} />
         <main className="min-w-0 flex-1 px-4 pt-6 pb-16 sm:px-6 lg:px-8 lg:pt-8">
-          <DemoBanner surface="industry" />
           {hydrated ? children : <ShellSkeleton />}
         </main>
       </div>

@@ -7,6 +7,7 @@
  */
 import { api } from "@/lib/api/client";
 import type { Permission, PriorityWeights, Problem, RankedProblem } from "./types";
+import type { EvidenceSide } from "@/lib/report/types";
 
 export type Me = {
   id: string;
@@ -38,6 +39,79 @@ export const GovApi = {
 
   publishWeights: (weights: PriorityWeights) =>
     api.post<{ weights: PriorityWeights }>("problems/priority/weights", { weights }),
+
+  /* ------------------------------------------------------- sponsorship -- */
+
+  inviteSponsors: (id: string) =>
+    api.post<RankedProblem>(`problems/${id}/sponsorship/invite`),
+
+  approveSponsorship: (id: string, sponsorId: string, amount?: number) =>
+    api.post<RankedProblem>(`problems/${id}/sponsorship/approve`, { sponsorId, amount }),
+
+  declineSponsorship: (id: string, sponsorId: string, reason: string) =>
+    api.post<RankedProblem>(`problems/${id}/sponsorship/decline`, { sponsorId, reason }),
+
+  sponsorshipFallback: (id: string) =>
+    api.post<RankedProblem>(`problems/${id}/sponsorship/fallback`),
+
+  /* ----------------------------------------------------------- funding -- */
+
+  approveFunding: (id: string, body: { amount?: number; source?: string; note?: string } = {}) =>
+    api.post<RankedProblem>(`problems/${id}/funding/approve`, body),
+
+  rejectFunding: (id: string, reason: string) =>
+    api.post<RankedProblem>(`problems/${id}/funding/reject`, { reason }),
+
+  /* ---------------------------------------------------------- delivery -- */
+
+  assignOfficer: (id: string, officerId: string) =>
+    api.post<RankedProblem>(`problems/${id}/assign`, { officerId }),
+
+  projectProgress: (id: string, progress: number, note?: string) =>
+    api.post<RankedProblem>(`problems/${id}/project/progress`, { progress, note }),
+
+  completeProject: (id: string) =>
+    api.post<RankedProblem>(`problems/${id}/project/complete`),
+
+  /* --------------------------------------------------------- workspace -- */
+
+  toggleAutomation: (id: string, enabled?: boolean) =>
+    api.patch<{ id: string; enabled: boolean; status: string }>(`automations/${id}`, { enabled }),
+
+  markAlertRead: (id: string) => api.post<{ id: string; read: boolean }>(`alerts/${id}/read`),
+
+  /* ---------------------------------------------------------- evidence -- */
+
+  /** Attach uploaded photographs to the before or after side of a problem. */
+  addEvidence: (id: string, side: "before" | "after", keys: string[], note?: string) =>
+    api.post<{ problemId: string }>(`gov/problems/${id}/evidence`, { side, keys, note }),
+
+  evidence: (id: string) =>
+    api.get<{
+      problemId: string;
+      before: EvidenceSide | null;
+      after: EvidenceSide | null;
+    }>(`verification/problems/${id}/evidence`),
+
+  verificationStatus: (id: string) =>
+    api.get<{
+      problemId: string;
+      asked: number;
+      confirmed: number;
+      denied: number;
+      pending: number;
+      settled: boolean;
+    }>(`gov/verification/${id}`),
+
+  objections: (id: string) =>
+    api.get<{ id: string; reason: string; status: string; at: string }[]>(
+      `gov/problems/${id}/objections`,
+    ),
+
+  adjustPriority: (
+    id: string,
+    body: { label: string; points: number; reason: string; objectionId?: string },
+  ) => api.post<{ problemId: string; adjusted: number }>(`gov/problems/${id}/adjust-priority`, body),
 };
 
 /** `me.permissions` is the same closed union as `Permission`. */

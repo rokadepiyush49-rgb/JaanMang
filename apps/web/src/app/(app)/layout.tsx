@@ -1,6 +1,7 @@
 import { AppShell } from "@/components/shell";
 import { requireSurface } from "@/lib/auth/guard";
 import { SessionProvider } from "@/lib/auth/session-context";
+import { StudentProvider } from "@/lib/student/store";
 
 /**
  * The student workspace.
@@ -13,7 +14,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const session = await requireSurface("student");
   return (
     <SessionProvider value={session}>
-      <AppShell>{children}</AppShell>
+      <StudentProvider>
+        <AppShell>{children}</AppShell>
+      </StudentProvider>
     </SessionProvider>
   );
 }

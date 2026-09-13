@@ -1,7 +1,9 @@
 /**
  * The priority engine — "need ≠ votes".
  *
- * Ported verbatim from apps/web/src/lib/gov/priority.ts. The whole engine is
+ * Ported verbatim from apps/web/src/lib/gov/priority.ts. The two files are one
+ * algorithm in two languages' worth of syntax; change one and change the other
+ * in the same commit, or the simulator and the ranking drift apart. The whole engine is
  * deterministic and explainable: every score decomposes into `factor × weight`
  * contributions plus a short list of named adjustments. AI is used earlier in
  * the pipeline (understanding a report, classifying it, judging duplicates); it
@@ -19,6 +21,7 @@ export const FACTOR_KEYS = [
   'duration',
   'recurrence',
   'repeatedDemand',
+  'citizenVotes',
 ] as const;
 
 export type PriorityFactorKey = (typeof FACTOR_KEYS)[number];
@@ -33,9 +36,23 @@ export const FACTOR_LABEL: Record<PriorityFactorKey, string> = {
   duration: 'Duration',
   recurrence: 'Recurrence',
   repeatedDemand: 'Repeated Demand',
+  citizenVotes: 'Citizen Votes',
 };
 
-/** The state's published default weighting. Sums to 100. */
+/**
+ * The state's published default weighting. Sums to 100.
+ *
+ * Adding votes did not add weight. The demand budget — what citizens say, as
+ * opposed to what the village register and the severity assessment say — was
+ * five points and stays five points, now split three to reports and two to
+ * votes. Every other factor is untouched.
+ *
+ * That split is the whole of "need ≠ votes" expressed as a number: a problem
+ * every resident of a well-served village votes up moves two points, while
+ * population impact and SECC deprivation still carry fifty between them. A
+ * jurisdiction that wants to weigh demand more heavily publishes its own
+ * `PriorityWeightSet`; it does not get that by default.
+ */
 export const DEFAULT_WEIGHTS: PriorityWeights = {
   populationImpact: 30,
   severity: 20,
@@ -43,7 +60,8 @@ export const DEFAULT_WEIGHTS: PriorityWeights = {
   coverage: 10,
   duration: 10,
   recurrence: 5,
-  repeatedDemand: 5,
+  repeatedDemand: 3,
+  citizenVotes: 2,
 };
 
 export interface PriorityAdjustment {

@@ -1,0 +1,108 @@
+name: deploy-web
+
+# Ships `apps/web/` to Vercel with the CLI rather than Vercel's own Git
+# integration, so the build runs on this runner: `vercel build` here means a
+# type error fails the job before any deployment is created, where letting
+# Vercel build discovers it on their side with the deploy already in flight.
+#
+# This workflow and deploy-api are independent — a push touching both runs both
+# at once, and nothing orders them. That is safe because the web app reads the
+# API only at request time, never at build time (web-ci enforces that with a
+# placeholder BACKEND_API_URL). The one case that needs care is a release where
+# the web app depends on a brand-new endpoint: deploy the API first by hand
+# (workflow_dispatch on deploy-api) and let the web push follow.
+#
+# Secrets this needs:
+#   VERCEL_TOKEN        Vercel → Account Settings → Tokens
+#   VERCEL_ORG_ID       from `.vercel/project.json` after one `vercel link`
+#   VERCEL_PROJECT_ID   likewise
+#   WEB_BASE_URL        https://your-app.vercel.app  (for the smoke check)
+#
+# Project-level environment variables (BACKEND_API_URL, GROQ_API_KEY) live in
+# the Vercel dashboard, not here — `vercel pull` fetches them into the build.
+# Putting BACKEND_API_URL in a GitHub secret as well would give one value two
+# homes and guarantee they drift.
+
+on:
+  push:
+    branches: [main]
+    paths: ['apps/web/**', '.github/workflows/deploy-web.yml']
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-web
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    outputs:
+      configured: ${{ steps.check.outputs.configured }}
+    steps:
+      - id: check
+        env:
+          TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          ORG: ${{ secrets.VERCEL_ORG_ID }}
+          PROJECT: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          if [ -n "$TOKEN" ] && [ -n "$ORG" ] && [ -n "$PROJECT" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Vercel secrets are not set — skipping the web deploy. See docs/DEPLOY.md §3."
+          fi
+
+  deploy:
+    needs: preflight
+    if: needs.preflight.outputs.configured == 'true'
+    runs-on: ubuntu-latest
+    environment: production
+
+    defaults:
+      run:
+        working-directory: apps/web
+
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+
+      - run: npm i -g vercel@latest
+
+      - run: vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
+      # Build here, deploy prebuilt. The alternative — letting Vercel build —
+      # means a type error is discovered on their runner after the deployment
+      # is already in flight.
+      - run: vercel build --prod --token="$VERCEL_TOKEN"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
+      - id: deploy
+        run: |
+          url=$(vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN")
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "Deployed to $url"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
+      # The public portal is the one surface that must render with no session.
+      # If the proxy or BACKEND_API_URL is wrong it 500s, and this catches it
+      # before anyone clicks a link.
+      - name: Smoke — signed-out public portal
+        run: |
+          url="${{ steps.deploy.outputs.url }}"
+          code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$url/problems")
+          [ "$code" = "200" ] || { echo "::error::/problems returned $code"; exit 1; }
+          curl -fsS --max-time 20 "$url/robots.txt" > /dev/null
+          echo "public portal OK"

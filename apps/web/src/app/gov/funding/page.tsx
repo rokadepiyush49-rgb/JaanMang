@@ -18,7 +18,7 @@ import { departmentName, moneyBook, villageName } from "@/lib/gov/selectors";
 import { govSeed, useGov } from "@/lib/gov/store";
 
 export default function FundingPage() {
-  const { ranked, dispatch, can } = useGov();
+  const { ranked, actions, can } = useGov();
   const money = moneyBook(ranked);
 
   const queue = ranked
@@ -158,7 +158,7 @@ export default function FundingPage() {
                       <Button
                         disabled={!p.funding.fundable}
                         icon="check"
-                        onClick={() => dispatch({ type: "funding/approve", id: p.id })}
+                        onClick={() => void actions.approveFunding(p.id)}
                         size="sm"
                       >
                         Approve {rupees(p.funding.required || p.estimatedCost)}
@@ -166,11 +166,10 @@ export default function FundingPage() {
                       <Button
                         icon="x"
                         onClick={() =>
-                          dispatch({
-                            type: "funding/reject",
-                            id: p.id,
-                            reason: "Deferred to the next financial year",
-                          })
+                          void actions.rejectFunding(
+                            p.id,
+                            "Deferred to the next financial year",
+                          )
                         }
                         size="sm"
                         tone="outline"

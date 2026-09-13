@@ -13,11 +13,11 @@ import Link from "next/link";
 import { Icon } from "@/components/icon";
 import { Avatar, Badge, ButtonLink, Card, Enter, Progress, cx } from "@/components/ui";
 import { CountUp, SdgChips } from "@/components/industry/pieces";
-import { DOMAIN_LABEL } from "@/lib/industry/challenges";
+import { DOMAIN_LABEL } from "@/lib/industry/vocabulary";
 import { people, rupees } from "@/lib/industry/format";
 import { csrBook, isOpen, matchContext, recommended } from "@/lib/industry/selectors";
 import { useIndustry } from "@/lib/industry/store";
-import { REDACTIONS } from "@/lib/industry/visibility";
+
 
 const CAPABILITY_LABEL: Record<string, string> = {
   manufacturing: "Manufacturing",
@@ -298,7 +298,7 @@ export default function CompanyPage() {
           </div>
 
           <ul className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {REDACTIONS.map((r) => (
+            {state.redactions.map((r) => (
               <li className="rounded-lg bg-card-muted p-4" key={r.visible}>
                 <p className="flex gap-2 text-sm text-ink">
                   <Icon className="mt-0.5 shrink-0 text-impact-deep" name="eye" size={15} />

@@ -31,6 +31,7 @@ export function toProblemDto(row: ProblemRow): ProblemDto {
     duration: row.factors?.duration ?? 0,
     recurrence: row.factors?.recurrence ?? 0,
     repeatedDemand: row.factors?.repeatedDemand ?? 0,
+    citizenVotes: row.factors?.citizenVotes ?? 0,
   };
 
   const ai: AiIntelligence = {
@@ -136,6 +137,7 @@ export function toProblemDto(row: ProblemRow): ProblemDto {
     jurisdictionId: row.jurisdictionId,
     villageIds: (row.villages ?? []).map((v) => v.villageId),
     reportCount: row.reportCount,
+    voteCount: row.voteCount,
     duplicateCount: row.duplicateCount,
     affected: row.affected,
     createdAt: row.createdAt.toISOString(),

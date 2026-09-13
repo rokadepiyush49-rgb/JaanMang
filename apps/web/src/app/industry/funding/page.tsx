@@ -15,7 +15,7 @@ import { Icon } from "@/components/icon";
 import { Badge, ButtonLink, Card, Enter, cx } from "@/components/ui";
 import { BarList } from "@/components/gov/charts";
 import { ChallengeStatusBadge, FundingLedger, MatchRing } from "@/components/industry/pieces";
-import { DOMAIN_LABEL } from "@/lib/industry/challenges";
+import { DOMAIN_LABEL } from "@/lib/industry/vocabulary";
 import { people, rupees, until } from "@/lib/industry/format";
 import { FundingService } from "@/lib/industry/service";
 import {

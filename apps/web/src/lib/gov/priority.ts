@@ -2,9 +2,18 @@
  * The priority engine — "need ≠ votes".
  *
  * A ranking built on complaint counts rewards the villages that are loudest,
- * which are usually the ones already best served. So the count is only one
- * input among seven, and it enters through `repeatedDemand` — deliberately the
- * smallest default weight in the model.
+ * which are usually the ones already best served. So what citizens say is only
+ * one input among eight, and it enters through two deliberately small weights:
+ * `repeatedDemand` (reports — "I have this problem") and `citizenVotes` ("I
+ * agree this matters"). Together they are five points of a hundred.
+ *
+ * The two are kept apart because they disagree, and the disagreement is
+ * information. The most-reported problem in the Ranchi register is a washed-out
+ * approach road 122 households filed; the most-voted is a cracked bridge deck
+ * only 18 thought to report and everyone who crosses the stream wants fixed.
+ * Merged into one demand number, those two cases are indistinguishable.
+ *
+ * Mirrored by backend/src/problems/priority/priority.engine.ts. Change both.
  *
  * The whole engine is deterministic and explainable: every score decomposes
  * into `factor × weight` contributions plus a short list of named adjustments,
@@ -30,6 +39,7 @@ export const FACTOR_KEYS: PriorityFactorKey[] = [
   "duration",
   "recurrence",
   "repeatedDemand",
+  "citizenVotes",
 ];
 
 export const FACTOR_LABEL: Record<PriorityFactorKey, string> = {
@@ -40,6 +50,7 @@ export const FACTOR_LABEL: Record<PriorityFactorKey, string> = {
   duration: "Duration",
   recurrence: "Recurrence",
   repeatedDemand: "Repeated Demand",
+  citizenVotes: "Citizen Votes",
 };
 
 export const FACTOR_HELP: Record<PriorityFactorKey, string> = {
@@ -56,9 +67,18 @@ export const FACTOR_HELP: Record<PriorityFactorKey, string> = {
     "How often the same problem has returned at this location in 24 months. Recurrence signals a failed fix, not a new fault.",
   repeatedDemand:
     "Volume of citizen reports, normalised against the village's historic reporting rate.",
+  citizenVotes:
+    "Residents who voted the problem up without filing it themselves. Normalised against the affected population, so a hundred votes from a town does not outrank thirty from a hamlet.",
 };
 
-/** The state's published default weighting. Sums to 100. */
+/**
+ * The state's published default weighting. Sums to 100.
+ *
+ * Adding votes did not add weight: the demand budget was five points and stays
+ * five points, now split three to reports and two to votes. Every other factor
+ * is untouched, so population impact and SECC deprivation still carry fifty
+ * between them.
+ */
 export const DEFAULT_WEIGHTS: PriorityWeights = {
   populationImpact: 30,
   severity: 20,
@@ -66,7 +86,8 @@ export const DEFAULT_WEIGHTS: PriorityWeights = {
   coverage: 10,
   duration: 10,
   recurrence: 5,
-  repeatedDemand: 5,
+  repeatedDemand: 3,
+  citizenVotes: 2,
 };
 
 export type Contribution = {

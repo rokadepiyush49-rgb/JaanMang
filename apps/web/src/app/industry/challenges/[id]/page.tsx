@@ -17,7 +17,7 @@
 
 import Link from "next/link";
 import { notFound, useParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Icon } from "@/components/icon";
 import { AuditTrail } from "@/components/gov/pieces";
 import {
@@ -43,13 +43,15 @@ import {
   SeverityBadge,
   SupportOption,
 } from "@/components/industry/pieces";
-import { DOMAIN_ICON, DOMAIN_LABEL, DOMAIN_TINT } from "@/lib/industry/challenges";
+import { DOMAIN_ICON, DOMAIN_LABEL, DOMAIN_TINT } from "@/lib/industry/vocabulary";
 import { exactRupees, people, rupees, shortDate, until } from "@/lib/industry/format";
-import { SUPPORT } from "@/lib/industry/mock-data";
-import { csrBook, facultyOf, ledger, team as findTeam, university } from "@/lib/industry/selectors";
+import { SUPPORT } from "@/lib/industry/vocabulary";
+import { csrBook, ledger, team as findTeam, university } from "@/lib/industry/selectors";
+import { ChallengeService } from "@/lib/industry/service";
 import { useChallenge, useIndustry } from "@/lib/industry/store";
-import { publicTimeline, REDACTIONS } from "@/lib/industry/visibility";
+
 import { SUPPORT_KINDS, type SupportKind } from "@/lib/industry/types";
+import type { AuditEntry } from "@/lib/gov/types";
 
 const TABS = [
   { id: "overview", label: "Overview" },
@@ -69,13 +71,38 @@ export default function ChallengeDossier() {
   const [tab, setTab] = useState("overview");
   const [fundOpen, setFundOpen] = useState(false);
 
+  /**
+   * The public timeline, fetched rather than derived.
+   *
+   * It used to be computed in the browser by `visibility.ts` from the full
+   * government audit trail — which meant the unredacted trail had to be in the
+   * browser for it to be collapsed. The server sends the collapsed one now and
+   * the raw entries never leave it.
+   */
+  const [timeline, setTimeline] = useState<AuditEntry[]>([]);
+  useEffect(() => {
+    let cancelled = false;
+    void ChallengeService.timeline(params.id)
+      .then((entries) => {
+        if (!cancelled) setTimeline(entries as AuditEntry[]);
+      })
+      .catch(() => {
+        if (!cancelled) setTimeline([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [params.id]);
+
   if (!scored) notFound();
   const { challenge, match } = scored;
 
   const book = ledger(challenge);
-  const uni = university(challenge.universityId);
-  const team = findTeam(challenge.teamId);
-  const faculty = facultyOf(team?.facultyId);
+  const uni = university(state.universities, challenge.universityId);
+  const team = findTeam(state.teams, challenge.teamId);
+  // The faculty guide travels on the team now, narrowed server-side to a name,
+  // a designation and an expertise list.
+  const faculty = team?.guide;
   const project = state.projects.find((p) => p.challengeId === challenge.id);
   const request = state.requests.find((r) => r.challengeId === challenge.id);
   const interested = state.interests.includes(challenge.id);
@@ -312,7 +339,7 @@ export default function ChallengeDossier() {
                 partners&rsquo; proposals.
               </p>
               <ul className="mt-4 flex flex-col gap-3">
-                {REDACTIONS.slice(0, 4).map((r) => (
+                {state.redactions.slice(0, 4).map((r) => (
                   <li className="text-xs" key={r.visible}>
                     <span className="flex gap-1.5 text-ink">
                       <Icon className="mt-px shrink-0 text-impact-deep" name="eye" size={12} />
@@ -626,7 +653,7 @@ export default function ChallengeDossier() {
                 collapsed to a count and officers appear by office rather than by name.
               </p>
               <div className="mt-5">
-                <AuditTrail entries={publicTimeline(challenge.id)} />
+                <AuditTrail entries={timeline} />
               </div>
             </Card>
 

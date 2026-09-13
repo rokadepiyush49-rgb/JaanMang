@@ -14,13 +14,22 @@ import {
   cx,
 } from "@/components/ui";
 import { SearchField, Select, Tabs } from "@/components/ui-interactive";
-import { OPPORTUNITIES, STUDENT, type Opportunity } from "@/lib/data";
+import { matchMap, toViewOpportunity, type ViewOpportunity } from "@/lib/student/adapters";
+import { useStudent } from "@/lib/student/store";
 
 const KINDS = ["All", "Internship", "Hackathon", "Fellowship", "Research", "Volunteer"];
 const MODES = ["Any mode", "On-site", "Hybrid", "Remote"];
 const SORTS = ["Best match", "Closing soonest", "Newest"];
 
-function OpportunityCard({ item }: { item: Opportunity }) {
+function OpportunityCard({
+  item,
+  mySkills,
+}: {
+  item: ViewOpportunity;
+  /* Passed rather than read from the store, so the card stays presentational
+     and renders the same way from the dashboard and the explorer. */
+  mySkills: string[];
+}) {
   const t = TINT[item.tint];
   const closingSoon = /in \d days?$/.test(item.closes) &&
     Number(item.closes.match(/\d+/)?.[0] ?? 99) <= 7;
@@ -64,7 +73,7 @@ function OpportunityCard({ item }: { item: Opportunity }) {
           <span
             className={cx(
               "rounded-full px-2.5 py-1 text-xs font-semibold",
-              STUDENT.skills.includes(skill)
+              mySkills.includes(skill)
                 ? "bg-tint-mint text-on-tint-mint"
                 : "bg-card-muted text-ink-muted",
             )}
@@ -103,13 +112,22 @@ function OpportunityCard({ item }: { item: Opportunity }) {
 }
 
 export default function OpportunitiesPage() {
+  const { state } = useStudent();
+  const profile = state.profile!;
+  /* Match percentages come from the recommender, so the number beside an
+     opportunity is the same number the recommendations screen shows. */
+  const matches = matchMap(state.recommendations);
+  const opportunities = state.opportunities.map((o) =>
+    toViewOpportunity(o, matches.get(o.id)),
+  );
+
   const [tab, setTab] = useState("All");
   const [query, setQuery] = useState("");
   const [mode, setMode] = useState(MODES[0]);
   const [sort, setSort] = useState(SORTS[0]);
 
   const results = useMemo(() => {
-    const filtered = OPPORTUNITIES.filter((o) => {
+    const filtered = opportunities.filter((o) => {
       if (tab !== "All" && o.kind !== tab) return false;
       if (mode !== MODES[0] && o.mode !== mode) return false;
       if (!query) return true;
@@ -134,8 +152,8 @@ export default function OpportunitiesPage() {
     label: kind,
     count:
       kind === "All"
-        ? OPPORTUNITIES.length
-        : OPPORTUNITIES.filter((o) => o.kind === kind).length,
+        ? opportunities.length
+        : opportunities.filter((o) => o.kind === kind).length,
   }));
 
   return (
@@ -201,7 +219,7 @@ export default function OpportunitiesPage() {
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 2xl:grid-cols-3">
           {results.map((item, i) => (
             <Enter className="h-full" index={i + 3} key={item.id}>
-              <OpportunityCard item={item} />
+              <OpportunityCard item={item} mySkills={profile.skills} />
             </Enter>
           ))}
         </div>

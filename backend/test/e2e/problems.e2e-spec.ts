@@ -73,7 +73,8 @@ describe('problems (e2e)', () => {
         coverage: 5,
         duration: 5,
         recurrence: 5,
-        repeatedDemand: 70,
+        repeatedDemand: 60,
+        citizenVotes: 10,
       });
       const res = await api()
         .get(`/api/v1/problems?weights=${encodeURIComponent(weights)}`)
@@ -197,7 +198,8 @@ describe('problems (e2e)', () => {
             coverage: 10,
             duration: 10,
             recurrence: 5,
-            repeatedDemand: 5,
+            repeatedDemand: 3,
+            citizenVotes: 2,
           },
         });
       expect(res.status).toBe(403);
@@ -212,7 +214,8 @@ describe('problems (e2e)', () => {
         coverage: 10,
         duration: 5,
         recurrence: 3,
-        repeatedDemand: 2,
+        repeatedDemand: 1,
+        citizenVotes: 1,
       };
       const pub = await api()
         .post('/api/v1/problems/priority/weights')

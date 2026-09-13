@@ -152,7 +152,8 @@ export type PriorityFactorKey =
   | "coverage"
   | "duration"
   | "recurrence"
-  | "repeatedDemand";
+  | "repeatedDemand"
+  | "citizenVotes";
 
 export type PriorityFactors = Record<PriorityFactorKey, number>;
 export type PriorityWeights = Record<PriorityFactorKey, number>;
@@ -333,6 +334,15 @@ export type Problem = {
   jurisdictionId: string;
   villageIds: string[];
   reportCount: number;
+  /**
+   * Citizens who agreed this matters without filing a report themselves.
+   *
+   * A separate number from `reportCount` the whole way through, because the
+   * priority engine weights them separately — see `citizenVotes` in
+   * `priority.ts`. The most-reported problem in a register is routinely not
+   * the most-voted one, and collapsing the two hides that.
+   */
+  voteCount: number;
   duplicateCount: number;
   affected: number;
   createdAt: string;

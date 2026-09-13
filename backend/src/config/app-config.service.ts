@@ -77,6 +77,39 @@ export class AppConfigService {
     };
   }
 
+  /** Thresholds for `ClusteringService`. See the env schema for why. */
+  get clustering() {
+    return {
+      confidenceMin: this.get('CLUSTER_CONFIDENCE_MIN'),
+      radiusM: this.get('CLUSTER_RADIUS_M'),
+      similarityMin: this.get('CLUSTER_SIMILARITY_MIN'),
+      cronEnabled: this.get('CLUSTER_CRON_ENABLED'),
+    };
+  }
+
+  /** The external recommender, when one is configured. See the env schema. */
+  get recommender() {
+    const url = this.get('RECOMMENDER_URL');
+    return {
+      url: url || undefined,
+      configured: Boolean(url),
+      timeoutMs: this.get('RECOMMENDER_TIMEOUT_MS'),
+    };
+  }
+
+  /** Upload limits and which driver serves them. See the env schema. */
+  get storage() {
+    const driver = this.get('STORAGE_DRIVER');
+    const r2 = this.r2;
+    return {
+      /** The driver actually in force, once `auto` is resolved. */
+      driver: driver === 'auto' ? (r2.configured ? 'r2' : 'local') : driver,
+      requested: driver,
+      localDir: this.get('STORAGE_LOCAL_DIR'),
+      maxBytes: this.get('UPLOAD_MAX_BYTES'),
+    } as const;
+  }
+
   get groqApiKey(): string | undefined {
     return this.get('GROQ_API_KEY');
   }

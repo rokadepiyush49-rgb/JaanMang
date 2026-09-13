@@ -1830,6 +1830,166 @@
         ]
       }
     },
+    "/api/v1/public/problems": {
+      "get": {
+        "description": "Filterable by district, category and SDG. Aggregates only: the individual reports, and everybody who filed them, stay on the government surface.",
+        "operationId": "PublicController_problems_v1",
+        "parameters": [
+          {
+            "name": "district",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minLength": 2,
+              "maxLength": 80,
+              "type": "string"
+            }
+          },
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "water",
+                "roads",
+                "drainage",
+                "streetlight",
+                "waste",
+                "bridge",
+                "sanitation",
+                "school",
+                "health"
+              ]
+            }
+          },
+          {
+            "name": "sdg",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 17,
+              "exclusiveMaximum": false,
+              "exclusiveMinimum": false,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Published problems, in the narrowest shape on the platform",
+        "tags": [
+          "public"
+        ]
+      }
+    },
+    "/api/v1/public/problems/{id}": {
+      "get": {
+        "operationId": "PublicController_problem_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "One problem, with its before-and-after and its ledger entries",
+        "tags": [
+          "public"
+        ]
+      }
+    },
+    "/api/v1/public/impact": {
+      "get": {
+        "description": "\"Verified\" means the citizens who reported the problem confirmed the work was done — not that an officer closed it. A rollup of officer-closed problems is the number every government already publishes, and the reason to build this was that nobody believes those.",
+        "operationId": "PublicController_impactSummary_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Verified impact per district",
+        "tags": [
+          "public"
+        ]
+      }
+    },
+    "/api/v1/public/ledger": {
+      "get": {
+        "operationId": "PublicController_ledger_v1",
+        "parameters": [
+          {
+            "name": "fiscalYear",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The public funding ledger",
+        "tags": [
+          "public"
+        ]
+      }
+    },
+    "/api/v1/public/leaderboard/{scope}": {
+      "get": {
+        "description": "citizens | students | institutes | partners | officers. Ranked on verified outcomes only — never on activity counts, which would rank the loudest account first.",
+        "operationId": "PublicController_leaderboard_v1",
+        "parameters": [
+          {
+            "name": "scope",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "exclusiveMaximum": false,
+              "exclusiveMinimum": false,
+              "default": 25,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "A published ranking, with the formula that produced it",
+        "tags": [
+          "public"
+        ]
+      }
+    },
     "/api/v1/public/stats": {
       "get": {
         "operationId": "PublicController_stats_v1",
@@ -1842,6 +2002,1800 @@
         "summary": "Platform statistics for the public landing page",
         "tags": [
           "public"
+        ]
+      }
+    },
+    "/api/v1/reports": {
+      "post": {
+        "description": "Open to anyone. The village is resolved from the coordinates, the text is classified by the intake pass (a hosted model when one is configured, a deterministic keyword pass otherwise), and clustering attaches the report to a problem on its next run.",
+        "operationId": "ReportsController_create_v1",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "A client-generated UUID. Send the same key when retrying and the report is filed once, however many times a flaky connection delivers the request.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateReportDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "File a citizen report",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/v1/reports/villages": {
+      "get": {
+        "description": "Public: a citizen whose browser refuses geolocation has to be able to name the place, and asking them to sign in first would defeat an open intake endpoint. Names and coordinates only — no population, no deprivation index, no reports.",
+        "operationId": "ReportsController_villages_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The village register, for the intake form",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/v1/reports/mine": {
+      "get": {
+        "operationId": "ReportsController_mine_v1",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "exclusiveMaximum": false,
+              "exclusiveMinimum": false,
+              "default": 25,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "cursor",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 200,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "A citizen's own reports and what became of each",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/v1/problems/{id}/vote": {
+      "post": {
+        "description": "Distinct from filing a report. A report says \"I have this problem\"; a vote says \"I agree this matters\". They are weighted separately by the priority engine. Voting twice is not an error and changes nothing.",
+        "operationId": "ProblemVotesController_vote_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Vote that a problem matters",
+        "tags": [
+          "reports"
+        ]
+      },
+      "delete": {
+        "operationId": "ProblemVotesController_unvote_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Withdraw a vote",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/v1/problems/{id}/sponsorship/invite": {
+      "post": {
+        "operationId": "SponsorshipController_invite_v1",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Send the same key on a retry and the transition happens once.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Invite every matched industry to sponsor this problem",
+        "tags": [
+          "sponsorship"
+        ]
+      }
+    },
+    "/api/v1/problems/{id}/sponsorship/approve": {
+      "post": {
+        "operationId": "SponsorshipController_approve_v1",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Send the same key on a retry and the transition happens once.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApproveSponsorshipDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Accept an industry's sponsorship proposal",
+        "tags": [
+          "sponsorship"
+        ]
+      }
+    },
+    "/api/v1/problems/{id}/sponsorship/decline": {
+      "post": {
+        "description": "When the last sponsor still in play declines, the government funding fallback fires in the same transaction — an officer should not have to notice that industry ran out.",
+        "operationId": "SponsorshipController_decline_v1",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Send the same key on a retry and the transition happens once.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeclineSponsorshipDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Record that an industry declined",
+        "tags": [
+          "sponsorship"
+        ]
+      }
+    },
+    "/api/v1/problems/{id}/sponsorship/fallback": {
+      "post": {
+        "description": "Recommends a source and says whether the department can afford it. It does not approve anything: moving public money stays a decision somebody with funding.approve makes.",
+        "operationId": "SponsorshipController_fallback_v1",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Send the same key on a retry and the transition happens once.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Abandon sponsorship and fall back to government funding",
+        "tags": [
+          "sponsorship"
+        ]
+      }
+    },
+    "/api/v1/problems/{id}/funding/approve": {
+      "post": {
+        "description": "One transaction: moves the department's committed budget, writes the allocation and the public ledger entry, and creates the project. A committed budget with no ledger entry is a corrupt book, so either all of it lands or none of it does.",
+        "operationId": "FundingController_approve_v1",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Send the same key on a retry and the budget is committed once.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApproveFundingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Approve government funding",
+        "tags": [
+          "funding"
+        ]
+      }
+    },
+    "/api/v1/problems/{id}/funding/reject": {
+      "post": {
+        "operationId": "FundingController_reject_v1",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Send the same key on a retry and the budget is committed once.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectFundingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Refuse government funding, with a reason that stays on the record",
+        "tags": [
+          "funding"
+        ]
+      }
+    },
+    "/api/v1/problems/{id}/assign": {
+      "post": {
+        "operationId": "DeliveryController_assign_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignOfficerDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Assign or reassign the delivery officer",
+        "tags": [
+          "delivery"
+        ]
+      }
+    },
+    "/api/v1/problems/{id}/project/progress": {
+      "post": {
+        "operationId": "DeliveryController_progress_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectProgressDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Update project progress",
+        "tags": [
+          "delivery"
+        ]
+      }
+    },
+    "/api/v1/problems/{id}/project/complete": {
+      "post": {
+        "description": "Does not resolve the problem. It raises the verification request addressed to the reporters; they decide whether it was fixed.",
+        "operationId": "DeliveryController_complete_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Mark the project complete and ask the citizens who reported it",
+        "tags": [
+          "delivery"
+        ]
+      }
+    },
+    "/api/v1/automations/{id}": {
+      "patch": {
+        "operationId": "WorkspaceController_toggle_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AutomationToggleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Enable or pause an automation",
+        "tags": [
+          "delivery"
+        ]
+      }
+    },
+    "/api/v1/alerts/{id}/read": {
+      "post": {
+        "operationId": "WorkspaceController_read_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Mark one of your own alerts read",
+        "tags": [
+          "delivery"
+        ]
+      }
+    },
+    "/api/v1/industry/profile": {
+      "get": {
+        "operationId": "IndustryController_profile_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The company profile the match engine reads",
+        "tags": [
+          "industry"
+        ]
+      },
+      "patch": {
+        "operationId": "IndustryController_updateProfile_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCompanyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Update the company profile",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/challenges": {
+      "get": {
+        "description": "Only problems the government has validated, and only ever through the redaction projection. Citizen names, phone numbers, verbatim reports and household coordinates are not in the response shape at all.",
+        "operationId": "IndustryController_challenges_v1",
+        "parameters": [
+          {
+            "name": "domain",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minLength": 2,
+              "maxLength": 40,
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minLength": 2,
+              "maxLength": 60,
+              "type": "string"
+            }
+          },
+          {
+            "name": "sdg",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 17,
+              "exclusiveMaximum": false,
+              "exclusiveMinimum": false,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Validated citizen problems, in the redacted partner shape",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/challenges/{id}": {
+      "get": {
+        "operationId": "IndustryController_challenge_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "One challenge",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/challenges/{id}/timeline": {
+      "get": {
+        "description": "Citizen entries collapse into a count and officer entries into an office. \"43 people reported this\" carries the weight without naming any of them.",
+        "operationId": "IndustryController_timeline_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The public audit trail",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/visibility-policy": {
+      "get": {
+        "description": "Published because the portal shows it. A partner who can see exactly where the line is drawn trusts the data on their side of it more, not less.",
+        "operationId": "IndustryController_visibilityPolicy_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "What partners can and cannot see",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/matches": {
+      "get": {
+        "operationId": "IndustryController_matches_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Every challenge scored against this company, best first",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/challenges/{id}/match": {
+      "get": {
+        "operationId": "IndustryController_matchOne_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The five-factor decomposition for one challenge",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/csr": {
+      "get": {
+        "operationId": "IndustryController_csr_v1",
+        "parameters": [
+          {
+            "name": "financialYear",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "pattern": "^\\d{4}-\\d{2}$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The CSR position for a financial year, and the benefits behind it",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/commitments": {
+      "get": {
+        "operationId": "IndustryController_commitments_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Every challenge this company has approached",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/challenges/{id}/commit": {
+      "post": {
+        "description": "Writes the same SponsorshipMatch row the government's sponsorship tab reads, so interest lands in the officer's queue. It approves nothing — acceptance is the government's decision, and the platform moves no money.",
+        "operationId": "IndustryController_commit_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommitDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Express interest in a challenge, or put a number on it",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/mentorship/requests": {
+      "get": {
+        "operationId": "IndustryController_mentorshipRequests_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Teams asking for a mentor",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/mentorship/assignments": {
+      "get": {
+        "operationId": "IndustryController_mentorAssignments_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Assignments this company's people hold",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/mentorship/requests/{id}/assign": {
+      "post": {
+        "operationId": "IndustryController_assignMentor_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignMentorDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Offer yourself as a mentor to this team",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/messages": {
+      "get": {
+        "operationId": "IndustryController_threads_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Threads this company participates in",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/messages/{id}": {
+      "post": {
+        "operationId": "IndustryController_postMessage_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostMessageDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Post to a thread you participate in",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/talent": {
+      "get": {
+        "description": "Enough to hold a design review, not enough to approach somebody off-platform. Surnames, enrolment numbers, email addresses and marks are in the same table and are never selected.",
+        "operationId": "IndustryController_talent_v1",
+        "parameters": [
+          {
+            "name": "skill",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minLength": 1,
+              "maxLength": 60,
+              "type": "string"
+            }
+          },
+          {
+            "name": "institution",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minLength": 1,
+              "maxLength": 64,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Student teams, narrowed to first name, year and discipline",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/universities": {
+      "get": {
+        "operationId": "IndustryController_universities_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Institutions on the register",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/projects": {
+      "get": {
+        "description": "Scoped by involvement — a sponsorship this company approved, or a mentor assignment one of its people holds. The government's own project list is not a partner's to read.",
+        "operationId": "IndustryController_projects_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Projects this company funds or mentors",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/impact": {
+      "get": {
+        "description": "Every figure is a sum over rows a government officer also sees. A partner cannot tell this platform how many people they helped, which is the only reason the number is worth printing.",
+        "operationId": "IndustryController_impact_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Impact computed from delivered work, never self-reported",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/industry/notifications": {
+      "get": {
+        "operationId": "IndustryController_notifications_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Your alerts",
+        "tags": [
+          "industry"
+        ]
+      }
+    },
+    "/api/v1/student/profile": {
+      "get": {
+        "operationId": "StudentController_profile_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The signed-in student’s own profile",
+        "tags": [
+          "student"
+        ]
+      },
+      "patch": {
+        "description": "Skills, interests, preferences and links. Not branch, year, institution, department or verification — those are facts the institution asserted, and this endpoint has no field for them.",
+        "operationId": "StudentController_updateProfile_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStudentProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Update the parts of the profile a student owns",
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/v1/student/opportunities": {
+      "get": {
+        "description": "Carries a difficulty signal derived from severity and the number of technologies a brief names, so a second-year has somewhere to start rather than a list headed by the hardest problem in the district.",
+        "operationId": "StudentController_opportunities_v1",
+        "parameters": [
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "water",
+                "roads",
+                "drainage",
+                "streetlight",
+                "waste",
+                "bridge",
+                "sanitation",
+                "school",
+                "health"
+              ]
+            }
+          },
+          {
+            "name": "difficulty",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "starter",
+                "intermediate",
+                "advanced"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Published problems a student can work on",
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/v1/student/recommendations": {
+      "get": {
+        "description": "Scored by the heuristic recommender, or by the external skill-map model when RECOMMENDER_URL is set. A recommendation without a reason is never returned by either.",
+        "operationId": "StudentController_recommendations_v1",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 50,
+              "exclusiveMaximum": false,
+              "exclusiveMinimum": false,
+              "default": 12,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Ranked suggestions, each with the reasons that produced it",
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/v1/student/applications": {
+      "get": {
+        "operationId": "StudentController_applications_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Your applications and where each one stands",
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/v1/student/opportunities/{id}/apply": {
+      "post": {
+        "description": "Writes the same Application row the institute's submissions queue reads — one record, two views, rather than two tables that can disagree about who applied to what.",
+        "operationId": "StudentController_apply_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Apply to an opportunity",
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/v1/student/applications/{id}": {
+      "delete": {
+        "operationId": "StudentController_withdraw_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Withdraw an application",
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/v1/student/projects": {
+      "get": {
+        "operationId": "StudentController_projects_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Projects your teams are carrying",
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/v1/student/teams": {
+      "get": {
+        "operationId": "StudentController_teams_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Teams you are in",
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/v1/student/achievements": {
+      "get": {
+        "description": "All derived — points from verified work, badges from the recognition rules, awards from a person. Nothing here moves in response to anything the client sends.",
+        "operationId": "StudentController_achievements_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Points, badges and awards",
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/v1/student/notifications": {
+      "get": {
+        "operationId": "StudentController_notifications_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Your notifications",
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/v1/student/notifications/{id}/read": {
+      "post": {
+        "operationId": "StudentController_readNotification_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Mark one of your own notifications read",
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/v1/student/candidates": {
+      "get": {
+        "description": "Name, college, skills and earned points. Narrower than the institute roster on purpose: enough to decide whether to ask somebody, not enough to contact them off-platform.",
+        "operationId": "StudentController_candidates_v1",
+        "parameters": [
+          {
+            "name": "skill",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Classmates open to teaming up",
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/v1/student/partners": {
+      "get": {
+        "operationId": "StudentController_partners_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Industry partners, and what they have published about themselves",
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/v1/student/proposals": {
+      "get": {
+        "operationId": "StudentController_proposals_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Your institution's unprompted solution proposals",
+        "tags": [
+          "student"
+        ]
+      },
+      "post": {
+        "description": "The inverse of an application: an application answers a brief somebody else wrote, a proposal writes the brief.",
+        "operationId": "StudentController_propose_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProposeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Propose a solution to a problem nobody asked you to solve",
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/v1/student/hackathons": {
+      "get": {
+        "operationId": "StudentController_hackathons_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Hackathons, and where your teams stand in them",
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/v1/student/hackathons/{id}/enter": {
+      "post": {
+        "operationId": "StudentController_enterHackathon_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnterHackathonDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Enter one of your teams",
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/v1/uploads/presign": {
+      "post": {
+        "description": "Content type and size are enforced here, before any bytes move, because a presigned URL is a capability. Returns a 503 when the deployment has no storage configured, rather than a confusing 500 later.",
+        "operationId": "UploadsController_presign_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PresignDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Get an upload target",
+        "tags": [
+          "uploads"
+        ]
+      }
+    },
+    "/api/v1/uploads/local/{path}": {
+      "put": {
+        "operationId": "UploadsController_putLocal_v1",
+        "parameters": [
+          {
+            "name": "content-type",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "uploads"
+        ]
+      }
+    },
+    "/api/v1/uploads/{path}": {
+      "get": {
+        "operationId": "UploadsController_serve_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Serve an uploaded file",
+        "tags": [
+          "uploads"
+        ]
+      }
+    },
+    "/api/v1/verification/mine": {
+      "get": {
+        "description": "Only problems you reported. Somebody who did not report the broken handpump has no standing to say it was fixed.",
+        "operationId": "VerificationController_mine_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Verification requests addressed to you",
+        "tags": [
+          "verification"
+        ]
+      }
+    },
+    "/api/v1/verification/problems/{id}": {
+      "post": {
+        "description": "Answering again replaces your previous answer. The problem closes only when everybody asked has answered and confirmations outweigh denials three to one.",
+        "operationId": "VerificationController_verify_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Say whether the work was actually done",
+        "tags": [
+          "verification"
+        ]
+      }
+    },
+    "/api/v1/verification/projects/{id}/rate": {
+      "post": {
+        "description": "A different question from verification: that asks whether it was fixed, this asks how well. Merging them loses the answer the delivery leaderboards rank on.",
+        "operationId": "VerificationController_rate_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Rate how well it was delivered",
+        "tags": [
+          "verification"
+        ]
+      }
+    },
+    "/api/v1/verification/projects/{id}/ratings": {
+      "get": {
+        "description": "Public, and without the raters. A citizen rating their own government’s work should not have their name on it in a public summary.",
+        "operationId": "VerificationController_ratings_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The rating summary for a project",
+        "tags": [
+          "verification"
+        ]
+      }
+    },
+    "/api/v1/verification/problems/{id}/evidence": {
+      "get": {
+        "operationId": "VerificationController_evidence_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "The before-and-after pair",
+        "tags": [
+          "verification"
+        ]
+      }
+    },
+    "/api/v1/verification/problems/{id}/object": {
+      "post": {
+        "description": "The appeal path DESIGN.md specifies. Recorded against the problem so an officer answers it in the open rather than in a phone call.",
+        "operationId": "VerificationController_object_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ObjectionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Object to a published ranking",
+        "tags": [
+          "verification"
+        ]
+      }
+    },
+    "/api/v1/gov/problems/{id}/evidence": {
+      "post": {
+        "operationId": "GovVerificationController_addEvidence_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EvidenceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Attach before or after photographs to a problem",
+        "tags": [
+          "verification"
+        ]
+      }
+    },
+    "/api/v1/gov/problems/{id}/objections": {
+      "get": {
+        "operationId": "GovVerificationController_objections_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Objections raised against this problem’s ranking",
+        "tags": [
+          "verification"
+        ]
+      }
+    },
+    "/api/v1/gov/problems/{id}/adjust-priority": {
+      "post": {
+        "description": "Bounded to ±15 points. Anything larger is a re-weighting, which belongs in the published weight set where everybody can see it.",
+        "operationId": "GovVerificationController_adjust_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdjustPriorityDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Answer an objection with a named, bounded correction",
+        "tags": [
+          "verification"
+        ]
+      }
+    },
+    "/api/v1/gov/verification/{id}": {
+      "get": {
+        "operationId": "GovVerificationController_status_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Where verification on a problem has got to",
+        "tags": [
+          "verification"
+        ]
+      }
+    },
+    "/api/v1/admin/recognition/recompute": {
+      "post": {
+        "description": "Runs hourly on its own. This exists so a corrected badge threshold or a late verification takes effect without waiting for the hour.",
+        "operationId": "RecognitionController_recompute_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Rebuild every leaderboard and re-evaluate every badge rule",
+        "tags": [
+          "recognition"
+        ]
+      }
+    },
+    "/api/v1/admin/recognition/status": {
+      "get": {
+        "operationId": "RecognitionController_status_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "When the rankings were last computed",
+        "tags": [
+          "recognition"
         ]
       }
     },
@@ -2837,6 +4791,13 @@
                 "exclusiveMinimum": false,
                 "maximum": 100,
                 "exclusiveMaximum": false
+              },
+              "citizenVotes": {
+                "type": "number",
+                "minimum": 0,
+                "exclusiveMinimum": false,
+                "maximum": 100,
+                "exclusiveMaximum": false
               }
             },
             "required": [
@@ -2846,7 +4807,8 @@
               "coverage",
               "duration",
               "recurrence",
-              "repeatedDemand"
+              "repeatedDemand",
+              "citizenVotes"
             ]
           },
           "jurisdictionId": {
@@ -3570,6 +5532,746 @@
         },
         "required": [
           "note"
+        ]
+      },
+      "CreateReportDto": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 4000
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "water",
+              "roads",
+              "drainage",
+              "streetlight",
+              "waste",
+              "bridge",
+              "sanitation",
+              "school",
+              "health"
+            ]
+          },
+          "urgency": {
+            "type": "string",
+            "enum": [
+              "critical",
+              "high",
+              "medium",
+              "low"
+            ]
+          },
+          "lat": {
+            "type": "number",
+            "minimum": -90,
+            "exclusiveMinimum": false,
+            "maximum": 90,
+            "exclusiveMaximum": false
+          },
+          "lng": {
+            "type": "number",
+            "minimum": -180,
+            "exclusiveMinimum": false,
+            "maximum": 180,
+            "exclusiveMaximum": false
+          },
+          "villageId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "photoIds": {
+            "type": "array",
+            "maxItems": 8,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          "citizenName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "language": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 12,
+            "default": "hi"
+          }
+        },
+        "required": [
+          "text",
+          "lat",
+          "lng"
+        ]
+      },
+      "ApproveSponsorshipDto": {
+        "type": "object",
+        "properties": {
+          "sponsorId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "amount": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": false,
+            "maximum": 1000000000000,
+            "exclusiveMaximum": false
+          }
+        },
+        "required": [
+          "sponsorId"
+        ]
+      },
+      "DeclineSponsorshipDto": {
+        "type": "object",
+        "properties": {
+          "sponsorId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "sponsorId",
+          "reason"
+        ]
+      },
+      "ApproveFundingDto": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": false,
+            "maximum": 1000000000000,
+            "exclusiveMaximum": false
+          },
+          "source": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 500
+          }
+        }
+      },
+      "RejectFundingDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
+      "AssignOfficerDto": {
+        "type": "object",
+        "properties": {
+          "officerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          }
+        },
+        "required": [
+          "officerId"
+        ]
+      },
+      "ProjectProgressDto": {
+        "type": "object",
+        "properties": {
+          "progress": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": false,
+            "maximum": 100,
+            "exclusiveMaximum": false
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "progress"
+        ]
+      },
+      "AutomationToggleDto": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          }
+        }
+      },
+      "UpdateCompanyDto": {
+        "type": "object",
+        "properties": {
+          "sector": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "about": {
+            "type": "string",
+            "maxLength": 1200
+          },
+          "website": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 300
+          },
+          "csrThemes": {
+            "type": "array",
+            "maxItems": 12,
+            "items": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 40
+            }
+          },
+          "geographies": {
+            "type": "array",
+            "maxItems": 30,
+            "items": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 60
+            }
+          },
+          "technologyDomains": {
+            "type": "array",
+            "maxItems": 40,
+            "items": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 60
+            }
+          },
+          "capabilities": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 40
+            }
+          },
+          "sdgPreferences": {
+            "type": "array",
+            "maxItems": 17,
+            "items": {
+              "type": "integer",
+              "minimum": 1,
+              "exclusiveMinimum": false,
+              "maximum": 17,
+              "exclusiveMaximum": false
+            }
+          },
+          "fundingMin": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": false,
+            "maximum": 1000000000000,
+            "exclusiveMaximum": false
+          },
+          "fundingMax": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": false,
+            "maximum": 1000000000000,
+            "exclusiveMaximum": false
+          },
+          "csrAllocated": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": false,
+            "maximum": 1000000000000,
+            "exclusiveMaximum": false
+          },
+          "csrPreferredCeiling": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": false,
+            "maximum": 1000000000000,
+            "exclusiveMaximum": false
+          },
+          "csrFinancialYear": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}$"
+          }
+        }
+      },
+      "CommitDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "interest",
+              "proposal"
+            ],
+            "default": "interest"
+          },
+          "amount": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": false,
+            "maximum": 1000000000000,
+            "exclusiveMaximum": false
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        }
+      },
+      "AssignMentorDto": {
+        "type": "object",
+        "properties": {
+          "roles": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 6,
+            "items": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 60
+            }
+          }
+        },
+        "required": [
+          "roles"
+        ]
+      },
+      "PostMessageDto": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000
+          }
+        },
+        "required": [
+          "body"
+        ]
+      },
+      "UpdateStudentProfileDto": {
+        "type": "object",
+        "properties": {
+          "skills": {
+            "type": "array",
+            "maxItems": 30,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            }
+          },
+          "interests": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            }
+          },
+          "preferredCategories": {
+            "type": "array",
+            "maxItems": 9,
+            "items": {
+              "type": "string",
+              "enum": [
+                "water",
+                "roads",
+                "drainage",
+                "streetlight",
+                "waste",
+                "bridge",
+                "sanitation",
+                "school",
+                "health"
+              ]
+            }
+          },
+          "preferredDistricts": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 60
+            }
+          },
+          "sdgInterests": {
+            "type": "array",
+            "maxItems": 17,
+            "items": {
+              "type": "integer",
+              "minimum": 1,
+              "exclusiveMinimum": false,
+              "maximum": 17,
+              "exclusiveMaximum": false
+            }
+          },
+          "weeklyHours": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": false,
+            "maximum": 80,
+            "exclusiveMaximum": false
+          },
+          "githubUrl": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 300
+              },
+              {
+                "type": "string",
+                "enum": [
+                  ""
+                ]
+              }
+            ]
+          },
+          "linkedinUrl": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 300
+              },
+              {
+                "type": "string",
+                "enum": [
+                  ""
+                ]
+              }
+            ]
+          },
+          "portfolioUrl": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 300
+              },
+              {
+                "type": "string",
+                "enum": [
+                  ""
+                ]
+              }
+            ]
+          },
+          "resumeUrl": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 300
+              },
+              {
+                "type": "string",
+                "enum": [
+                  ""
+                ]
+              }
+            ]
+          }
+        },
+        "required": [
+          "githubUrl",
+          "linkedinUrl",
+          "portfolioUrl",
+          "resumeUrl"
+        ]
+      },
+      "ApplyDto": {
+        "type": "object",
+        "properties": {
+          "teamId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 1500
+          }
+        }
+      },
+      "ProposeDto": {
+        "type": "object",
+        "properties": {
+          "problemId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "title": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 160
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 2000
+          },
+          "approach": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 4000
+          },
+          "estimatedCost": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": false,
+            "maximum": 1000000000000,
+            "exclusiveMaximum": false
+          },
+          "durationDays": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": true,
+            "maximum": 1095,
+            "exclusiveMaximum": false
+          },
+          "needs": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 200
+            }
+          },
+          "teamId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          }
+        },
+        "required": [
+          "problemId",
+          "title",
+          "summary",
+          "approach"
+        ]
+      },
+      "EnterHackathonDto": {
+        "type": "object",
+        "properties": {
+          "teamId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          }
+        },
+        "required": [
+          "teamId"
+        ]
+      },
+      "PresignDto": {
+        "type": "object",
+        "properties": {
+          "contentType": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 120
+          },
+          "sizeBytes": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": true
+          },
+          "purpose": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 40,
+            "default": "evidence"
+          }
+        },
+        "required": [
+          "contentType",
+          "sizeBytes"
+        ]
+      },
+      "VerifyDto": {
+        "type": "object",
+        "properties": {
+          "fixed": {
+            "type": "boolean"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "photoKeys": {
+            "type": "array",
+            "maxItems": 8,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 300
+            }
+          },
+          "lat": {
+            "type": "number",
+            "minimum": -90,
+            "exclusiveMinimum": false,
+            "maximum": 90,
+            "exclusiveMaximum": false
+          },
+          "lng": {
+            "type": "number",
+            "minimum": -180,
+            "exclusiveMinimum": false,
+            "maximum": 180,
+            "exclusiveMaximum": false
+          }
+        },
+        "required": [
+          "fixed"
+        ]
+      },
+      "RateDto": {
+        "type": "object",
+        "properties": {
+          "stars": {
+            "type": "integer",
+            "minimum": 1,
+            "exclusiveMinimum": false,
+            "maximum": 5,
+            "exclusiveMaximum": false
+          },
+          "comment": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "timeliness": {
+            "type": "integer",
+            "minimum": 1,
+            "exclusiveMinimum": false,
+            "maximum": 5,
+            "exclusiveMaximum": false
+          },
+          "quality": {
+            "type": "integer",
+            "minimum": 1,
+            "exclusiveMinimum": false,
+            "maximum": 5,
+            "exclusiveMaximum": false
+          },
+          "conduct": {
+            "type": "integer",
+            "minimum": 1,
+            "exclusiveMinimum": false,
+            "maximum": 5,
+            "exclusiveMaximum": false
+          }
+        },
+        "required": [
+          "stars"
+        ]
+      },
+      "ObjectionDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 1500
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
+      "EvidenceDto": {
+        "type": "object",
+        "properties": {
+          "side": {
+            "type": "string",
+            "enum": [
+              "before",
+              "after"
+            ]
+          },
+          "keys": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 12,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 300
+            }
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "side",
+          "keys"
+        ]
+      },
+      "AdjustPriorityDto": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 80
+          },
+          "points": {
+            "type": "number",
+            "minimum": -15,
+            "exclusiveMinimum": false,
+            "maximum": 15,
+            "exclusiveMaximum": false
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 1000
+          },
+          "objectionId": {
+            "type": "string",
+            "maxLength": 64
+          }
+        },
+        "required": [
+          "label",
+          "points",
+          "reason"
         ]
       }
     }

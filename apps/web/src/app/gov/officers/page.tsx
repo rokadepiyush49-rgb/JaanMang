@@ -16,7 +16,7 @@ import { departmentName, officerLoad, recommendOfficer } from "@/lib/gov/selecto
 import { useGov } from "@/lib/gov/store";
 
 export default function OfficersPage() {
-  const { state, ranked, dispatch, can } = useGov();
+  const { state, ranked, actions, can } = useGov();
 
   const unassigned = ranked.filter(
     (p) => !p.assignedOfficerId && p.status !== "resolved" && p.status !== "rejected",
@@ -151,9 +151,7 @@ export default function OfficersPage() {
                       </p>
                       {can("officer.assign") ? (
                         <Button
-                          onClick={() =>
-                            dispatch({ type: "officer/assign", id: p.id, officerId: rec.id })
-                          }
+                          onClick={() => void actions.assignOfficer(p.id, rec.id)}
                           size="sm"
                         >
                           Assign

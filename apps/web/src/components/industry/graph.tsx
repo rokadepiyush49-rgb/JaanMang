@@ -21,7 +21,8 @@
 import { Icon, type IconName } from "@/components/icon";
 import { cx } from "@/components/ui";
 import { rupees } from "@/lib/industry/format";
-import { facultyOf, team as findTeam, universityName } from "@/lib/industry/selectors";
+import { team as findTeam, universityName } from "@/lib/industry/selectors";
+import { useIndustry } from "@/lib/industry/store";
 import type { Challenge, IndustryProject } from "@/lib/industry/types";
 
 type LaneKey = "citizen" | "government" | "university" | "industry";
@@ -59,9 +60,13 @@ export function CollaborationGraph({
   project?: IndustryProject;
   className?: string;
 }) {
-  const team = findTeam(project?.teamId ?? challenge.teamId);
-  const faculty = facultyOf(project?.facultyId ?? team?.facultyId);
-  const uni = universityName(project?.universityId ?? challenge.universityId);
+  // The register comes from the store rather than from props: this component
+  // renders from four screens, and threading two lists through all of them to
+  // resolve two names is worse than reading the one context they all sit in.
+  const { state } = useIndustry();
+  const team = findTeam(state.teams, project?.teamId ?? challenge.teamId);
+  const faculty = team?.guide;
+  const uni = universityName(state.universities, project?.universityId ?? challenge.universityId);
   const committed = project?.investment.committed ?? challenge.contributions.filter((c) => c.isSelf).reduce((s, c) => s + c.amount, 0);
 
   /* How far along the chain this record actually is. Everything past it is

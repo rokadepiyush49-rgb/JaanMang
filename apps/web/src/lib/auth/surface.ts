@@ -57,6 +57,14 @@ export function surfaceOf(pathname: string): Surface | null {
   if (STUDENT_ROUTES.some((r) => pathname === r || pathname.startsWith(`${r}/`))) {
     return "student";
   }
+  /*
+   * A citizen's own reports and verification queue need a session but belong to
+   * no workspace surface — a citizen holds `citizen`, and a student who filed a
+   * report holds `student`. `citizen` is returned so the proxy sends an
+   * anonymous visitor to sign in; the page itself checks nothing beyond having
+   * a session, because standing is decided per problem by who reported it.
+   */
+  if (pathname === "/report/mine" || pathname === "/report/verify") return "citizen";
   return null;
 }
 

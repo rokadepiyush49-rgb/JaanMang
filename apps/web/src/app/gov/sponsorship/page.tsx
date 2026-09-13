@@ -28,7 +28,7 @@ const COLUMNS: { status: SponsorshipStatus[]; title: string; hint: string }[] = 
 ];
 
 export default function SponsorshipPage() {
-  const { ranked, dispatch, can } = useGov();
+  const { ranked, actions, can } = useGov();
   const eligible = ranked.filter((p) => p.sponsorship.eligible || p.sponsorship.status !== "not_eligible");
 
   const sponsored = ranked
@@ -107,7 +107,7 @@ export default function SponsorshipPage() {
                     <SponsorshipCard
                       canInvite={can("sponsorship.invite")}
                       key={p.id}
-                      onInvite={() => dispatch({ type: "sponsorship/invite", id: p.id })}
+                      onInvite={() => void actions.inviteSponsors(p.id)}
                       problem={p}
                     />
                   ))}

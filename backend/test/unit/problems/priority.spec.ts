@@ -36,8 +36,9 @@ describe('priority engine (parity with apps/web/src/lib/gov/priority.ts)', () =>
       duration: 10,
       recurrence: 0,
       repeatedDemand: 0,
+      citizenVotes: 0,
     };
-    // 80*.30 + 60*.20 + 40*.20 + 20*.10 + 10*.10 + 0 + 0 = 24+12+8+2+1 = 47
+    // 80*.30 + 60*.20 + 40*.20 + 20*.10 + 10*.10 + 0 + 0 + 0 = 24+12+8+2+1 = 47
     expect(scoreOf(factors, [], DEFAULT_WEIGHTS)).toBe(47);
     expect(scoreOf(factors, [{ label: 'x', points: 6, reason: '' }], DEFAULT_WEIGHTS)).toBe(53);
   });
@@ -51,6 +52,7 @@ describe('priority engine (parity with apps/web/src/lib/gov/priority.ts)', () =>
       duration: 100,
       recurrence: 100,
       repeatedDemand: 100,
+      citizenVotes: 100,
     };
     expect(scoreOf(maxed, [{ label: 'x', points: 50, reason: '' }], DEFAULT_WEIGHTS)).toBe(100);
   });
@@ -77,6 +79,40 @@ describe('priority engine (parity with apps/web/src/lib/gov/priority.ts)', () =>
       expect(s).toBeGreaterThanOrEqual(0);
       expect(s).toBeLessThanOrEqual(100);
     }
+  });
+
+  it('weights reports and votes separately — neither can stand in for the other', () => {
+    // The reason the two are not one merged demand number. A problem nobody
+    // reported but everybody voted for, and its mirror image, must not score
+    // the same; and moving one factor must not move the other's contribution.
+    const base: PriorityFactors = {
+      populationImpact: 50,
+      severity: 50,
+      deprivation: 50,
+      coverage: 50,
+      duration: 50,
+      recurrence: 50,
+      repeatedDemand: 0,
+      citizenVotes: 0,
+    };
+    const allReports = scoreOf({ ...base, repeatedDemand: 100 }, [], DEFAULT_WEIGHTS);
+    const allVotes = scoreOf({ ...base, citizenVotes: 100 }, [], DEFAULT_WEIGHTS);
+    const neither = scoreOf(base, [], DEFAULT_WEIGHTS);
+
+    // Reports carry 3 points of 100, votes 2 — so each moves the score, and
+    // reports move it further. If these ever come out equal the two factors
+    // have been collapsed into one.
+    expect(allReports).toBe(neither + 3);
+    expect(allVotes).toBe(neither + 2);
+    expect(allReports).not.toBe(allVotes);
+  });
+
+  it('spends no more of the weighting on demand than before votes existed', () => {
+    // "need ≠ votes" as an invariant rather than a comment: what citizens say,
+    // reports and votes together, is five points of a hundred. A change that
+    // raises this is a change to state policy and should fail here first.
+    expect(DEFAULT_WEIGHTS.repeatedDemand + DEFAULT_WEIGHTS.citizenVotes).toBe(5);
+    expect(DEFAULT_WEIGHTS.populationImpact + DEFAULT_WEIGHTS.deprivation).toBe(50);
   });
 
   it('carries previousRank when a baseline weighting is supplied', () => {

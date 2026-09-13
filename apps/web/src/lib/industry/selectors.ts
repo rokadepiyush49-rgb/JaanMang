@@ -12,7 +12,7 @@
  * moves every screen that reports on it.
  */
 
-import { FACULTY, MENTOR_ASSIGNMENTS, TEAMS, UNIVERSITIES, SDGS } from "./mock-data";
+import { SDGS } from "./vocabulary";
 import { matchChallenge, type MatchContext, type MatchResult } from "./match";
 import type {
   Challenge,
@@ -29,20 +29,25 @@ import type {
 
 /* ============================================================= lookups === */
 
-export function university(id?: string): University | undefined {
-  return UNIVERSITIES.find((u) => u.id === id);
+/**
+ * The lookups used to close over fixture arrays — `UNIVERSITIES.find(...)`,
+ * `TEAMS.find(...)` — which is how a module with no arguments ended up
+ * deciding what a screen could see. They take their data as a parameter now,
+ * because the data is the signed-in company's and arrives from the API.
+ *
+ * `sdgTitle` is the exception and stays closed over `SDGS`: the UN goals are
+ * facts about the world, not rows in this database.
+ */
+export function university(list: University[], id?: string): University | undefined {
+  return list.find((u) => u.id === id);
 }
 
-export function universityName(id?: string): string {
-  return university(id)?.shortName ?? "Not yet assigned";
+export function universityName(list: University[], id?: string): string {
+  return university(list, id)?.shortName ?? "Not yet assigned";
 }
 
-export function team(id?: string): StudentTeam | undefined {
-  return TEAMS.find((t) => t.id === id);
-}
-
-export function facultyOf(id?: string) {
-  return FACULTY.find((f) => f.id === id);
+export function team(list: StudentTeam[], id?: string): StudentTeam | undefined {
+  return list.find((t) => t.id === id);
 }
 
 export function sdgTitle(n: number) {
@@ -68,11 +73,14 @@ export type PortfolioTotals = {
   sdgs: number[];
 };
 
-export function portfolioTotals(projects: IndustryProject[]): PortfolioTotals {
+export function portfolioTotals(
+  projects: IndustryProject[],
+  teams: StudentTeam[] = [],
+): PortfolioTotals {
   const committed = projects.reduce((s, p) => s + p.investment.committed, 0);
   const peopleImpacted = projects.reduce((s, p) => s + p.peopleImpacted, 0);
   const technologies = new Set(
-    projects.flatMap((p) => team(p.teamId)?.skills ?? []),
+    projects.flatMap((p) => team(teams, p.teamId)?.skills ?? []),
   );
 
   return {
@@ -81,7 +89,7 @@ export function portfolioTotals(projects: IndustryProject[]): PortfolioTotals {
     disbursed: projects.reduce((s, p) => s + p.investment.disbursed, 0),
     peopleImpacted,
     communities: projects.reduce((s, p) => s + p.villages, 0),
-    students: projects.reduce((s, p) => s + (team(p.teamId)?.memberCount ?? 0), 0),
+    students: projects.reduce((s, p) => s + (team(teams, p.teamId)?.memberCount ?? 0), 0),
     universities: new Set(projects.map((p) => p.universityId)).size,
     pilotsRunning: projects.filter((p) => p.stage === "pilot").length,
     completed: projects.filter((p) => p.stage === "impact").length,
@@ -293,7 +301,7 @@ export function mentorLoad(assignments: MentorAssignment[]) {
  */
 export function matchContext(
   projects: IndustryProject[],
-  assignments: MentorAssignment[] = MENTOR_ASSIGNMENTS,
+  assignments: MentorAssignment[],
 ): MatchContext {
   return {
     partnerUniversityIds: [...new Set(projects.map((p) => p.universityId))],
@@ -372,13 +380,17 @@ export type UniversityRollup = {
   peopleImpacted: number;
 };
 
-export function universityRollup(projects: IndustryProject[]): UniversityRollup[] {
-  return UNIVERSITIES.map((u) => {
+export function universityRollup(
+  projects: IndustryProject[],
+  universities: University[],
+  teams: StudentTeam[] = [],
+): UniversityRollup[] {
+  return universities.map((u) => {
     const mine = projects.filter((p) => p.universityId === u.id);
     return {
       university: u,
       projects: mine,
-      students: mine.reduce((s, p) => s + (team(p.teamId)?.memberCount ?? 0), 0),
+      students: mine.reduce((s, p) => s + (team(teams, p.teamId)?.memberCount ?? 0), 0),
       investment: mine.reduce((s, p) => s + p.investment.committed, 0),
       peopleImpacted: mine.reduce((s, p) => s + p.peopleImpacted, 0),
     };

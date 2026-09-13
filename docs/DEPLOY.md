@@ -29,7 +29,10 @@ API's URL.
 
 ## 2. API — Railway
 
-1. New project → **Deploy from GitHub repo** → pick this repo.
+1. New project → **Deploy from GitHub repo** → pick this repo. (If you would
+   rather deploy only from the `deploy-api` workflow, disconnect the GitHub
+   source afterwards — otherwise every push deploys twice, once from each, and
+   the two race the pre-deploy migration hook.)
 2. Set the service **Root Directory** to `backend`. Railway then picks up
    [`backend/railway.json`](../backend/railway.json), which already declares the
    Dockerfile build, the `/healthz` check and the pre-deploy migration.
@@ -60,21 +63,63 @@ API's URL.
 
 ### Seeding
 
-The seed is written for demonstration: it creates the Ranchi jurisdictions,
-five departments, five officers, twelve problems, ninety-six citizen reports,
-the BIT Mesra institute and the demo accounts. It is what makes a fresh deploy
-show a working product instead of empty tables.
+The seed is written for demonstration: it creates the Ranchi jurisdictions, 8
+villages, 5 departments, 5 delivery officers, 12 problems carrying 96 citizen
+reports, 69 votes, 12 evidence objects, 7 delivery ratings, the BIT Mesra
+institute, the industry partner and 41 accounts in all. It is what makes a
+fresh deploy show a working product instead of empty tables.
 
-Run it once, from the Railway service shell:
+It **refuses to run** when `NODE_ENV` is `production` or `staging` — the first
+line of `prisma/seed.ts` throws. That guard exists because the seed begins by
+wiping every table, and a deploy is exactly the context in which someone runs
+the wrong command in the wrong shell. To seed a fresh production database you
+have to say so on purpose, once, from the Railway service shell:
 
 ```bash
-npm run db:seed
+NODE_ENV=development npm run db:seed
 ```
 
-Every demo account uses the password `jansetu-dev`. **Change or disable them
-before this is in front of real users** — `student@jansetu.local`,
-`user-district@jansetu.local`, `industry@jansetu.local`,
-`institute@jansetu.local` and `admin@jansetu.local` are published in this repo.
+Never run that against a database with real reports in it. There is no
+incremental mode; it truncates first.
+
+#### Rotate the demo credentials before anyone real signs in
+
+All 41 seeded accounts share the password **`jansetu-dev`**, which is written in
+this repository and therefore public. Among them are
+`admin@jansetu.local` (holds every permission), `user-district@jansetu.local`
+(approves funding), `industry@jansetu.local`, `institute@jansetu.local`,
+`student@jansetu.local`, five `off-0N@` delivery officers and sixteen `cit-*@`
+citizens whose reports carry the verification standing.
+
+Either seed and then rotate, or do not seed at all:
+
+```sql
+-- Locks every seeded account out without deleting the data they anchor.
+UPDATE users SET "passwordHash" = '!' WHERE email LIKE '%@jansetu.local';
+```
+
+A hash that no bcrypt comparison can match disables sign-in while leaving the
+reports, votes, ratings and leaderboard rows intact — deleting the users would
+orphan all of it. Re-enable individual accounts through the normal
+password-reset flow once that is wired (see *What is not wired yet*).
+
+### Uploads
+
+Evidence photographs and report attachments go through `/api/v1/uploads`. Two
+drivers sit behind it and `STORAGE_DRIVER=auto` (the default) picks between
+them: R2 when all four `R2_*` variables are present, local disk otherwise.
+
+**In production the local driver is refused, with a 503, on purpose.** Railway's
+filesystem is ephemeral — a redeploy or a restart discards it — so uploads
+written to disk would disappear silently, taking the before-and-after gallery
+that the public portal and the citizen verification flow both read with them.
+Failing loudly beats losing evidence.
+
+So: if you want uploads on the deployed API, create a Cloudflare R2 bucket
+(free tier, no card) and set `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`,
+`R2_SECRET_ACCESS_KEY`, `R2_BUCKET` and `R2_PUBLIC_BASE_URL`. If you leave them
+blank, everything else works and the two upload buttons return a 503 that the
+UI surfaces as "attachments are not configured".
 
 ---
 
@@ -108,21 +153,102 @@ anything about credentials.
 
 ---
 
+## 5. CI and continuous deploy
+
+Five workflows in [`.github/workflows/`](../.github/workflows):
+
+| Workflow | Runs on | What it proves |
+| --- | --- | --- |
+| `backend-ci` | `backend/**` | lint, `tsc`, 91 unit tests, `migrate deploy` + seed + 162 e2e against a Postgres service, and that `openapi.json` is not stale |
+| `web-ci` | `apps/web/**` | `tsc`, lint, and a production build against a placeholder `BACKEND_API_URL` — which is how it enforces that no page fetches at build time |
+| `mobile-ci` | `apps/citizen-app/**` | `flutter analyze`, 74 widget tests, and a release web build |
+| `deploy-api` | push to `main` | `railway up`, then polls `/readyz` until the database answers |
+| `deploy-web` | push to `main` | `vercel build` here, `vercel deploy --prebuilt`, then checks the signed-out `/problems` page renders |
+
+The two deploy workflows **skip themselves, green, when their secrets are
+absent**. A clone with no hosting attached should not show a red X on every
+push. Add these under *Settings → Secrets and variables → Actions* when you
+have the accounts:
+
+```
+RAILWAY_TOKEN       Railway → project → Settings → Tokens (a project token)
+RAILWAY_SERVICE     the service name — "backend" unless you renamed it
+API_BASE_URL        https://your-backend.up.railway.app
+
+VERCEL_TOKEN        Vercel → Account Settings → Tokens
+VERCEL_ORG_ID       from apps/web/.vercel/project.json after one `vercel link`
+VERCEL_PROJECT_ID   likewise
+```
+
+`BACKEND_API_URL` and `GROQ_API_KEY` are **not** in that list on purpose. They
+live in the Vercel project's own environment and `vercel pull` fetches them at
+build time; giving them a second home in GitHub secrets guarantees the two
+drift apart.
+
+Nothing orders the two deploys against each other — a push touching both runs
+both at once. That is safe because the web app reads the API only per-request,
+never during the build. The one release that needs care is a web change that
+depends on a brand-new endpoint: dispatch `deploy-api` by hand first.
+
+---
+
 ## Smoke test
 
-In order, on the deployed site:
+Fifteen minutes, in this order. Steps 1–4 need no account at all, which is the
+point: the public half of this product has to work for someone who arrived from
+a WhatsApp link.
 
-1. `/signin` renders and lists the demo accounts.
-2. Signing in as `user-district@jansetu.local` lands on `/gov`, not `/signin`.
-3. `/gov/departments` shows five departments with officer names — this is the
-   proof the reference endpoints are wired, because that screen has no fixtures
-   behind it any more.
-4. `/gov/problems` shows the register, and the Village and Department filters are
-   populated (8 and 5 entries).
-5. Opening a problem and pressing **Validate** persists — reload and it holds.
-6. Signing out and back in as `institute@jansetu.local` lands on `/institute`.
-7. `/industry` and `/dashboard` both show the amber **Demonstration data**
-   banner. They are meant to.
+**Signed out**
+
+1. `/problems` lists published problems with vote counts, and `/problems/<id>`
+   opens one. This is the redaction boundary doing its job — every field on that
+   page is named explicitly server-side, so anything sensitive appearing here is
+   a bug, not a setting.
+2. `/impact`, `/ledger` and `/leaderboard` render. `/ledger` is the funding
+   audit trail; if it is empty the seed did not run.
+3. `/robots.txt` and `/sitemap.xml` both return 200, and the sitemap lists the
+   problem pages.
+4. `/report` renders the intake form with no sign-in wall. File one — *"School
+   ke paas wala chapakal sukha pada hai"* is a good test because it exercises
+   the romanised-Hindi path in the keyword classifier. The confirmation should
+   name a category (water), not "uncategorised". With no `GROQ_API_KEY` this is
+   the deterministic keyword pass; that is a supported configuration, not a
+   degraded one.
+
+**Government**
+
+5. `/signin` → `user-district@jansetu.local`. It must land on `/gov`, not back
+   on `/signin`. If it loops, it is `CORS_ORIGINS` (step 4 above) nine times in
+   ten.
+6. `/gov/departments` shows 5 departments with officer names; `/gov/problems`
+   shows the register with the Village and Department filters populated (8 and
+   5 entries).
+7. Open a problem → **Validate**. Reload. It holds. Then **Approve funding** on
+   one that is ready, and reload again: the committed figure moves and
+   `/ledger` gains a row. Every government mutation is server-backed now — if
+   any of them reverts on reload, the proxy is dropping the request rather than
+   the UI being optimistic.
+8. `/gov/priority` shows the five weights summing to 100. Publishing a new set
+   re-ranks `/gov/problems` on the next load.
+
+**The other three surfaces**
+
+9. Sign out, in as `institute@jansetu.local` → lands on `/institute`, and
+   `/institute/students` lists the seeded roster.
+10. `industry@jansetu.local` → `/industry`. `/industry/discover` shows challenge
+    briefs built from real problems, with the village and reporter identities
+    stripped. `/industry/csr` generates a report.
+11. `student@jansetu.local` → `/dashboard`, and `/opportunities` is ranked by
+    the recommender. With no `RECOMMENDER_URL` set this is the heuristic scorer
+    — again, supported, not degraded.
+
+**Verification, if R2 is configured**
+
+12. As one of the `cit-*@jansetu.local` accounts (they hold the reporting
+    standing), open `/report/verify`, attach a photograph and submit. Reload:
+    the image renders in the gallery, and the same object appears on the public
+    problem page. A 503 here means `STORAGE_DRIVER` fell back to local disk —
+    see *Uploads* above.
 
 ---
 
@@ -131,17 +257,35 @@ In order, on the deployed site:
 Say this out loud to anyone evaluating the deployment, because the screens do
 not:
 
-- **The industry portal and the student surface run on fixtures.** Both carry a
-  banner. No mutation on either is written anywhere.
-- **Fifteen government mutations are client-side only** — sponsorship, funding,
-  officer assignment, project progress, verification, automation toggles. They
-  survive navigation and are lost on reload. Validate, reject, route and publish
-  weights are the four that persist.
-- **No OTP or password-reset message is ever delivered.**
-  `backend/src/auth/otp.service.ts` and `auth.service.ts` both carry the TODO.
-  Citizen phone login cannot work in production until a provider is wired.
-- **No file upload.** The R2 variables are read but no endpoint uses them.
-- **No error tracking or alerting.** `/healthz` is the only signal.
+- **No message of any kind is ever delivered.** No OTP, no password reset, no
+  email, no push. `backend/src/auth/otp.service.ts:52` and
+  `auth.service.ts:159` both carry the TODO, and `FCM_SERVICE_ACCOUNT_JSON` is
+  read but unused. Consequences: **citizen phone login cannot work**, a
+  forgotten password has no recovery path short of a SQL update, and
+  notifications are written to the database but only ever seen by someone who
+  opens the notifications screen.
+- **The sign-in page publishes the demo account list in production.**
+  `apps/web/src/components/auth/demo-accounts.ts` is rendered unconditionally,
+  and every account it names uses the password in this repository. Rotate them
+  (see *Rotate the demo credentials* above) or remove that component before the
+  URL goes anywhere.
+- **Uploads need R2.** Without it the endpoints return 503 in production by
+  design; evidence, attachments and the before-and-after gallery are the parts
+  that go missing.
+- **The Flutter citizen app does not talk to this backend.** It runs on
+  in-memory repositories against a Firebase design that duplicates this API's
+  clustering, ranking and verification logic. `mobile-ci` keeps it compiling and
+  its 74 tests green; it is not part of this deployment. See the root README and
+  COMPLETION_PLAN.md §7.
+- **No error tracking, no alerting, no uptime check.** `/healthz` and `/readyz`
+  are the only signals, and nothing watches them except `deploy-api` at the
+  moment of deploy. A 3am 500 is invisible.
+- **The recommender is heuristic unless you point it somewhere.**
+  `RECOMMENDER_URL` switches student matching from the weighted scorer to an
+  HTTP model; absent, the seam is real but nothing is behind it. It falls back
+  rather than failing, so a wrong URL degrades silently.
+- **The audit log is append-only but nothing reads it in the UI.** Every
+  mutation writes an `audit_entries` row. There is no screen for it.
 
 ---
 

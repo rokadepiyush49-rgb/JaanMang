@@ -18,7 +18,7 @@ import { Icon } from "@/components/icon";
 import { Badge, Card, Enter, Progress, cx } from "@/components/ui";
 import { Toggle } from "@/components/ui-interactive";
 import { MatchRing } from "@/components/industry/pieces";
-import { DOMAIN_LABEL, DOMAINS } from "@/lib/industry/challenges";
+import { DOMAIN_LABEL, DOMAINS } from "@/lib/industry/vocabulary";
 import { matchChallenge } from "@/lib/industry/match";
 import { people, rupees } from "@/lib/industry/format";
 import { isOpen, matchContext, recommended } from "@/lib/industry/selectors";

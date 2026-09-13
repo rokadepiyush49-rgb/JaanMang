@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Icon } from "@/components/icon";
 import { Stepper } from "@/components/stepper";
 import {
@@ -11,11 +11,29 @@ import {
   PageHeading,
   Tag,
 } from "@/components/ui";
-import { CANDIDATES, SKILL_FILTERS } from "@/lib/data";
+import { SKILL_FILTERS } from "@/lib/student/vocabulary";
+import { toViewCandidate } from "@/lib/student/adapters";
+import { StudentApi } from "@/lib/student/service";
 
 const TEAM_SIZE = 4;
 
 export default function TeamFormationPage() {
+  /* Classmates open to teaming up, from the student surface. Narrower than the
+     institute roster on purpose — see the endpoint. */
+  const [candidates, setCandidates] = useState<ReturnType<typeof toViewCandidate>[]>([]);
+  useEffect(() => {
+    let cancelled = false;
+    void StudentApi.candidates()
+      .then((rows) => {
+        if (!cancelled) setCandidates(rows.map(toViewCandidate));
+      })
+      .catch(() => {
+        if (!cancelled) setCandidates([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const [query, setQuery] = useState("");
   const [active, setActive] = useState<string[]>(["React", "UI/UX"]);
   const [invited, setInvited] = useState<string[]>(["rohan"]);
@@ -38,7 +56,7 @@ export default function TeamFormationPage() {
 
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return CANDIDATES.filter((c) => {
+    return candidates.filter((c) => {
       if (
         active.length > 0 &&
         !active.some(
@@ -54,9 +72,9 @@ export default function TeamFormationPage() {
         c.skills.some((s) => s.toLowerCase().includes(q))
       );
     });
-  }, [active, query]);
+  }, [active, query, candidates]);
 
-  const team = CANDIDATES.filter((c) => invited.includes(c.id));
+  const team = candidates.filter((c) => invited.includes(c.id));
   const full = invited.length >= TEAM_SIZE - 1;
 
   return (

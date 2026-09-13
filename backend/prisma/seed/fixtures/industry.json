@@ -1,0 +1,563 @@
+{
+  "_generatedAt": "2026-09-12T05:19:59.376Z",
+  "_source": "apps/web/src/lib/industry/challenges.ts",
+  "categoryDomain": {
+    "water": "water",
+    "sanitation": "water",
+    "roads": "infrastructure",
+    "bridge": "infrastructure",
+    "drainage": "infrastructure",
+    "streetlight": "energy",
+    "waste": "environment",
+    "school": "education",
+    "health": "health"
+  },
+  "domainLabel": {
+    "water": "Water & Sanitation",
+    "health": "Healthcare",
+    "education": "Education",
+    "agriculture": "Agriculture",
+    "environment": "Environment",
+    "energy": "Energy",
+    "infrastructure": "Infrastructure",
+    "accessibility": "Accessibility",
+    "rural": "Rural Development"
+  },
+  "enrichment": {
+    "P-1042": {
+      "summary": "Piped supply to three villages has been down for three days and the handpump fallback is dry. The panchayat needs the pump-house valve assembly replaced and, more importantly, instrumentation that reports a failure the day it happens instead of three days later. A BIT Mesra team has a working pressure-node prototype and no way to field it.",
+      "technologies": [
+        "IoT & Telemetry",
+        "LoRaWAN",
+        "Water Systems",
+        "Sensors & Instrumentation",
+        "Hydraulic Systems",
+        "AI/ML"
+      ],
+      "capabilitiesNeeded": [
+        "hardware",
+        "field-deployment",
+        "certification"
+      ],
+      "supportNeeded": [
+        "fund",
+        "mentor",
+        "technology",
+        "deploy"
+      ],
+      "sdgs": [
+        6,
+        9,
+        11
+      ],
+      "timelineDays": 90,
+      "universityId": "u-bit",
+      "teamId": "t-dhara",
+      "sanctionReference": "JH-RAN-WS-2026-114",
+      "expectedOutcomes": [
+        {
+          "label": "Supply restored",
+          "target": "3 villages, within 14 days",
+          "method": "Panchayat water register, verified against citizen confirmation"
+        },
+        {
+          "label": "Outage detection time",
+          "target": "3 days → under 6 hours",
+          "method": "Time between telemetry alarm and the first citizen report, over 90 days"
+        },
+        {
+          "label": "Repeat outage reports",
+          "target": "95% reduction",
+          "method": "Report volume for this cluster, 90 days before against 90 days after"
+        },
+        {
+          "label": "Panchayat can operate it",
+          "target": "2 staff certified",
+          "method": "Handover checklist countersigned by the Junior Engineer"
+        }
+      ],
+      "evidence": [
+        {
+          "label": "Expected demand reduction",
+          "value": "95%",
+          "source": "Modelled from the 2025 Ormanjhi deployment: 41 reports in the 90 days before, 2 after"
+        },
+        {
+          "label": "Cost basis",
+          "value": "₹6.2 L",
+          "source": "Rural Works schedule of rates 2026 + BIT Mesra bill of materials"
+        }
+      ],
+      "contributions": [
+        {
+          "id": "c-1042-a",
+          "party": "Tata Steel Foundation",
+          "kind": "industry",
+          "amount": 150000,
+          "status": "proposed",
+          "at": "2026-09-11T23:19:59.376Z"
+        }
+      ]
+    },
+    "P-1038": {
+      "summary": "A 1.4 km approach road has washed out for the third time in 24 months, cutting Pithoria off from the block headquarters during rain. The previous repair did not hold, so the department wants the drainage cross-section re-specified rather than the surface relaid — which is a design problem a civil engineering department can take on.",
+      "technologies": [
+        "GIS",
+        "Hydrology",
+        "Materials"
+      ],
+      "capabilitiesNeeded": [
+        "field-deployment",
+        "logistics"
+      ],
+      "supportNeeded": [
+        "fund",
+        "mentor",
+        "partner"
+      ],
+      "sdgs": [
+        9,
+        11
+      ],
+      "timelineDays": 150,
+      "expectedOutcomes": [
+        {
+          "label": "Washout recurrence",
+          "target": "0 over two monsoons",
+          "method": "Department inspection after each monsoon, published to the problem record"
+        },
+        {
+          "label": "Connectivity days lost",
+          "target": "18 → under 3 per year",
+          "method": "Block transport log"
+        }
+      ],
+      "evidence": [
+        {
+          "label": "Recurrence",
+          "value": "3rd washout in 24 months",
+          "source": "Rural Works Department repair history at the same chainage"
+        }
+      ]
+    },
+    "P-1051": {
+      "status": "in_delivery",
+      "summary": "Eleven poles on the Booty Basti main road have been dark for six weeks, on a stretch with a girls' school and a bus stop. The ward wants solar units with fault telemetry so a failure raises a ticket instead of waiting for a complaint. NIT Jamshedpur has the controller design and needs the field electronics.",
+      "technologies": [
+        "Solar & Power Electronics",
+        "IoT & Telemetry",
+        "Embedded Systems"
+      ],
+      "capabilitiesNeeded": [
+        "hardware",
+        "field-deployment",
+        "training"
+      ],
+      "supportNeeded": [
+        "fund",
+        "technology",
+        "deploy"
+      ],
+      "sdgs": [
+        7,
+        11
+      ],
+      "timelineDays": 75,
+      "universityId": "u-nit",
+      "teamId": "t-roshni",
+      "projectId": "CDP-102",
+      "expectedOutcomes": [
+        {
+          "label": "Lit hours",
+          "target": "97% of dark hours",
+          "method": "Controller uptime log, sampled monthly"
+        },
+        {
+          "label": "Fault-to-repair time",
+          "target": "42 days → 5 days",
+          "method": "Ticket timestamps from the telemetry backend"
+        }
+      ],
+      "contributions": [
+        {
+          "id": "c-1051-self",
+          "party": "Nirvaha Technologies",
+          "kind": "industry",
+          "amount": 360000,
+          "status": "disbursed",
+          "at": "2026-02-14T05:19:59.376Z",
+          "isSelf": true
+        }
+      ]
+    },
+    "P-1012": {
+      "status": "in_delivery",
+      "summary": "The Kanchi stream crossing has a cracked deck panel and is under a load restriction that adds 11 km to every trip from Tigra. Before a repair estimate can be written the department needs a real load rating, which means instrumenting the deck — work a structural engineering department can do well and cheaply.",
+      "technologies": [
+        "Sensors & Instrumentation",
+        "Structural Monitoring",
+        "Embedded Systems"
+      ],
+      "capabilitiesNeeded": [
+        "hardware",
+        "testing",
+        "field-deployment"
+      ],
+      "supportNeeded": [
+        "fund",
+        "technology",
+        "test",
+        "mentor"
+      ],
+      "sdgs": [
+        9,
+        11
+      ],
+      "timelineDays": 120,
+      "universityId": "u-bit",
+      "teamId": "t-prahari",
+      "projectId": "CDP-108",
+      "expectedOutcomes": [
+        {
+          "label": "Load rating established",
+          "target": "Signed rating note",
+          "method": "District engineer's office acceptance of the instrumented rating"
+        },
+        {
+          "label": "Detour distance removed",
+          "target": "11 km per trip",
+          "method": "Block transport survey after the restriction lifts"
+        }
+      ],
+      "contributions": [
+        {
+          "id": "c-1012-self",
+          "party": "Nirvaha Technologies",
+          "kind": "industry",
+          "amount": 1130000,
+          "status": "disbursed",
+          "at": "2026-04-11T05:19:59.376Z",
+          "isSelf": true
+        }
+      ]
+    },
+    "P-1008": {
+      "status": "in_delivery",
+      "summary": "Two classrooms at Chandaghasi Middle School are unusable in rain, and the same roof failure has taken the school's rainwater tank out of service. A BIT Mesra civil team has designed a repair that restores both at once, and needs the retrofit hardware and a manufacturing read on the tap assembly.",
+      "technologies": [
+        "Water Systems",
+        "Materials",
+        "Rainwater Harvesting"
+      ],
+      "capabilitiesNeeded": [
+        "manufacturing",
+        "field-deployment"
+      ],
+      "supportNeeded": [
+        "fund",
+        "mentor",
+        "prototype",
+        "deploy"
+      ],
+      "sdgs": [
+        4,
+        6
+      ],
+      "timelineDays": 100,
+      "universityId": "u-bit",
+      "teamId": "t-saksham",
+      "projectId": "CDP-104",
+      "expectedOutcomes": [
+        {
+          "label": "Classroom days lost to rain",
+          "target": "22 → 0 per year",
+          "method": "School attendance and closure register"
+        },
+        {
+          "label": "Tank back in service",
+          "target": "8,000 L, year round",
+          "method": "Headmaster's monthly return to the block education office"
+        }
+      ],
+      "contributions": [
+        {
+          "id": "c-1008-self",
+          "party": "Nirvaha Technologies",
+          "kind": "industry",
+          "amount": 340000,
+          "status": "committed",
+          "at": "2026-08-01T05:19:59.376Z",
+          "isSelf": true
+        }
+      ]
+    },
+    "P-1024": {
+      "summary": "The Nagri bazaar public toilet has been unusable since the water connection and cleaning contract both lapsed. The fix is largely contractual rather than technical, and the government has funded it — this is listed so partners can see the whole pipeline, not because it needs money.",
+      "technologies": [
+        "Water Systems"
+      ],
+      "capabilitiesNeeded": [],
+      "supportNeeded": [],
+      "sdgs": [
+        6,
+        11
+      ],
+      "timelineDays": 45,
+      "expectedOutcomes": [
+        {
+          "label": "Facility in service",
+          "target": "Daily, with a named cleaner",
+          "method": "Citizen verification — 22 original reporters asked to confirm"
+        }
+      ]
+    },
+    "P-1003": {
+      "summary": "The Nagri PHC lost mains power during three deliveries in a month and its backup did not carry the load. NIT Jamshedpur instrumented the supply, found the fault was battery health rather than generator capacity, and the fix is now handed over and verified.",
+      "technologies": [
+        "Solar & Power Electronics",
+        "IoT & Telemetry",
+        "Embedded Systems"
+      ],
+      "capabilitiesNeeded": [
+        "hardware",
+        "testing",
+        "field-deployment"
+      ],
+      "supportNeeded": [
+        "fund",
+        "technology",
+        "test"
+      ],
+      "sdgs": [
+        3,
+        7,
+        9
+      ],
+      "timelineDays": 90,
+      "universityId": "u-nit",
+      "teamId": "t-ujjwal",
+      "projectId": "CDP-105",
+      "expectedOutcomes": [
+        {
+          "label": "Unbacked outages during deliveries",
+          "target": "3 per month → 0",
+          "method": "PHC incident register plus continuous supply telemetry"
+        },
+        {
+          "label": "Battery replacement warned in advance",
+          "target": "30 days' notice",
+          "method": "State-of-health model against actual replacement dates"
+        }
+      ],
+      "contributions": [
+        {
+          "id": "c-1003-self",
+          "party": "Nirvaha Technologies",
+          "kind": "industry",
+          "amount": 450000,
+          "status": "disbursed",
+          "at": "2025-12-14T05:19:59.376Z",
+          "isSelf": true
+        },
+        {
+          "id": "c-1003-b",
+          "party": "Usha Martin Foundation",
+          "kind": "industry",
+          "amount": 200000,
+          "status": "disbursed",
+          "at": "2025-12-26T05:19:59.376Z"
+        }
+      ]
+    },
+    "P-1046": {
+      "status": "in_delivery",
+      "summary": "The drain beside the Hesag weekly market backs into eleven houses whenever heavy rain coincides with market day. A CUJ team has built an early-warning model on the drain level, and the honest finding so far is that it raises too many false alarms — which is the part industry help would fix.",
+      "technologies": [
+        "IoT & Telemetry",
+        "AI/ML",
+        "Cloud & Data Platforms"
+      ],
+      "capabilitiesNeeded": [
+        "hardware",
+        "software",
+        "field-deployment"
+      ],
+      "supportNeeded": [
+        "fund",
+        "mentor",
+        "technology"
+      ],
+      "sdgs": [
+        6,
+        11,
+        13
+      ],
+      "timelineDays": 110,
+      "universityId": "u-cuj",
+      "teamId": "t-tarang",
+      "projectId": "CDP-103",
+      "expectedOutcomes": [
+        {
+          "label": "False alarm rate",
+          "target": "87% → under 20%",
+          "method": "Alerts raised against overflows confirmed by the ward"
+        },
+        {
+          "label": "Households given usable warning",
+          "target": "11, at least 2 hours ahead",
+          "method": "Alert timestamps against the ward's flooding log"
+        }
+      ],
+      "contributions": [
+        {
+          "id": "c-1046-self",
+          "party": "Nirvaha Technologies",
+          "kind": "industry",
+          "amount": 520000,
+          "status": "disbursed",
+          "at": "2026-06-26T05:19:59.376Z",
+          "isSelf": true
+        }
+      ]
+    },
+    "P-1055": {
+      "summary": "Ward 4 in Kanke Chowk has had no waste collection for nine days. It is a routing and accountability failure rather than an engineering one, and the block has it in validation — listed here for pipeline visibility.",
+      "technologies": [
+        "GIS",
+        "Cloud & Data Platforms"
+      ],
+      "capabilitiesNeeded": [
+        "software"
+      ],
+      "supportNeeded": [
+        "technology"
+      ],
+      "sdgs": [
+        11,
+        12
+      ],
+      "timelineDays": 60,
+      "expectedOutcomes": [
+        {
+          "label": "Collection days missed",
+          "target": "9 → 0 per month",
+          "method": "Route completion log against the ward schedule"
+        }
+      ]
+    },
+    "P-1060": {
+      "summary": "Handpump water at Tigra tola has turned discoloured, in a hamlet whose deprivation index is the highest in the panchayat and which has no alternative source. CUJ built a field-portable screening kit for exactly this; it works on the bench and drifts in the heat.",
+      "technologies": [
+        "Sensors & Instrumentation",
+        "Water Systems",
+        "Embedded Systems",
+        "Cloud & Data Platforms"
+      ],
+      "capabilitiesNeeded": [
+        "hardware",
+        "testing",
+        "certification"
+      ],
+      "supportNeeded": [
+        "fund",
+        "mentor",
+        "test",
+        "technology"
+      ],
+      "sdgs": [
+        3,
+        6,
+        9
+      ],
+      "timelineDays": 120,
+      "universityId": "u-cuj",
+      "teamId": "t-nirmal",
+      "expectedOutcomes": [
+        {
+          "label": "Screening turnaround",
+          "target": "11 days → same day",
+          "method": "Time from sample to result, against the district lab baseline"
+        },
+        {
+          "label": "Households on a tested source",
+          "target": "620 of 620",
+          "method": "Panchayat water register cross-checked with test records"
+        }
+      ]
+    },
+    "P-1035": {
+      "summary": "A collapsed culvert on the Ormanjhi link road has cut the direct route to the block hospital for 2,450 people. The department has the design; what it does not have is a partner, and the industry response window closes tomorrow before it falls back to the government funding queue.",
+      "technologies": [
+        "Materials",
+        "GIS"
+      ],
+      "capabilitiesNeeded": [
+        "field-deployment",
+        "logistics"
+      ],
+      "supportNeeded": [
+        "fund",
+        "deploy",
+        "partner"
+      ],
+      "sdgs": [
+        9,
+        11
+      ],
+      "timelineDays": 120,
+      "expectedOutcomes": [
+        {
+          "label": "Route restored",
+          "target": "Direct access to the block hospital",
+          "method": "Rural Works completion certificate"
+        },
+        {
+          "label": "Ambulance response time",
+          "target": "48 min → 22 min",
+          "method": "Block health transport log, 90 days after"
+        }
+      ],
+      "contributions": [
+        {
+          "id": "c-1035-a",
+          "party": "Central Coalfields CSR Cell",
+          "kind": "industry",
+          "amount": 300000,
+          "status": "proposed",
+          "at": "2026-09-10T05:19:59.376Z"
+        }
+      ]
+    },
+    "P-1049": {
+      "summary": "The Booty Basti anganwadi centre has no toilet, which is the reason attendance falls off for older girls. It is a small, well-understood build, and small is the point: it is the kind of thing a partner can close in a quarter.",
+      "technologies": [
+        "Water Systems"
+      ],
+      "capabilitiesNeeded": [
+        "field-deployment"
+      ],
+      "supportNeeded": [
+        "fund",
+        "deploy"
+      ],
+      "sdgs": [
+        4,
+        6,
+        10
+      ],
+      "timelineDays": 60,
+      "expectedOutcomes": [
+        {
+          "label": "Facility built and connected",
+          "target": "1 unit, with running water",
+          "method": "Block education office inspection"
+        },
+        {
+          "label": "Attendance of girls over 8",
+          "target": "+18 percentage points",
+          "method": "Anganwadi attendance register, two terms after"
+        }
+      ]
+    }
+  }
+}

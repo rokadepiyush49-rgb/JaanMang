@@ -17,11 +17,12 @@ import {
   cx,
 } from "@/components/ui";
 import { Menu, Tabs } from "@/components/ui-interactive";
-import { STUDENT_PROJECTS, type StudentProject } from "@/lib/data";
+import { toViewProject, type ViewProject } from "@/lib/student/adapters";
+import { useStudent } from "@/lib/student/store";
 
 const STAGES = ["Plan", "Research", "Build", "Test", "Pilot", "Handover"];
 
-function ProjectCard({ project }: { project: StudentProject }) {
+function ProjectCard({ project }: { project: ViewProject }) {
   const t = TINT[project.tint];
   return (
     <Card className="flex h-full flex-col p-5">
@@ -113,16 +114,18 @@ function ProjectCard({ project }: { project: StudentProject }) {
 }
 
 export default function ProjectsPage() {
+  const { state } = useStudent();
+  const projects = state.projects.map(toViewProject);
   const [tab, setTab] = useState("active");
 
-  const active = STUDENT_PROJECTS.filter((p) => p.percent < 100);
-  const completed = STUDENT_PROJECTS.filter((p) => p.percent === 100);
-  const shown = tab === "active" ? active : tab === "completed" ? completed : STUDENT_PROJECTS;
+  const active = projects.filter((p) => p.percent < 100);
+  const completed = projects.filter((p) => p.percent === 100);
+  const shown = tab === "active" ? active : tab === "completed" ? completed : projects;
 
   const avgProgress = Math.round(
     active.reduce((sum, p) => sum + p.percent, 0) / Math.max(active.length, 1),
   );
-  const teammates = new Set(STUDENT_PROJECTS.flatMap((p) => p.team)).size - 1;
+  const teammates = new Set(projects.flatMap((p) => p.team)).size - 1;
 
   return (
     <div className="mx-auto flex max-w-[1400px] flex-col gap-6">
@@ -174,7 +177,7 @@ export default function ProjectsPage() {
           tabs={[
             { id: "active", label: "Active", count: active.length },
             { id: "completed", label: "Completed", count: completed.length },
-            { id: "all", label: "All", count: STUDENT_PROJECTS.length },
+            { id: "all", label: "All", count: projects.length },
           ]}
           value={tab}
         />

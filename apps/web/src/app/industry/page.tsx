@@ -25,9 +25,9 @@ import {
   ChallengeCard,
   KpiTile,
 } from "@/components/industry/pieces";
-import { DOMAIN_ICON, DOMAIN_LABEL, DOMAINS, DOMAIN_TINT } from "@/lib/industry/challenges";
+import { DOMAIN_ICON, DOMAIN_LABEL, DOMAINS, DOMAIN_TINT } from "@/lib/industry/vocabulary";
 import { exactRupees, people, relative, rupees } from "@/lib/industry/format";
-import { SUPPORT } from "@/lib/industry/mock-data";
+import { SUPPORT } from "@/lib/industry/vocabulary";
 import {
   awaitingReview,
   csrBook,

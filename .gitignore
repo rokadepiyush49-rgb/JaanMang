@@ -75,6 +75,7 @@ server/.env.*
 .env
 .env.*
 !.env.example
+!.env.*.example
 
 # Signing
 android/key.properties
@@ -87,3 +88,4 @@ android/key.properties
 # Local AI/editor agent config (not part of the project)
 .claude/
 CLAUDE.md
+.uploads/
